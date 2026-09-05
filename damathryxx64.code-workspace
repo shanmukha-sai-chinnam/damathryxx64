@@ -1,7 +1,7 @@
 {
     "folders": [
         {
-            "path": "/home/damathryxx64/repositories/"
+            "path": "."
         }
     ],
     "extensions": {
@@ -18,6 +18,7 @@
             "foxundermoon.shell-format",
             "github.copilot",
             "github.copilot-chat",
+            "ms-vscode.vscode-chat-customizations-evaluations",
             "github.vscode-github-actions",
             "gruntfuggly.todo-tree",
             "hashicorp.terraform",
@@ -45,16 +46,13 @@
             {
                 "label": "Rebuild Configuration (Flake)",
                 "type": "shell",
-                "command": "sudo nixos-rebuild switch --flake /home/damathryxx64/repositories/damathryxx64#nixos",
+                "command": "sudo nixos-rebuild switch --flake ${workspaceFolder}#nixos",
                 "problemMatcher": [],
                 "group": {
                     "kind": "build",
                     "isDefault": true
                 },
                 "detail": "Rebuild and apply the current NixOS configuration using flakes.",
-                "dependsOn": [
-                    "git add flake.lock"
-                ],
                 "dependsOrder": "sequence"
             },
             {
@@ -67,7 +65,7 @@
             {
                 "label": "Check Configuration (Flake)",
                 "type": "shell",
-                "command": "nixos-rebuild build --flake /home/damathryxx64/repositories/damathryxx64#nixos",
+                "command": "nixos-rebuild build --flake ${workspaceFolder}#nixos",
                 "problemMatcher": [],
                 "detail": "Check the current NixOS flake configuration without applying changes."
             },
@@ -81,6 +79,8 @@
         ]
     },
     "settings": {
+        "chat.useCustomizationsInParentRepositories": true,
+        "workbench.settings.editor": "json",
         // Editor Font & Display
         "editor.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontLigatures": true,
@@ -159,7 +159,7 @@
                 },
                 "options": {
                     "nixos": {
-                        "expr": "(builtins.getFlake \"/home/damathryxx64/damathryxx64\").nixosConfigurations.nixos.options"
+                        "expr": "(builtins.getFlake \"${workspaceFolder}\").nixosConfigurations.nixos.options"
                     }
                 }
             }
