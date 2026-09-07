@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788777716,
-        "narHash": "sha256-XkWqOP3XrYmJpDr8jTg3H557BijCi/qO8USDmZ2SflI=",
+        "lastModified": 1788778246,
+        "narHash": "sha256-xIIVcmK++2wvZ617I4sPB1K/npAcyCDFmVADDa5yGBE=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "8b694528c776a6e045f1373ab7e3346a0a8c2d39",
+        "rev": "0c892eb6cfbc5a07864602e010f099c014697e4f",
         "type": "github"
       },
       "original": {
