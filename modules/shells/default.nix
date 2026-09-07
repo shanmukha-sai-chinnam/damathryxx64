@@ -25,6 +25,9 @@
     };
     starship = {
       enable = true;
+      settings = {
+        scan_timeout = 100;
+      };
     };
     zoxide = {
       enable = true;
