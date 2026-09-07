@@ -70,6 +70,7 @@
 in {
   environment.systemPackages = with pkgs; [
     antigravity-cli
+    gemini-cli
     herdr
     opencode
     claude-code
