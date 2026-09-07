@@ -90,6 +90,10 @@
       agspd = "antigravity-superpowers doctor";
       agspc = "antigravity-superpowers check";
       agsps = "antigravity-superpowers sync";
+      agspsw = "antigravity-superpowers swarm";
+      agspw = "antigravity-superpowers watch";
+      agspq = "antigravity-superpowers quota";
+      agspm = "antigravity-superpowers mcp";
     };
     localBinInPath = true;
     systemPackages = with pkgs; [

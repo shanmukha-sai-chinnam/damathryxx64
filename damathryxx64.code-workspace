@@ -237,7 +237,7 @@
             {
                 "label": "Antigravity: Check Usage & Quota (Auto on Reload)",
                 "type": "shell",
-                "command": "~/.local/bin/antigravity-usage quota 2>/dev/null || npx -y antigravity-usage quota 2>/dev/null || npx -y antigravity-usage status",
+                "command": "antigravity-superpowers quota 2>/dev/null || ~/.local/bin/antigravity-usage quota 2>/dev/null || npx -y antigravity-usage status",
                 "runOptions": {
                     "runOn": "folderOpen"
                 },
@@ -250,6 +250,46 @@
                 },
                 "problemMatcher": [],
                 "detail": "Runs on every Antigravity window reload to display remaining model quotas and reset countdowns."
+            },
+            {
+                "label": "Superpowers: Doctor Health Check",
+                "type": "shell",
+                "command": "antigravity-superpowers doctor",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Inspect environment readiness for Nix, Herdr, Node, Git, and Antigravity profiles."
+            },
+            {
+                "label": "Superpowers: Swarm Status (Trio Flow)",
+                "type": "shell",
+                "command": "antigravity-superpowers swarm status",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Inspect active Herdr multi-agent swarm panes, roles, and integrations."
+            },
+            {
+                "label": "Superpowers: Continuous Watcher (Auto-Fix)",
+                "type": "shell",
+                "command": "antigravity-superpowers watch --fix",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Start continuous watcher with automated Alejandra, Statix, Deadnix, and ShellCheck fixes."
+            },
+            {
+                "label": "Superpowers: Sync Skills Globally",
+                "type": "shell",
+                "command": "antigravity-superpowers sync --global",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Synchronize all 21 skills into ~/.gemini/config/skills without overwriting custom settings."
             }
         ]
     },
