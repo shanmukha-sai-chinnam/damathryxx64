@@ -33,6 +33,12 @@
     echo "  hw               → herdr workspace list"
     echo "  hp               → herdr pane list"
     echo ""
+    echo -e "\033[1;33mAntigravity Superpowers:\033[0m"
+    echo "  agsp             → antigravity-superpowers init (Scaffold .agents)"
+    echo "  agspd            → antigravity-superpowers doctor (Diagnose environment)"
+    echo "  agspc            → antigravity-superpowers check (Verify profile integrity)"
+    echo "  agsps            → antigravity-superpowers sync (Synchronize skills and rules)"
+    echo ""
   '';
 in {
   devShell = pkgs.mkShell {

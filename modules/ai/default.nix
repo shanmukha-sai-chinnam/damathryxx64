@@ -29,4 +29,9 @@ in {
       RemainAfterExit = true;
     };
   };
+
+  programs.antigravity-superpowers = {
+    enable = true;
+    installGlobally = true;
+  };
 }

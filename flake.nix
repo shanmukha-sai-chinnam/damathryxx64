@@ -6,12 +6,17 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    antigravity-superpowers = {
+      url = "github:shanmukha-sai-chinnam/antigravity-superpowers";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     nixpkgs,
     nixos-wsl,
     nix-index-database,
+    antigravity-superpowers,
     ...
   }: let
     system = "x86_64-linux";
@@ -31,6 +36,7 @@
         modules = [
           nixos-wsl.nixosModules.default
           nix-index-database.nixosModules.nix-index
+          antigravity-superpowers.nixosModules.default
           ({pkgs, ...}:
             import ./modules/configuration.nix {
               inherit system nixpkgs hostName userName pkgs;

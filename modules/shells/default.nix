@@ -84,6 +84,12 @@
       hi = "herdr integration status";
       hw = "herdr workspace list";
       hp = "herdr pane list";
+
+      # Antigravity Superpowers
+      agsp = "antigravity-superpowers init";
+      agspd = "antigravity-superpowers doctor";
+      agspc = "antigravity-superpowers check";
+      agsps = "antigravity-superpowers sync";
     };
     localBinInPath = true;
     systemPackages = with pkgs; [
