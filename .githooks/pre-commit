@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+
+echo "🔍 Running pre-commit validation gates..."
+
+# 1. Check Alejandra formatting
+echo "  ↳ [1/3] Checking Nix formatting (Alejandra)..."
+if ! alejandra --check . > /dev/null 2>&1; then
+  echo -e "\033[1;31m❌ Alejandra formatting check failed.\033[0m"
+  echo "Run 'nix fmt -- .' to automatically format all files."
+  exit 1
+fi
+
+# 2. Statix check
+echo "  ↳ [2/3] Checking Nix anti-patterns (Statix)..."
+if ! statix check -i .direnv -i result . > /dev/null 2>&1; then
+  echo -e "\033[1;31m❌ Statix lint check failed.\033[0m"
+  statix check -i .direnv -i result .
+  echo "Run 'statix fix .' to auto-remediate anti-patterns."
+  exit 1
+fi
+
+# 3. Deadnix check
+echo "  ↳ [3/3] Checking dead code (Deadnix)..."
+if ! deadnix --fail --exclude .direnv result . > /dev/null 2>&1; then
+  echo -e "\033[1;31m❌ Deadnix detected unused Nix code.\033[0m"
+  deadnix --exclude .direnv result .
+  exit 1
+fi
+
+echo -e "\033[1;32m✓ All pre-commit checks passed!\033[0m"

@@ -1,91 +1,273 @@
 {
     "folders": [
         {
+            "name": "repositories",
+            "path": ".."
+        },
+        {
+            "name": "damathryxx64",
             "path": "."
+        },
+        {
+            "name": "SpoilsOfTheShatteredFates",
+            "path": "../SpoilsOfTheShatteredFates"
+        },
+        {
+            "name": "antigravity-superpowers",
+            "path": "../antigravity-superpowers"
         }
     ],
     "extensions": {
         "recommendations": [
-            "4ops.packer",
-            "4ops.terraform",
-            "azat-io.vscode-gruvbox-icon-theme",
-            "davidanson.vscode-markdownlint",
-            "dbaeumer.vscode-eslint",
-            "eamodio.gitlens",
-            "editorconfig.editorconfig",
-            "eraserlabs.eraserlabs",
-            "formulahendry.code-runner",
-            "foxundermoon.shell-format",
-            "github.copilot",
-            "github.copilot-chat",
-            "ms-vscode.vscode-chat-customizations-evaluations",
-            "github.vscode-github-actions",
-            "gruntfuggly.todo-tree",
-            "hashicorp.terraform",
-            "ibm.output-colorizer",
-            "jdinhlife.gruvbox",
-            "jnoortheen.nix-ide",
-            "kamadorueda.alejandra",
-            "kevinrose.vsc-python-indent",
-            "mads-hartmann.bash-ide-vscode",
-            "ms-python.debugpy",
+            "googlecloudtools.datacloud",
             "ms-python.python",
-            "ms-python.vscode-pylance",
+            "ms-python.debugpy",
             "ms-python.vscode-python-envs",
-            "oderwat.indent-rainbow",
-            "redhat.ansible",
-            "redhat.vscode-yaml",
-            "standard.vscode-standard",
-            "streetsidesoftware.code-spell-checker",
-            "tal7aouy.icons"
+            "ms-toolsai.jupyter"
         ]
     },
     "tasks": {
         "version": "2.0.0",
         "tasks": [
             {
-                "label": "Rebuild Configuration (Flake)",
+                "label": "NixOS: Build (Dry Run)",
                 "type": "shell",
-                "command": "sudo nixos-rebuild switch --flake ${workspaceFolder}#nixos",
+                "command": "nixos-rebuild build --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
                 "problemMatcher": [],
                 "group": {
                     "kind": "build",
                     "isDefault": true
                 },
-                "detail": "Rebuild and apply the current NixOS configuration using flakes.",
-                "dependsOrder": "sequence"
+                "detail": "Build the NixOS system derivation without applying or activating changes."
             },
             {
-                "label": "Garbage Collect",
+                "label": "NixOS: Rebuild & Apply (Switch)",
                 "type": "shell",
-                "command": "sudo nix-collect-garbage -d",
+                "command": "sudo nixos-rebuild switch --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
                 "problemMatcher": [],
-                "detail": "Remove old generations and clean up unused packages."
+                "detail": "Rebuild and apply the current NixOS configuration (activates live changes)."
             },
             {
-                "label": "Check Configuration (Flake)",
+                "label": "NixOS: Test Configuration (Session Only)",
                 "type": "shell",
-                "command": "nixos-rebuild build --flake ${workspaceFolder}#nixos",
+                "command": "sudo nixos-rebuild test --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
                 "problemMatcher": [],
-                "detail": "Check the current NixOS flake configuration without applying changes."
+                "detail": "Build and activate configuration for current session without modifying bootloader."
             },
             {
-                "label": "Rollback",
+                "label": "NixOS: Check Flake",
+                "type": "shell",
+                "command": "nix flake check --impure",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Validate flake schema, inputs, and devShell derivations."
+            },
+            {
+                "label": "NixOS: Format Code (Alejandra)",
+                "type": "shell",
+                "command": "nix fmt -- .",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Format all Nix expressions using Alejandra."
+            },
+            {
+                "label": "NixOS: Validate All (Format + Check + Build)",
+                "type": "shell",
+                "command": "${workspaceFolder:damathryxx64}/.agents/skills/nixos-wsl/scripts/validate.sh",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "group": "test",
+                "detail": "Run full verification: format check, flake check, and system derivation build."
+            },
+            {
+                "label": "NixOS: Rollback Generation",
                 "type": "shell",
                 "command": "sudo nixos-rebuild switch --rollback",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
                 "problemMatcher": [],
-                "detail": "Rollback to the previous working configuration."
+                "detail": "Rollback to the previous working NixOS generation."
+            },
+            {
+                "label": "NixOS: Garbage Collect & Optimize",
+                "type": "shell",
+                "command": "nix-collect-garbage -d && sudo nix-collect-garbage -d && nix store optimise",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Clean up old generations and optimize the Nix store."
+            },
+            {
+                "label": "NixOS: Update Flake Inputs",
+                "type": "shell",
+                "command": "nix flake update",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Update flake.lock with latest revisions from inputs."
+            },
+            {
+                "label": "NixOS: Enter Python Shell",
+                "type": "shell",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#python",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Launch the dedicated Python 3.12 devShell."
+            },
+            {
+                "label": "NixOS: Enter DevOps Shell",
+                "type": "shell",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#devops",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Launch the DevOps devShell with AWS, Terraform, Docker, and Kubernetes tools."
+            },
+            {
+                "label": "Herdr: Integration Status",
+                "type": "shell",
+                "command": "herdr integration status && systemctl --user status herdr-integrations.service --no-pager",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Inspect status of Herdr-managed agent integrations (Claude, Codex, Copilot, OpenCode, Antigravity/Gemini)."
+            },
+            {
+                "label": "Herdr: Active Agent List",
+                "type": "shell",
+                "command": "herdr agent list",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "List all active AI coding agents managed by Herdr."
+            },
+            {
+                "label": "Herdr: Launch Persistent Session",
+                "type": "shell",
+                "command": "herdr",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Launch or attach to the persistent Herdr terminal workspace."
+            },
+            {
+                "label": "NixOS: Fast Build (nh)",
+                "type": "shell",
+                "command": "nh os build",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Build system derivation using nh with visual NOM progress."
+            },
+            {
+                "label": "NixOS: Lint & Audit (statix + deadnix)",
+                "type": "shell",
+                "command": "statix check . && deadnix .",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Run static analysis linter and scan for dead code."
+            },
+            {
+                "label": "NixOS: Auto-Fix Lints (statix fix)",
+                "type": "shell",
+                "command": "statix fix . && nix fmt -- .",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Automatically remediate statix anti-patterns and format with Alejandra."
+            },
+            {
+                "label": "NixOS: Clean Generations (nh clean)",
+                "type": "shell",
+                "command": "nh clean all",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Garbage collect old NixOS generations and clean cache using nh."
+            },
+            {
+                "label": "NixOS: Explore Store Closures (nix-tree)",
+                "type": "shell",
+                "command": "nix-tree",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Interactively explore package store closures and tree dependencies."
+            },
+            {
+                "label": "NixOS: Enter Developer Shell (Dots)",
+                "type": "shell",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#default",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Enter the Nix developer environment with the full authoring and inspection toolchain."
+            },
+            {
+                "label": "Antigravity: Check Usage & Quota (Auto on Reload)",
+                "type": "shell",
+                "command": "~/.local/bin/antigravity-usage quota 2>/dev/null || npx -y antigravity-usage quota 2>/dev/null || npx -y antigravity-usage status",
+                "runOptions": {
+                    "runOn": "folderOpen"
+                },
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared",
+                    "clear": true,
+                    "focus": false,
+                    "showReuseMessage": false
+                },
+                "problemMatcher": [],
+                "detail": "Runs on every Antigravity window reload to display remaining model quotas and reset countdowns."
             }
         ]
     },
     "settings": {
-        "chat.useCustomizationsInParentRepositories": true,
         "workbench.settings.editor": "json",
+        "task.allowAutomaticTasks": "on",
+
+        // Antigravity Engine & Semantic Codebase Search
+        "antigravity.searchMaxWorkspaceFileCount": 10000,
+        "antigravity.persistentLanguageServer": true,
+
         // Editor Font & Display
         "editor.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontLigatures": true,
         "editor.fontVariations": true,
         "editor.codeLensFontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
+        "editor.fontSize": 15,
+
         // Editor Behavior
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
@@ -93,12 +275,14 @@
         "editor.autoClosingBrackets": "languageDefined",
         "editor.cursorStyle": "underline",
         "editor.wordWrap": "wordWrapColumn",
-        "editor.minimap.autohide": "mouseover",
         "editor.suggestSelection": "first",
         "editor.acceptSuggestionOnEnter": "smart",
         "editor.quickSuggestionsDelay": 0,
         "editor.snippetSuggestions": "top",
-        // Editor Display
+
+        // Editor Display & Visual Layout
+        "editor.minimap.enabled": false,
+        "editor.scrollbar.verticalScrollbarSize": 0,
         "editor.renderWhitespace": "trailing",
         "editor.renderControlCharacters": true,
         "editor.renderFinalNewline": "on",
@@ -106,10 +290,15 @@
         "editor.guides.bracketPairs": true,
         "editor.guides.indentation": true,
         "editor.stickyScroll.enabled": true,
-        // Diff Editor
+
+        // Diff Editor & Antigravity Agent Review
         "diffEditor.codeLens": true,
         "diffEditor.wordWrap": "inherit",
         "diffEditor.ignoreTrimWhitespace": false,
+        "diffEditor.renderSideBySide": false,
+        "diffEditor.experimental.showMoves": true,
+        "scm.diffDecorations": "all",
+
         // File Management
         "files.autoSave": "onWindowChange",
         "files.autoSaveWorkspaceFilesOnly": true,
@@ -118,35 +307,64 @@
         "files.trimTrailingWhitespace": true,
         "files.insertFinalNewline": true,
         "files.trimFinalNewlines": true,
-        // Search & Replace
+
+        // File Watcher Exclusions (Protect Antigravity & Nix Store from Derivation Flooding)
+        "files.watcherExclude": {
+            "**/.git/objects/**": true,
+            "**/.git/subtree-cache/**": true,
+            "**/result/**": true,
+            "**/.direnv/**": true,
+            "**/.venv/**": true,
+            "**/target/**": true
+        },
+
+        // Search & Indexing Exclusions
         "search.showLineNumbers": true,
         "search.smartCase": true,
         "search.useGlobalIgnoreFiles": true,
         "search.useParentIgnoreFiles": true,
-        // Terminal
+        "search.exclude": {
+            "**/result": true,
+            "**/.direnv": true,
+            "**/.venv": true,
+            "**/target": true
+        },
+
+        // Terminal & WSL Integration
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.cursorBlinking": true,
         "terminal.integrated.persistentSessionReviveProcess": "never",
         "terminal.integrated.enableMultiLinePasteWarning": "always",
+        "terminal.integrated.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
+        "terminal.integrated.scrollback": 10000,
+        "terminal.integrated.smoothScrolling": true,
+
         // Explorer
         "explorer.excludeGitIgnore": true,
         "explorer.autoReveal": true,
         "explorer.confirmDelete": false,
         "explorer.confirmDragAndDrop": false,
+
         // Workbench
         "workbench.startupEditor": "none",
         "workbench.editor.enablePreview": false,
         "workbench.editor.highlightModifiedTabs": true,
         "workbench.editor.limit.enabled": true,
         "workbench.editor.limit.value": 8,
-        "workbench.settings.openDefaultSettings": true,
-        // Git
+        "workbench.statusBar.visible": true,
+        "window.zoomLevel": 0.5,
+
+        // Git Version Control
         "git.autofetch": true,
         "git.suggestSmartCommit": false,
         "git.enableSmartCommit": true,
         "git.confirmSync": false,
         "git.openRepositoryInParentFolders": "never",
-        // Nix Configuration
+        "git.rebaseWhenSync": true,
+        "git.defaultBranchName": "trunk",
+        "git.enableCommitSigning": false,
+
+        // Nix Language Server (nixd) & Formatter (Alejandra)
         "alejandra.program": "alejandra",
         "nix.enableLanguageServer": true,
         "nix.serverPath": "nixd",
@@ -159,24 +377,35 @@
                 },
                 "options": {
                     "nixos": {
-                        "expr": "(builtins.getFlake \"${workspaceFolder}\").nixosConfigurations.nixos.options"
+                        "expr": "(builtins.getFlake \"${workspaceFolder:damathryxx64}\").nixosConfigurations.nixos.options"
                     }
                 }
             }
         },
-        "editor.fontSize": 15,
-        "editor.matchBrackets": "never",
-        "editor.minimap.enabled": false,
-        "editor.scrollbar.verticalScrollbarSize": 0,
-        "workbench.statusBar.visible": true,
-        "window.zoomLevel": 0.5,
-        "git.rebaseWhenSync": true,
-        "git.defaultBranchName": "trunk",
-        "git.enableCommitSigning": false,
-        "git.postCommitCommand": "sync",
-        "files.watcherExclude": {
-            "**/target": true
+
+        // Language-Specific Formatting & Indentation
+        "[nix]": {
+            "editor.formatOnSave": true,
+            "editor.tabSize": 2
         },
-        "terminal.integrated.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace"
+        "[markdown]": {
+            "editor.wordWrap": "on",
+            "editor.quickSuggestions": {
+                "comments": "off",
+                "strings": "off",
+                "other": "off"
+            }
+        },
+        "[yaml]": {
+            "editor.tabSize": 2
+        },
+        "[json]": {
+            "editor.defaultFormatter": "vscode.json-language-features",
+            "editor.tabSize": 2
+        },
+        "[jsonc]": {
+            "editor.defaultFormatter": "vscode.json-language-features",
+            "editor.tabSize": 4
+        }
     }
 }

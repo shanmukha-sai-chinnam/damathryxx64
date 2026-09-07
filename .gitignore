@@ -1,3 +1,5 @@
+.direnv
 .venv
 result
+result*
 .env

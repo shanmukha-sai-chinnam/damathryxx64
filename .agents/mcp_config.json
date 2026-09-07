@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "nixos": {
+      "command": "mcp-nixos",
+      "args": []
+    },
+    "github": {
+      "command": "github-mcp-server",
+      "args": []
+    },
+    "git": {
+      "command": "mcp-server-git",
+      "args": ["--repository", "/home/damathryxx64/repositories/damathryxx64"]
+    },
+    "filesystem": {
+      "command": "mcp-server-filesystem",
+      "args": ["/home/damathryxx64/repositories/damathryxx64"]
+    },
+    "fetch": {
+      "command": "mcp-server-fetch",
+      "args": []
+    },
+    "sequential-thinking": {
+      "command": "mcp-server-sequential-thinking",
+      "args": []
+    }
+  }
+}

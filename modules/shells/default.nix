@@ -1,15 +1,4 @@
 {pkgs, ...}: {
-  fonts = {
-    packages = with pkgs; [
-      nerd-fonts.caskaydia-cove
-    ];
-    fontconfig = {
-      defaultFonts = {
-        monospace = ["CascadiaCode Nerd Font"];
-      };
-    };
-  };
-
   programs = {
     zsh = {
       enable = true;
@@ -42,13 +31,66 @@
     };
     git = {
       enable = true;
+      config = {
+        user = {
+          name = "Shanmukha Sai Chinnam";
+          email = "shanmukh02.ch@gmail.com";
+        };
+      };
     };
     bat = {
       enable = true;
     };
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
+    nix-index-database.comma.enable = true;
+    command-not-found.enable = false;
   };
 
-  environment.pathsToLink = ["/share/zsh"];
-  environment.shells = [pkgs.zsh];
+  programs.zsh.interactiveShellInit = ''
+    eval "$(${pkgs.nix-your-shell}/bin/nix-your-shell zsh)"
+  '';
+
+  environment = {
+    shellAliases = {
+      # Fast NixOS rebuilds via nh
+      nhb = "nh os build";
+      nht = "nh os test";
+      nhs = "nh os switch";
+      nhc = "nh clean all";
+      nhsearch = "nh search";
+
+      # Linters & Formatters
+      nfmt = "nix fmt -- .";
+      nlint = "statix check . && deadnix .";
+      nfix = "statix fix . && nix fmt -- .";
+      nval = "/home/damathryxx64/repositories/damathryxx64/.agents/skills/nixos-wsl/scripts/validate.sh";
+
+      # Comma & Tooling Shorthands
+      comma = ",";
+      antigravity-usage = "antigravity-usage";
+      agy-usage = "antigravity-usage quota";
+
+      # Inspection & Docs
+      nman = "manix";
+      ndiff = "nix-diff";
+      ntree = "nix-tree";
+      ninspect = "nix-inspect";
+
+      # Herdr Multi-Agent Orchestration
+      ha = "herdr agent list";
+      hi = "herdr integration status";
+      hw = "herdr workspace list";
+      hp = "herdr pane list";
+    };
+    localBinInPath = true;
+    systemPackages = with pkgs; [
+      nix-your-shell
+    ];
+    pathsToLink = ["/share/zsh"];
+    shells = [pkgs.zsh];
+  };
   users.defaultUserShell = pkgs.zsh;
 }
