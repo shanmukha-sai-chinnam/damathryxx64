@@ -94,6 +94,11 @@
       agspw = "antigravity-superpowers watch";
       agspq = "antigravity-superpowers quota";
       agspm = "antigravity-superpowers mcp";
+
+      # Hermes Agent (Nous Research)
+      hermes = "$HOME/.hermes/hermes-agent/hermes";
+      hchat = "$HOME/.hermes/hermes-agent/hermes";
+      hup = "curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash";
     };
     localBinInPath = true;
     systemPackages = with pkgs; [
