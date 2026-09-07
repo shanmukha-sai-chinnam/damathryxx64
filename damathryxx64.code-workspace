@@ -152,7 +152,7 @@
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Inspect status of Herdr-managed agent integrations (Claude, Codex, Copilot, OpenCode, Antigravity/Gemini)."
+                "detail": "Inspect status of Herdr-managed agent integrations (Claude, Codex, Copilot, OpenCode, Antigravity (AGY))."
             },
             {
                 "label": "Herdr: Active Agent List",
@@ -302,10 +302,10 @@
         "antigravity.persistentLanguageServer": true,
 
         // Editor Font & Display
-        "editor.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
+        "editor.fontFamily": "'CaskaydiaCove Nerd Font', 'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontLigatures": true,
         "editor.fontVariations": true,
-        "editor.codeLensFontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
+        "editor.codeLensFontFamily": "'CaskaydiaCove Nerd Font', 'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontSize": 15,
 
         // Editor Behavior
@@ -375,7 +375,8 @@
         "terminal.integrated.cursorBlinking": true,
         "terminal.integrated.persistentSessionReviveProcess": "never",
         "terminal.integrated.enableMultiLinePasteWarning": "always",
-        "terminal.integrated.fontFamily": "'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
+        "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font', 'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Cascadia Code NF', 'Cascadia Mono NF', 'MesloLGS NF', Consolas, 'Courier New', monospace",
+        "terminal.integrated.unicodeVersion": "11",
         "terminal.integrated.scrollback": 10000,
         "terminal.integrated.smoothScrolling": true,
 

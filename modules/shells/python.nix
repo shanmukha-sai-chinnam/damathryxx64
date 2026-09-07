@@ -11,11 +11,14 @@ in {
   devShell = usedPkgs.mkShell {
     buildInputs = with usedPkgs.python312Packages; [
       usedPkgs.python312
+      usedPkgs.uv
+      usedPkgs.ruff
       virtualenv
       pip
       setuptools
       wheel
       ipython
+      rich
       black
       flake8
       mypy

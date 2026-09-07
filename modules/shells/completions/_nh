@@ -1,0 +1,76 @@
+#compdef nh
+
+_nh() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local -a commands
+  commands=(
+    'os:NixOS system management (build, switch, test, boot)'
+    'home:Home-manager environment management'
+    'darwin:Nix-darwin environment management'
+    'search:Search packages or NixOS options via search.nixos.org or local database'
+    'clean:Enhanced nix cleanup (generations and store)'
+  )
+
+  _arguments -C \
+    '-v[Increase logging verbosity]' \
+    '--verbose[Increase logging verbosity]' \
+    '-q[Decrease logging verbosity]' \
+    '--quiet[Decrease logging verbosity]' \
+    '-e[Choose privilege elevation strategy]:strategy:(none passwordless auto)' \
+    '--elevation-strategy[Choose privilege elevation strategy]:strategy:(none passwordless auto)' \
+    '-h[Print help]' \
+    '--help[Print help]' \
+    '-V[Print version]' \
+    '--version[Print version]' \
+    '1:command:->command' \
+    '*::args:->args'
+
+  case "$state" in
+    command)
+      _describe -t commands 'nh command' commands
+      ;;
+    args)
+      case "$words[1]" in
+        os)
+          local -a os_commands
+          os_commands=(
+            'build:Build configuration without activating'
+            'switch:Activate configuration live and update bootloader'
+            'test:Activate configuration for current session only'
+            'boot:Add configuration to bootloader without activating'
+          )
+          _arguments -C '1:subcmd:->subcmd' '*::subargs:->subargs'
+          case "$state" in
+            subcmd)
+              _describe -t os_commands 'nh os command' os_commands
+              ;;
+            subargs)
+              _arguments \
+                '--dry[Perform a dry run]' \
+                '--ask[Ask for confirmation before switching]' \
+                '--diff[Show package diff between generations]' \
+                '--nom[Use nix-output-monitor]' \
+                '--specialisation[Target specific specialisation]:specialisation:' \
+                '*:flake:_files'
+              ;;
+          esac
+          ;;
+        clean)
+          local -a clean_commands
+          clean_commands=(
+            'all:Clean old generations and garbage collect store'
+            'user:Clean user profiles only'
+          )
+          _describe -t clean_commands 'nh clean command' clean_commands
+          ;;
+        search)
+          _arguments '*:query: '
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_nh "$@"

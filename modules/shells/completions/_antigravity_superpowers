@@ -1,0 +1,114 @@
+#compdef antigravity-superpowers agsp agspd agspc agsps agspsw agspw agspq agspm
+
+_antigravity_superpowers() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local -a commands
+  commands=(
+    'init:Initialize .agents profile in a project or globally'
+    'check:Validate installed Antigravity Superpowers profile integrity'
+    'doctor:Run diagnostic healthcheck on Nix, Herdr, Node, Git, and AGY'
+    'sync:Synchronize latest skills and rules without overwriting custom files'
+    'mcp:Model Context Protocol server (NixOS, Herdr, Quotas, Skills)'
+    'swarm:Herdr multi-agent orchestrator (Trio, Pair, DevOps, Review)'
+    'watch:Continuous filesystem watcher with automated linters'
+    'quota:Inspect Antigravity token quotas and reset countdowns'
+    'preset:Scaffold full language/stack profile (nixos, web, rust, python)'
+  )
+
+  _arguments -C \
+    '-h[Show help]' \
+    '--help[Show help]' \
+    '1:command:->command' \
+    '*::args:->args'
+
+  case "$state" in
+    command)
+      _describe -t commands 'antigravity-superpowers command' commands
+      ;;
+    args)
+      case "$words[1]" in
+        init)
+          _arguments \
+            '-f[Overwrite existing profile]' \
+            '--force[Overwrite existing profile]' \
+            '-g[Target global configuration (~/.gemini/config)]' \
+            '--global[Target global configuration (~/.gemini/config)]' \
+            '-n[Include template flake.nix and .envrc for Nix developer shell]' \
+            '--nix[Include template flake.nix and .envrc for Nix developer shell]' \
+            '-m[Provision declarative MCP server configuration]' \
+            '--mcp[Provision declarative MCP server configuration]' \
+            '--hooks[Provision lifecycle automation hooks]' \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:target:_directories'
+          ;;
+        check|doctor)
+          _arguments \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:target:_directories'
+          ;;
+        sync)
+          _arguments \
+            '-g[Target global configuration (~/.gemini/config)]' \
+            '--global[Target global configuration (~/.gemini/config)]' \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:target:_directories'
+          ;;
+        mcp)
+          local -a mcp_actions
+          mcp_actions=(
+            'serve:Start STDIO MCP server daemon'
+            'tools:List all available MCP tools'
+            'config:Show declarative MCP configuration'
+          )
+          _describe -t mcp_actions 'mcp action' mcp_actions
+          ;;
+        swarm)
+          local -a swarm_actions
+          swarm_actions=(
+            'start:Start Herdr swarm session'
+            'status:Show status of active swarm agents and panes'
+            'broadcast:Broadcast prompt across all swarm agents'
+            'stop:Stop swarm session'
+          )
+          _describe -t swarm_actions 'swarm action' swarm_actions
+          ;;
+        watch)
+          _arguments \
+            '--fix[Automatically apply linter fixes]' \
+            '--test[Run test suite on change]' \
+            '--once[Run single check pass and exit]' \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:target:_directories'
+          ;;
+        quota)
+          _arguments \
+            '--json[Output quotas formatted as JSON]' \
+            '--all[Display all model quotas]' \
+            '--refresh[Bypass cache and query quota backend]' \
+            '-h[Show help]' \
+            '--help[Show help]'
+          ;;
+        preset)
+          local -a presets
+          presets=(
+            'nixos:NixOS system dotfiles configuration preset'
+            'web:Modern web development stack preset'
+            'rust:Rust development stack preset'
+            'python:Python development stack preset'
+          )
+          _arguments \
+            '1:preset:((nixos\:"NixOS stack" web\:"Web stack" rust\:"Rust stack" python\:"Python stack"))' \
+            '2:target:_directories'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_antigravity_superpowers "$@"

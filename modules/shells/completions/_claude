@@ -1,0 +1,62 @@
+#compdef claude cld
+
+_claude() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local -a commands
+  commands=(
+    'config:Manage Claude Code configuration'
+    'mcp:Manage MCP servers'
+    'update:Update Claude Code CLI'
+    'doctor:Diagnose local Claude installation and environment'
+  )
+
+  _arguments -C \
+    '-p[Run single prompt non-interactively]:prompt:' \
+    '--print[Run single prompt non-interactively]:prompt:' \
+    '-c[Continue most recent conversation]' \
+    '--continue[Continue most recent conversation]' \
+    '-r[Resume previous conversation by ID]:conversation ID:' \
+    '--resume[Resume previous conversation by ID]:conversation ID:' \
+    '--model[Select model for session]:model:(claude-3-7-sonnet claude-3-5-sonnet claude-3-5-haiku claude-3-opus)' \
+    '--add-dir[Additional directory to allow tool access to]:directory:_directories' \
+    '--agent[Agent for the current session]:agent:' \
+    '--dangerously-skip-permissions[Auto-approve all tool permission checks]' \
+    '--verbose[Enable verbose logging]' \
+    '-h[Show help]' \
+    '--help[Show help]' \
+    '1:command:->command' \
+    '*::args:->args'
+
+  case "$state" in
+    command)
+      _describe -t commands 'claude command' commands
+      ;;
+    args)
+      case "$words[1]" in
+        mcp)
+          local -a mcp_commands
+          mcp_commands=(
+            'add:Add an MCP server'
+            'remove:Remove an MCP server'
+            'list:List configured MCP servers'
+            'serve:Start MCP server'
+          )
+          _describe -t mcp_commands 'mcp command' mcp_commands
+          ;;
+        config)
+          local -a config_commands
+          config_commands=(
+            'get:Get configuration value'
+            'set:Set configuration value'
+            'list:List all configuration values'
+          )
+          _describe -t config_commands 'config command' config_commands
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude "$@"

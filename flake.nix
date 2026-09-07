@@ -33,14 +33,14 @@
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = {
+          inherit antigravity-superpowers hostName userName;
+        };
         modules = [
           nixos-wsl.nixosModules.default
           nix-index-database.nixosModules.nix-index
           antigravity-superpowers.nixosModules.default
-          ({pkgs, ...}:
-            import ./modules/configuration.nix {
-              inherit system nixpkgs hostName userName pkgs;
-            })
+          ./modules/configuration.nix
           {
             wsl = {
               enable = true;
