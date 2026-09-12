@@ -536,6 +536,69 @@ def cmd_rewrite():
                 if htext != orig_htext:
                     h_file.write_text(htext, encoding="utf-8")
 
+            # Clean .version-bump.json
+            vb_file = path / ".version-bump.json"
+            if vb_file.exists():
+                try:
+                    vb_data = {
+                        "files": [
+                            {"path": "package.json", "field": "version"},
+                            {"path": "gemini-extension.json", "field": "version"}
+                        ],
+                        "audit": {
+                            "exclude": [
+                                "CHANGELOG.md",
+                                "RELEASE-NOTES.md",
+                                "node_modules",
+                                ".git",
+                                ".version-bump.json",
+                                "scripts/bump-version.sh"
+                            ]
+                        }
+                    }
+                    with open(vb_file, "w", encoding="utf-8") as f:
+                        json.dump(vb_data, f, indent=2)
+                        f.write("\n")
+                except Exception:
+                    pass
+
+            # Clean README.md
+            readme_f = path / "README.md"
+            if readme_f.exists():
+                rtext = readme_f.read_text(encoding="utf-8")
+                orig_rtext = rtext
+                # Clean TOC
+                rtext = re.sub(
+                    r"- \[Getting Started\]\(#installation\)\n(  - \[.*?\]\(#.*?\)\n)+",
+                    "- [Getting Started](#installation)\n  - [Antigravity](#antigravity)\n  - [Gemini CLI](#gemini-cli)\n",
+                    rtext
+                )
+                # Clean Installation section
+                clean_install = (
+                    "## Installation\n\n"
+                    "Installation for supported environments:\n\n"
+                    "### Antigravity\n\n"
+                    "Install Superpowers as a plugin from this repository:\n\n"
+                    "```bash\n"
+                    "agy plugin install https://github.com/shanmukha-sai-chinnam/superpowers\n"
+                    "```\n\n"
+                    "Antigravity runs the plugin's session-start hook, so Superpowers is active from\n"
+                    "the first message. Reinstall with the same command to update.\n\n"
+                    "### Gemini CLI\n\n"
+                    "Install the extension:\n\n"
+                    "```bash\n"
+                    "gemini extensions install https://github.com/shanmukha-sai-chinnam/superpowers\n"
+                    "```\n\n"
+                    "Update later:\n\n"
+                    "```bash\n"
+                    "gemini extensions update superpowers\n"
+                    "```\n"
+                )
+                rtext = re.sub(r"## Installation.*?(?=## The Basic Workflow)", clean_install + "\n", rtext, flags=re.DOTALL)
+                rtext = rtext.replace(" and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` opt-outs.", " opt-out.")
+                if rtext != orig_rtext:
+                    readme_f.write_text(rtext, encoding="utf-8")
+
         # Enforce Antigravity / Gemini native structure across all markdown files
         for mf in path.rglob("*.md"):
             content = mf.read_text(encoding="utf-8", errors="replace")
