@@ -3,11 +3,11 @@
     "andrej-karpathy-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789210353,
-        "narHash": "sha256-Q17B/DRr6iFtcc75uoAe142HA8aIy3k3mXEtlgkS3lY=",
+        "lastModified": 1789212383,
+        "narHash": "sha256-RfmJ/MgPTlgIZYwi+G3jYPL7f+5PJMX3XdjivpMysAc=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "andrej-karpathy-skills",
-        "rev": "9755155706f1628d53e10c7ef8d05f8285cc0910",
+        "rev": "216c6ebcb0cf5174b39e904ad13da5cf7a8c9343",
         "type": "github"
       },
       "original": {
@@ -24,11 +24,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789206824,
-        "narHash": "sha256-/+Iuyk5ZkQPv5q5UaCQt27gLkx9EGqq43KIjeXH1BtE=",
+        "lastModified": 1789213093,
+        "narHash": "sha256-Jj3p+FSh26qI+Jngb7+a+JJ1xNYR1/O1zCsqE1E+als=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "a5b95f68d302db2aaa9570965ea158a08d5c7f29",
+        "rev": "77dd3321e828bf732dad9ead2c37648757be7815",
         "type": "github"
       },
       "original": {

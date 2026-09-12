@@ -35,18 +35,24 @@ Agents MUST load the relevant skill via `view_file` on its `SKILL.md` before per
 | Skill | Use When |
 |---|---|
 | **antigravity-mcp-integration** | Configuring, developing, debugging, or invoking MCP servers in Antigravity. |
+| **anti-slop-writing** | Writing any response, documentation, commit message, or report — eliminates filler words, contrastive framing, and AI-typical verbal patterns. |
+| **autonomous-execution** | Executing implementation work, making routine judgment calls, or when tempted to stop and ask "shall I?" for reversible actions. |
 | **brainstorming** | Before any creative work — creating features, building components, adding functionality, or modifying behavior. |
 | **continuous-codebase-watching** | Setting up background verification, auto-formatting, and static analysis watchers during implementation. |
 | **executing-plans** | Executing a written implementation plan in Antigravity single-flow mode. |
 | **finishing-a-development-branch** | Implementation is complete, all tests pass, and you need to decide how to integrate the work. |
+| **independent-verification** | User asks "is this correct?", presents a result for validation, or makes a claim about code behavior or configuration. |
 | **karpathy-guidelines** | Enforce Think Before Coding, Simplicity First, Surgical Changes, and Goal-Driven Execution. |
 | **nix-code-audit** | Before committing Nix code or when auditing NixOS modules for code quality, formatting, dead declarations, and antipatterns. |
 | **nix-derivation-debugging** | Diagnosing failing Nix builds, compilation errors, missing shared libraries, or packaging issues. |
 | **nix-flake-management** | Creating, updating, auditing, or refactoring Nix flakes, inputs, overlays, devShells, or package outputs. |
 | **nixos-system-rebuild** | Modifying NixOS configurations, testing system modules, or executing system switches. Enforces 5-stage validation. |
 | **nixos-wsl-interop** | Managing, diagnosing, and optimizing NixOS inside WSL 2 (filesystem, systemd, memory, networking). |
+| **outcome-driven-reporting** | Finishing work, reporting results, or claiming a task is done — ensures every "done" assertion cites observed evidence. |
+| **persistent-memory-protocol** | Discovering non-obvious project facts, user preferences, or recurring corrections worth persisting across sessions. |
 | **receiving-code-review** | Receiving code review feedback, before implementing suggestions — requires technical rigor over blind implementation. |
 | **requesting-code-review** | Completing tasks, implementing major features, or before merging to verify work meets requirements. |
+| **scannable-output-formatting** | Writing any response, report, summary, or explanation — enforces direct openings, context-matched formatting, and structured hierarchy. |
 | **single-flow-task-execution** | Executing implementation plans or doing structured task-by-task development with review gates. |
 | **systematic-debugging** | Encountering any bug, test failure, or unexpected behavior — before proposing fixes. |
 | **test-driven-development** | Implementing any feature or bugfix — before writing implementation code. |
@@ -69,6 +75,15 @@ These MCP servers are configured in `.agents/mcp_config.json` and available for 
 | **filesystem** | `mcp-server-filesystem` | File/directory operations within this repository. |
 | **fetch** | `mcp-server-fetch` | HTTP content fetching and URL reading. |
 | **sequential-thinking** | `mcp-server-sequential-thinking` | Structured multi-step reasoning and problem decomposition. |
+
+## Confirmation & Autonomy Discipline
+
+1. **Confirm only for destructive/irreversible/outward-facing actions**: System switches, data deletion, publishing, sending messages to external services.
+2. **Authorization persists across turns**: If the user authorized an action earlier in the session, do not re-ask.
+3. **Reversible actions proceed without asking**: For actions that follow from the original request and can be undone (file edits, branch creation, test runs), proceed.
+4. **Complete work before asking**: Make the proposed action concrete and reviewable before requesting permission — the user should approve a result, not a plan.
+5. **Explain why when you must ask**: If confirmation is required, explicitly state the reason and the source of the constraint (e.g., "System Activation Policy in AGENTS.md requires explicit approval for `dots-switch`").
+6. **Finish the whole task**: Do not stop at "good enough." If part of the scope is blocked, finish every other part and explicitly name what was left out and why.
 
 ## Mandatory Change Guidelines
 

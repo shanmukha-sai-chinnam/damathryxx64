@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  antigravity-superpowers ? null,
   andrej-karpathy-skills ? null,
   google-skills ? null,
   superpowers ? null,
@@ -108,6 +109,21 @@
 
       if [ -f "$ADHD_SRC/GEMINI.md" ]; then
         cp "$ADHD_SRC/GEMINI.md" "$RULES_DIR/i-have-adhd.md"
+      fi
+    ''}
+
+    # ── 5. Synchronize Antigravity Superpowers Skills ──────────────────────
+    ${lib.optionalString (antigravity-superpowers != null) ''
+      SUPERPOWERS_CUSTOM_SRC="${antigravity-superpowers}"
+      if [ -d "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills" ]; then
+        for skill in "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills"/*; do
+          if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
+            sname=$(basename "$skill")
+            rm -rf "$SKILLS_DIR/$sname"
+            mkdir -p "$SKILLS_DIR/$sname"
+            cp -r "$skill"/* "$SKILLS_DIR/$sname/"
+          fi
+        done
       fi
     ''}
 
