@@ -1,8 +1,12 @@
 {
     "folders": [
         {
+            "name": "damathryxx64",
+            "path": "/home/damathryxx64/repositories/damathryxx64"
+        },
+        {
             "name": "repositories",
-            "path": "/home/damathryxx64/repositories/"
+            "path": "/home/damathryxx64/repositories"
         }
     ],
     "tasks": {

@@ -127,6 +127,14 @@
       fi
     ''}
 
+    # ── 6. Purge Foreign Provider Artifacts from Config ────────────────────
+    find "$CONFIG_DIR" -depth \( \
+      -name ".claude*" -o -name ".cursor*" -o -name ".codex*" -o \
+      -name ".opencode*" -o -name ".hermes*" -o -name ".kimi*" -o \
+      -name ".devin*" -o -name "CLAUDE.md" -o -name "CURSOR.md" -o \
+      -name "*claude*.md" -o -name "*cursor*.md" \
+    \) -exec rm -rf {} + 2>/dev/null || true
+
     # Ensure all deployed configs are writable for the user
     chmod -R u+w "$CONFIG_DIR" 2>/dev/null || true
   '';

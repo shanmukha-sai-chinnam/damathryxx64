@@ -3,11 +3,11 @@
     "andrej-karpathy-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789212383,
-        "narHash": "sha256-RfmJ/MgPTlgIZYwi+G3jYPL7f+5PJMX3XdjivpMysAc=",
+        "lastModified": 1789226329,
+        "narHash": "sha256-dAafDUA0VIoV8R/YmGuQ8VVRj703UEGU1FtuKMC90TQ=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "andrej-karpathy-skills",
-        "rev": "216c6ebcb0cf5174b39e904ad13da5cf7a8c9343",
+        "rev": "1c22dce1ac3737c30ad66f00ded45e65191e664e",
         "type": "github"
       },
       "original": {
@@ -24,11 +24,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789213093,
-        "narHash": "sha256-Jj3p+FSh26qI+Jngb7+a+JJ1xNYR1/O1zCsqE1E+als=",
+        "lastModified": 1789226329,
+        "narHash": "sha256-WWExmgZLhFN+YnL3hPcnNEWZQxj4AUSoMytsos3dnTA=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "77dd3321e828bf732dad9ead2c37648757be7815",
+        "rev": "af1a31c50e14c037770a884e7c3905625a2548ab",
         "type": "github"
       },
       "original": {
@@ -89,11 +89,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789212375,
-        "narHash": "sha256-2rQlsguo5rImQb7cFl5a3/OA+hiNmiQjqyz4M0JvgLY=",
+        "lastModified": 1789226329,
+        "narHash": "sha256-HNddoLWHE92PylFZkPmtWjYi4KKSi6hzv02adJr+kBw=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "bc2a49ebc01b2b7ac6ac0be4fc5e901764f02186",
+        "rev": "2984706d7f1cce7e061f381191bafd255534b4eb",
         "type": "github"
       },
       "original": {
@@ -105,11 +105,11 @@
     "i-have-adhd": {
       "flake": false,
       "locked": {
-        "lastModified": 1789212402,
-        "narHash": "sha256-Kx6qwuL6yRUfakOTCk47ENSDF41q8yqY7X/ojDYoOPU=",
+        "lastModified": 1789226329,
+        "narHash": "sha256-5DXZD8bXbfRt3aJjfipWNC9Eq6F8jirTpNrgRCA/XBg=",
         "ref": "refs/heads/main",
-        "rev": "34850a8d18095cceab6637fc64a8c9afe8b690a6",
-        "revCount": 217,
+        "rev": "10b61857d00e673cab36ef7a92a96caeaa7829bf",
+        "revCount": 218,
         "type": "git",
         "url": "file:///home/damathryxx64/repositories/i-have-adhd"
       },
@@ -230,11 +230,11 @@
     "superpowers": {
       "flake": false,
       "locked": {
-        "lastModified": 1789211196,
-        "narHash": "sha256-DfilCyecNWpV5gLQ3QxQi7A/z+uy1VQENWLQcFdjBpk=",
+        "lastModified": 1789226329,
+        "narHash": "sha256-JQz81IalZ78cJBT/SZpu+BKN706CDHp4pP27uREJd8I=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "superpowers",
-        "rev": "62ccdb8f0e9feb670e5f76f60f9ff2ea9c0a1fa7",
+        "rev": "41fa2bf950de1de4a2cff3c7bf8bca18df8a13b4",
         "type": "github"
       },
       "original": {

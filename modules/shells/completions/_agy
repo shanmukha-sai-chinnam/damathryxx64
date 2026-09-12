@@ -57,7 +57,7 @@ _agy() {
           local -a plugin_commands
           plugin_commands=(
             'list:List imported plugins'
-            'import:Import plugins from gemini or claude'
+            'import:Import plugins from gemini'
             'install:Install a plugin'
             'uninstall:Uninstall a plugin'
             'enable:Enable a plugin'
@@ -80,7 +80,7 @@ _agy() {
                   _arguments '*:plugin: '
                   ;;
                 import)
-                  _arguments '1:source:(gemini claude)'
+                  _arguments '1:source:(gemini)'
                   ;;
                 validate)
                   _arguments '*:path:_directories'

@@ -22,6 +22,13 @@
       agy plugin install https://github.com/DietrichGebert/ponytail || true
     fi
 
+    if [ -d "$HOME/.gemini/config/plugins/ponytail" ]; then
+      # Purge foreign provider files and directories from ponytail plugin
+      rm -rf "$HOME/.gemini/config/plugins/ponytail"/{.claude*,.codex*,.cursor*,.devin*,.grok*,.kiro*,.opencode*,.pi*,.qoder*,.windsurf*,.openclaw,pi-extension} 2>/dev/null || true
+      rm -f "$HOME/.gemini/config/plugins/ponytail/hooks"/{claude*,copilot*,qoder*} 2>/dev/null || true
+      rm -f "$HOME/.gemini/config/plugins/ponytail"/{opencode.json,.github/copilot-instructions.md} 2>/dev/null || true
+    fi
+
     if [ -f "$HOME/.gemini/config/plugins/ponytail/.agents/rules/ponytail.md" ]; then
       mkdir -p "$HOME/.gemini/config/rules"
       ln -sf "$HOME/.gemini/config/plugins/ponytail/.agents/rules/ponytail.md" "$HOME/.gemini/config/rules/ponytail.md"

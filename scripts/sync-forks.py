@@ -362,7 +362,7 @@ def cmd_rewrite():
 
     print(f"\n{BOLD}{BLUE}Purging non-Antigravity/non-Gemini providers & rewriting forks...{RESET}")
 
-    foreign_dirs = [
+    foreign_dir_names = {
         ".claude-plugin",
         ".codex-plugin",
         ".cursor-plugin",
@@ -372,15 +372,58 @@ def cmd_rewrite():
         ".kimi-plugin",
         ".opencode",
         ".pi",
-    ]
+        ".grok-plugin",
+        ".qoder",
+        ".kiro",
+        ".windsurf",
+        "pi-extension",
+        ".openclaw",
+    }
 
-    foreign_files = [
+    foreign_exact_files = {
         "CLAUDE.md",
         "CURSOR.md",
         "kimi.plugin.json",
         "qwen-extension.json",
         "opencode.json",
+        "openai.yaml",
+        "cursor-skill-sync.yml",
+        "claude.yml",
+        "pi-load-check.yml",
+        "test_opencode_plugin.py",
+        "opencode_plugin_driver.mjs",
+        "check_pi_extension.py",
+        "package-codex-plugin.sh",
+        "sync-to-codex-plugin.sh",
+        "README.opencode.md",
+        "README.kimi.md",
+        "2025-11-22-opencode-support-design.md",
+        "2025-11-22-opencode-support-implementation.md",
+        "hermes-tools.md",
+        "codex-tools.md",
+        "anthropic-best-practices.md",
+        "CLAUDE_MD_TESTING.md",
+        "claude-suggested-it.txt",
+        "cursor.md",
+        "claude_code.md",
+        "github_copilot.md",
+        "other_agents.md",
+        "copilot-instructions.md",
+        "claude-codex-hooks.json",
+        "copilot-hooks.json",
+        "qoder-hooks.json",
+    }
+
+    foreign_rel_paths = [
+        "tests/devin",
+        "tests/claude-code",
+        "tests/hermes",
+        "tests/kimi",
+        "tests/opencode",
+        "tests/codex",
+        "tests/codex-plugin-sync",
         "hooks/hooks-cursor.json",
+        "skills/cloud/firebase-basics/references/refresh/claude.md",
     ]
 
     for repo in MANAGED_REPOS:
@@ -392,33 +435,123 @@ def cmd_rewrite():
         print(f"  Processing {CYAN}{name}{RESET}...")
         removed_count = 0
 
-        # Remove foreign directories
-        for fdir in foreign_dirs:
-            target = path / fdir
-            if target.exists() and target.is_dir():
-                shutil.rmtree(target)
+        # Remove explicit relative paths
+        for rel in foreign_rel_paths:
+            target = path / rel
+            if target.exists():
+                if target.is_dir():
+                    shutil.rmtree(target)
+                else:
+                    target.unlink()
                 removed_count += 1
 
-        # Remove foreign files
-        for ffile in foreign_files:
-            target = path / ffile
-            if target.exists() and target.is_file():
-                target.unlink()
-                removed_count += 1
+        # Walk entire repository and remove foreign dirs and files (excluding .git)
+        for root, dirs, files in os.walk(path, topdown=True):
+            if ".git" in dirs:
+                dirs.remove(".git")
+            
+            # Remove matching directories
+            for d in list(dirs):
+                if d in foreign_dir_names:
+                    full_d = Path(root) / d
+                    shutil.rmtree(full_d, ignore_errors=True)
+                    dirs.remove(d)
+                    removed_count += 1
 
-        # Enforce Antigravity / Gemini native structure in SKILL.md files
-        for sf in path.rglob("SKILL.md"):
-            content = sf.read_text(encoding="utf-8", errors="replace")
+            # Remove matching files
+            for f in files:
+                if f in foreign_exact_files:
+                    full_f = Path(root) / f
+                    try:
+                        full_f.unlink()
+                        removed_count += 1
+                    except OSError:
+                        pass
+
+        # Specific repository rewrites
+        if name == "andrej-karpathy-skills":
+            # Sanitize README.md and README.zh.md
+            for readme_name in ["README.md", "README.zh.md"]:
+                rf = path / readme_name
+                if rf.exists():
+                    text = rf.read_text(encoding="utf-8")
+                    orig_text = text
+                    # Remove Claude Code & Cursor from platform list
+                    text = text.replace(", **Claude Code**, **Cursor**,", ",")
+                    text = text.replace(" | [Cursor Guide](./CURSOR.md)", "")
+                    # Remove Claude Code and Cursor setup sections
+                    text = re.sub(r"### 2\. Claude Code.*?(?=## How to Know It's Working|## License|\Z)", "", text, flags=re.DOTALL)
+                    text = re.sub(r"## 在 Cursor 中使用.*?(?=## 如何验证效果|## 许可证|\Z)", "", text, flags=re.DOTALL)
+                    text = re.sub(r"\*\*选项 A：Claude Code 插件.*?(?=## 如何验证效果|## 许可证|\Z)", "", text, flags=re.DOTALL)
+                    if text != orig_text:
+                        rf.write_text(text, encoding="utf-8")
+
+        elif name == "i-have-adhd":
+            # Clean package.json
+            pkg_file = path / "package.json"
+            if pkg_file.exists():
+                try:
+                    with open(pkg_file, "r", encoding="utf-8") as f:
+                        pkg_data = json.load(f)
+                    pkg_data.pop("omp", None)
+                    pkg_data.pop("pi", None)
+                    if "keywords" in pkg_data and isinstance(pkg_data["keywords"], list):
+                        pkg_data["keywords"] = [k for k in pkg_data["keywords"] if k != "pi-package"]
+                    with open(pkg_file, "w", encoding="utf-8") as f:
+                        json.dump(pkg_data, f, indent=2)
+                        f.write("\n")
+                except Exception:
+                    pass
+
+            # Clean README.md
+            readme_f = path / "README.md"
+            if readme_f.exists():
+                rtext = readme_f.read_text(encoding="utf-8")
+                orig_rtext = rtext
+                rtext = re.sub(r"claude plugin uninstall.*?\n\s*Restart Claude Code, then re-invoke `/i-have-adhd`\.", "Refresh skills via `dots-sync-skills refresh` or `refresh-skills`.", rtext, flags=re.DOTALL)
+                if rtext != orig_rtext:
+                    readme_f.write_text(rtext, encoding="utf-8")
+
+            # Clean INSTALL.md
+            install_f = path / "INSTALL.md"
+            if install_f.exists():
+                itext = install_f.read_text(encoding="utf-8")
+                orig_itext = itext
+                # Remove sections for foreign providers in details tags
+                for provider in ["Claude Code", "Codex", "GitHub Copilot", "Hermes", "Kimi Code CLI", "OpenCode", "Qwen Code", "Cursor"]:
+                    pattern = rf"<details>\s*<summary><strong>{re.escape(provider)}.*?</strong></summary>.*?</details>"
+                    itext = re.sub(pattern, "", itext, flags=re.DOTALL | re.IGNORECASE)
+                # Remove claude plugin troubleshooting
+                itext = re.sub(r"In Claude Code, Qwen Code, and Codex.*", "", itext, flags=re.DOTALL)
+                if itext != orig_itext:
+                    install_f.write_text(itext, encoding="utf-8")
+
+        elif name == "superpowers":
+            # Clean hooks/session-start
+            h_file = path / "hooks" / "session-start"
+            if h_file.exists():
+                htext = h_file.read_text(encoding="utf-8")
+                orig_htext = htext
+                htext = re.sub(r"# Cursor hooks expect.*?(?=echo )", "", htext, flags=re.DOTALL)
+                if htext != orig_htext:
+                    h_file.write_text(htext, encoding="utf-8")
+
+        # Enforce Antigravity / Gemini native structure across all markdown files
+        for mf in path.rglob("*.md"):
+            content = mf.read_text(encoding="utf-8", errors="replace")
             orig = content
             # Strip disable-model-invocation: true
             content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
             # Normalize provider mentions
             content = content.replace("Claude Code", "Antigravity CLI")
             content = content.replace("claude-code", "antigravity-cli")
+            content = content.replace("Claude Desktop", "Antigravity IDE")
             content = content.replace("OpenCode", "Antigravity CLI")
             content = content.replace("opencode", "antigravity-cli")
+            content = content.replace("CLAUDE.md", "AGENTS.md")
+            content = content.replace("CURSOR.md", "AGENTS.md")
             if content != orig:
-                sf.write_text(content, encoding="utf-8")
+                mf.write_text(content, encoding="utf-8")
 
         # Check git status
         dirty = run_cmd(["git", "status", "--porcelain"], cwd=path).stdout.strip()
