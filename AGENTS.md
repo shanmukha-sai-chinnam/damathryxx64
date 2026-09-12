@@ -9,7 +9,7 @@ Repository-wide guidance and operating constraints for Antigravity agents in thi
 
 ## Repository Overview
 
-- **Flake Entrypoint**: `flake.nix` defines the NixOS-WSL system (`nixosConfigurations.nixos`), development shells (`devShells.python`, `devShells.devops`), and the code formatter (`formatter.alejandra`).
+- **Flake Entrypoint**: `flake.nix` defines the NixOS-WSL system (`nixosConfigurations.nixos`), development shells (`devShells.python`, `devShells.devops`, `devShells.resume`), and the code formatter (`formatter.alejandra`).
 - **Core Configuration**: `modules/configuration.nix` orchestrates imported system modules.
 - **Module Architecture**:
   - `modules/ai/`: Antigravity CLI, Gemini CLI, `antigravity-superpowers`, declarative agent skills synchronizer (`skills.nix`), `dots-sync-skills`, and `refresh-skills`.
@@ -17,7 +17,7 @@ Repository-wide guidance and operating constraints for Antigravity agents in thi
   - `modules/fonts/`: System and monospace font packages (Cascadia Code, Fira Code nerd font).
   - `modules/mcp/`: Native Model Context Protocol servers (`mcp-nixos`, `github-mcp-server`, `mcp-server-git`, etc.).
   - `modules/nixos-maintenance/`: Nix store optimization, automatic weekly garbage collection, and diagnostic utilities (`nix-tree`, `nix-du`, `nom`).
-  - `modules/packages/`: General system CLI utilities and packages.
+  - `modules/packages/`: System CLI utilities and declarative task runners (`dots-validate`, `dots-fmt`, `dots-lint`, `dots-build`, `dots-switch`, `dots-upgrade`, `dots-clean`).
   - `modules/shells/`: Shell configuration (Zsh, Starship, direnv, bat, fzf) and standalone devShell definitions (`python.nix`, `devops.nix`, `cv.nix`).
 
 ## Available Skills
@@ -76,9 +76,13 @@ These MCP servers are configured in `.agents/mcp_config.json` and available for 
 2. **Reproducibility**: Avoid hardcoded machine-specific paths or volatile state. WSL host settings (CPU, memory, swap) belong in Windows `%UserProfile%\.wslconfig`, not in this repository.
 3. **Format Requirement**: Always verify and format Nix expressions using `nix fmt -- .`. All code must comply with Alejandra style.
 4. **Pre-commit Validation**:
-   - Check flake integrity: `nix flake check --impure`
-   - Validate system build: `nixos-rebuild build --flake .#nixos --impure` (or `nix build .#nixosConfigurations.nixos.config.system.build.toplevel --impure`)
+   - Automated full suite: `dots-validate` (runs format check, Statix/Deadnix linter, and Flake check).
+   - Or run manually:
+     - Alejandra format check: `nix fmt -- .`
+     - Linter / anti-patterns: `statix check . && deadnix .`
+     - Flake evaluation: `nix flake check --impure`
+     - Build verification: `dots-build` (or `nix build .#nixosConfigurations.nixos.config.system.build.toplevel --impure`)
 5. **System Activation Policy**:
-   - **NEVER** run `nixos-rebuild switch` unless the user explicitly and directly requests applying/switching the live system configuration.
-   - Building and validating derivations does not require system activation.
+   - **NEVER** run `nixos-rebuild switch` or `dots-switch` unless the user explicitly and directly requests applying/switching the live system configuration.
+   - Building and validating derivations (`dots-validate`, `dots-build`) does not require system activation.
 6. **Workflow Isolation**: Keep GitHub Actions workflows (`.github/workflows/`) separate from system flake configuration unless the task specifically targets CI/CD automation.
