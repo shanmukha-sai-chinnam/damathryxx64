@@ -2,18 +2,18 @@
   helpNix = pkgs.writeShellScriptBin "help-nix" ''
     echo -e "\033[1;36m❄️  NixOS Developer Tools Quick Reference:\033[0m"
     echo ""
-    echo -e "\033[1;33mBuild & Switch (nh):\033[0m"
-    echo "  nh os build                    → Fast dry build with NOM progress"
+    echo -e "\033[1;33mHandy Task Commands:\033[0m"
+    echo "  dots-validate                  → Run full 4-stage validation (Alejandra, Statix, Deadnix, Flake)"
+    echo "  dots-fmt                       → Format Nix expressions with Alejandra"
+    echo "  dots-lint                      → Run Statix & Deadnix anti-pattern checks"
+    echo "  dots-build                     → Fast build with progress (nh os build)"
+    echo "  dots-clean                     → Clean old generations (nh clean all)"
+    echo ""
+    echo -e "\033[1;33mBuild & Switch:\033[0m"
+    echo "  nh os build                    → Dry build system configuration"
     echo "  nh os test                     → Activate configuration for current session"
     echo "  nh os switch                   → Apply live (user prompted only)"
-    echo "  nh clean all                   → Garbage collect older generations"
     echo "  nh search <query>              → Fast package search"
-    echo ""
-    echo -e "\033[1;33mLint & Quality Gates:\033[0m"
-    echo "  nix fmt -- .                   → Format all Nix expressions with Alejandra"
-    echo "  statix check . && deadnix .    → Check for anti-patterns & dead declarations"
-    echo "  statix fix . && nix fmt -- .   → Auto-remediate lints and reformat"
-    echo "  validate.sh                    → Run complete 5-step validation pipeline"
     echo ""
     echo -e "\033[1;33mPackage Authoring & Discovery:\033[0m"
     echo "  nurl <url>                     → Generate fetcher expression with precomputed hash"
@@ -63,7 +63,6 @@ in {
 
       # Formatters & Linters
       alejandra
-      nixfmt
       statix
       deadnix
 
@@ -87,7 +86,6 @@ in {
       nix-melt
 
       # Language server & cache
-      nil
       cachix
     ];
 

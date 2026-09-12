@@ -3,6 +3,10 @@
   nix-alien,
   ...
 }: {
+  imports = [
+    ./task-runners.nix
+  ];
+
   environment.systemPackages = with pkgs; [
     gh
     tree
@@ -19,7 +23,6 @@
     pciutils
     openssl
     libnotify
-    yt-dlp # Video downloader
     nix-alien.packages.${pkgs.system}.nix-alien
   ];
 }

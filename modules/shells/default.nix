@@ -171,175 +171,20 @@ in {
     starship = {
       enable = true;
       settings = {
-        scan_timeout = 100;
-        format = pkgs.lib.concatStrings [
-          "$os"
-          "$username"
-          "$hostname"
-          "$nix_shell"
-          "$directory"
-          "$git_branch"
-          "$git_commit"
-          "$git_state"
-          "$git_status"
-          "$package"
-          "$python"
-          "$nodejs"
-          "$rust"
-          "$golang"
-          "$ruby"
-          "$terraform"
-          "$aws"
-          "$docker_context"
-          "$kubernetes"
-          "$cmd_duration"
-          "$jobs"
-          "$time"
-          "$status"
-          "$line_break"
-          "$character"
-        ];
-
-        os = {
-          disabled = false;
-          symbols = {
-            NixOS = " ";
-            Ubuntu = " ";
-            Linux = "🐧 ";
-          };
-          style = "bold cyan";
-        };
-
-        username = {
-          show_always = true;
-          style_user = "bold blue";
-          style_root = "bold red";
-          format = "[$user]($style)@";
-        };
-
-        hostname = {
-          ssh_only = false;
-          style = "bold yellow";
-          format = "[$hostname]($style) ";
-        };
-
-        nix_shell = {
-          symbol = "❄️  ";
-          format = "via [$symbol$state( \\($name\\))]($style) ";
-          style = "bold cyan";
-          impure_msg = "impure";
-          pure_msg = "pure";
-        };
-
+        add_newline = true;
+        scan_timeout = 50;
         directory = {
           truncation_length = 4;
           truncate_to_repo = true;
-          truncation_symbol = "…/";
-          style = "bold lavender";
-          read_only = " 🔒";
-          format = "in [$path]($style)[$read_only]($read_only_style) ";
         };
-
+        nix_shell = {
+          format = "via [❄️ $state]($style) ";
+        };
         git_branch = {
-          symbol = " ";
-          style = "bold purple";
-          format = "on [$symbol$branch]($style) ";
+          format = "on [$branch]($style) ";
         };
-
         git_status = {
-          format = "([$all_status$ahead_behind]($style)) ";
-          style = "bold red";
-          conflicted = "🏳  ";
-          ahead = "🏎💨 \${count} ";
-          behind = "🐢 \${count} ";
-          diverged = "🔱🏎💨 \${ahead_count} 🐢 \${behind_count} ";
-          untracked = "🤷 \${count} ";
-          stashed = "📦 ";
-          modified = "📝 \${count} ";
-          staged = "🗃️ \${count} ";
-          renamed = "🏷️ \${count} ";
-          deleted = "🗑️ \${count} ";
-        };
-
-        cmd_duration = {
-          min_time = 500;
-          format = "took [⚡ $duration]($style) ";
-          style = "bold yellow";
-        };
-
-        status = {
-          disabled = false;
-          symbol = "✗";
-          format = "[$symbol $status]($style) ";
-          style = "bold red";
-        };
-
-        time = {
-          disabled = false;
-          time_format = "%T";
-          format = "at [🕐 $time]($style) ";
-          style = "dimmed white";
-        };
-
-        character = {
-          success_symbol = "[λ](bold cyan) ";
-          error_symbol = "[λ](bold red) ";
-          vicmd_symbol = "[λ](bold green) ";
-        };
-
-        python = {
-          symbol = "🐍 ";
-          format = "via [$symbol($version )(($virtualenv) )]($style)";
-          style = "bold green";
-        };
-
-        nodejs = {
-          symbol = "⬢ ";
-          format = "via [$symbol($version )]($style)";
-          style = "bold green";
-        };
-
-        rust = {
-          symbol = "🦀 ";
-          format = "via [$symbol($version )]($style)";
-          style = "bold red";
-        };
-
-        golang = {
-          symbol = "🐹 ";
-          format = "via [$symbol($version )]($style)";
-          style = "bold cyan";
-        };
-
-        ruby = {
-          symbol = "💎 ";
-          format = "via [$symbol($version )]($style)";
-          style = "bold red";
-        };
-
-        aws = {
-          symbol = "☁️  ";
-          format = "on [$symbol($profile )(\\($region\\) )]($style)";
-          style = "bold orange";
-        };
-
-        docker_context = {
-          symbol = "🐳 ";
-          format = "via [$symbol$context]($style) ";
-          style = "bold blue";
-        };
-
-        kubernetes = {
-          symbol = "☸ ";
-          format = "[$symbol$context( \\($namespace\\))]($style) ";
-          style = "bold cyan";
-          disabled = false;
-        };
-
-        terraform = {
-          symbol = "💠 ";
-          format = "via [$symbol$workspace]($style) ";
-          style = "bold 105";
+          format = "([$all_status$ahead_behind]($style) )";
         };
       };
     };

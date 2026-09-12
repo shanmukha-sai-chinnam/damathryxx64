@@ -89,6 +89,7 @@
       python = pythonEnv.devShell;
       devops = devopsEnv.devShell;
       cv = cvEnv.devShell;
+      resume = cvEnv.devShell;
     };
 
     formatter.${system} = pkgs.alejandra;

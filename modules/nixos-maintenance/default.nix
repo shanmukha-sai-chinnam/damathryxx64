@@ -28,7 +28,6 @@
     systemPackages = with pkgs; [
       # Formatters & Linters
       alejandra
-      nixfmt
       statix
       deadnix
 
@@ -52,7 +51,6 @@
       # Documentation, Discovery & Caching
       manix
       cachix
-      nil
     ];
   };
 }

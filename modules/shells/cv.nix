@@ -42,7 +42,7 @@ in {
 
     shellHook = ''
       export FONTCONFIG_FILE="${fontsConf}"
-      echo "Awesome-CV / LaTeX devShell active. Run 'make' or 'xelatex <file>.tex' to compile."
+      echo "Resume / LaTeX devShell active. Run 'make' or 'xelatex <file>.tex' to compile."
     '';
   };
 }
