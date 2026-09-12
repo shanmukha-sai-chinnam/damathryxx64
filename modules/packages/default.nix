@@ -23,6 +23,6 @@
     pciutils
     openssl
     libnotify
-    nix-alien.packages.${pkgs.system}.nix-alien
+    nix-alien.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien
   ];
 }
