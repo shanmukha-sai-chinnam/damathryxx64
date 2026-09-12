@@ -72,6 +72,8 @@ in {
     ./skills.nix
   ];
 
+  nixpkgs.config.problems.handlers.gemini-cli.removal = "ignore";
+
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli

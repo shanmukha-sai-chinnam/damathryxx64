@@ -37,7 +37,10 @@
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
-      config.allowUnfree = true;
+      config = {
+        allowUnfree = true;
+        problems.handlers.gemini-cli.removal = "ignore";
+      };
     };
     dotsEnv = import ./modules/shells/dots.nix {inherit pkgs;};
     pythonEnv = import ./modules/shells/python.nix {inherit pkgs;};
