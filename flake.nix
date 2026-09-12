@@ -10,6 +10,14 @@
       url = "github:shanmukha-sai-chinnam/antigravity-superpowers";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    andrej-karpathy-skills = {
+      url = "github:shanmukha-sai-chinnam/andrej-karpathy-skills";
+      flake = false;
+    };
+    google-skills = {
+      url = "github:shanmukha-sai-chinnam/skills";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -17,6 +25,8 @@
     nixos-wsl,
     nix-index-database,
     antigravity-superpowers,
+    andrej-karpathy-skills,
+    google-skills,
     ...
   }: let
     system = "x86_64-linux";
@@ -34,7 +44,13 @@
       nixos = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit antigravity-superpowers hostName userName;
+          inherit
+            antigravity-superpowers
+            andrej-karpathy-skills
+            google-skills
+            hostName
+            userName
+            ;
         };
         modules = [
           nixos-wsl.nixosModules.default

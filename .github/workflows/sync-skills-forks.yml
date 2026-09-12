@@ -1,0 +1,36 @@
+name: Sync Agent Skills Forks
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # Runs daily at 04:00 UTC
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  check-and-sync-forks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Inspect Fork Status
+        run: |
+          python3 ./scripts/sync-forks.py status || true
+
+      - name: Audit Skills Frontmatter
+        run: |
+          python3 ./scripts/sync-forks.py audit || true

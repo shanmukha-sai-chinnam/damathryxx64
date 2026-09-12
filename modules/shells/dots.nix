@@ -38,6 +38,8 @@
     echo "  antigravity-superpowers doctor → Diagnose agent environment"
     echo "  antigravity-superpowers check  → Verify profile integrity"
     echo "  antigravity-superpowers sync   → Synchronize skills and rules"
+    echo "  dots-sync-skills status        → Check fork sync & flake lock status"
+    echo "  dots-sync-skills all           → Full sync: fetch, merge, audit, push & bump flake"
     echo "  agy -p <prompt>                → Execute non-interactive AGY prompt"
     echo "  agy -i <prompt>                → Interactive AGY prompt session"
     echo "  agy -c                         → Continue most recent AGY conversation"

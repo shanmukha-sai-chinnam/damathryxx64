@@ -68,6 +68,10 @@
     fi
   '';
 in {
+  imports = [
+    ./skills.nix
+  ];
+
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli

@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "andrej-karpathy-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789206582,
+        "narHash": "sha256-F++1Pv/xAD4rVi068DZpaD32reKXK7vvZvMlFtUsFWY=",
+        "owner": "shanmukha-sai-chinnam",
+        "repo": "andrej-karpathy-skills",
+        "rev": "18242080a990a163fe37abae4e608a6525d51b72",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shanmukha-sai-chinnam",
+        "repo": "andrej-karpathy-skills",
+        "type": "github"
+      }
+    },
     "antigravity-superpowers": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -8,11 +24,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788778246,
-        "narHash": "sha256-xIIVcmK++2wvZ617I4sPB1K/npAcyCDFmVADDa5yGBE=",
+        "lastModified": 1789206824,
+        "narHash": "sha256-/+Iuyk5ZkQPv5q5UaCQt27gLkx9EGqq43KIjeXH1BtE=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "0c892eb6cfbc5a07864602e010f099c014697e4f",
+        "rev": "a5b95f68d302db2aaa9570965ea158a08d5c7f29",
         "type": "github"
       },
       "original": {
@@ -52,6 +68,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "google-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789206765,
+        "narHash": "sha256-SQJNpPLRd1El6K/L3w7i2QqoMrL8qlEZeFXRlmsC5zw=",
+        "owner": "shanmukha-sai-chinnam",
+        "repo": "skills",
+        "rev": "9f316eac40b73519bec8bf2ad7de939e07b23705",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shanmukha-sai-chinnam",
+        "repo": "skills",
         "type": "github"
       }
     },
@@ -129,7 +161,9 @@
     },
     "root": {
       "inputs": {
+        "andrej-karpathy-skills": "andrej-karpathy-skills",
         "antigravity-superpowers": "antigravity-superpowers",
+        "google-skills": "google-skills",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2"
