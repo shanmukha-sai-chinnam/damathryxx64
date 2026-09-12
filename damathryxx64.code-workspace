@@ -145,34 +145,24 @@
                 "detail": "Launch the DevOps devShell with AWS, Terraform, Docker, and Kubernetes tools."
             },
             {
-                "label": "Herdr: Integration Status",
+                "label": "Skills: Inspect Sync Status",
                 "type": "shell",
-                "command": "herdr integration status && systemctl --user status herdr-integrations.service --no-pager",
+                "command": "dots-sync-skills status",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Inspect status of Herdr-managed agent integrations (Claude, Codex, Copilot, OpenCode, Antigravity (AGY))."
+                "detail": "Inspect git divergence and flake lock synchronization across all 6 fork repositories."
             },
             {
-                "label": "Herdr: Active Agent List",
+                "label": "Skills: Full Refresh Pipeline",
                 "type": "shell",
-                "command": "herdr agent list",
+                "command": "refresh-skills",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "List all active AI coding agents managed by Herdr."
-            },
-            {
-                "label": "Herdr: Launch Persistent Session",
-                "type": "shell",
-                "command": "herdr",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Launch or attach to the persistent Herdr terminal workspace."
+                "detail": "Fetch upstream, sync commits, rewrite to Antigravity format, and audit YAML frontmatter."
             },
             {
                 "label": "NixOS: Fast Build (nh)",
@@ -259,17 +249,7 @@
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Inspect environment readiness for Nix, Herdr, Node, Git, and Antigravity profiles."
-            },
-            {
-                "label": "Superpowers: Swarm Status (Trio Flow)",
-                "type": "shell",
-                "command": "antigravity-superpowers swarm status",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Inspect active Herdr multi-agent swarm panes, roles, and integrations."
+                "detail": "Inspect environment readiness for Nix, Node, Git, and Antigravity profiles."
             },
             {
                 "label": "Superpowers: Continuous Watcher (Auto-Fix)",

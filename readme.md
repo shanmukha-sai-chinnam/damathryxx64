@@ -17,27 +17,15 @@ nix flake check --impure
 
 The flake explicitly manages WSL systemd, Windows interop, automounts, DNS/hosts generation, the default user, SSH-agent passthrough, Nix store optimization, weekly garbage collection, and `direnv`/`nix-direnv` support.
 
-## Herdr-managed coding agents
+## Antigravity & Gemini AI Coding Agents
 
-The system installs Herdr together with OpenCode, Claude Code, Codex, and GitHub Copilot CLI. The `herdr-integrations` user service creates the agent configuration directories and installs Herdr's official integrations for all four agents. After activating the system, inspect it with:
-
-```sh
-systemctl --user status herdr-integrations.service
-herdr integration status
-herdr agent list
-```
-
-Start agents from Herdr so their terminals, lifecycle state, and resumable sessions stay under one runtime:
+The system standardizes exclusively on Antigravity CLI (`agy`) and the Google Gemini AI toolkit, alongside declarative agent skill synchronization via Nix flakes. Inspect and manage agent skills with:
 
 ```sh
-herdr
-herdr agent start claude --kind claude --pane <pane-id>
-herdr agent start codex --kind codex --pane <pane-id>
-herdr agent start opencode --kind opencode --pane <pane-id>
-herdr agent start copilot --kind copilot --pane <pane-id>
+dots-sync-skills status
+refresh-skills
+agy -p "prompt"
 ```
-
-The integration installer is intentionally run at user-session startup because each upstream agent stores its Herdr hook or plugin in the user's home directory. This keeps package installation declarative while preserving the agents' own configuration and credentials.
 
 CPU, memory, swap, networking mode, and WSL VM behavior are Windows-level settings. Configure those in `%UserProfile%\\.wslconfig`, then run `wsl --shutdown` from PowerShell for changes to take effect. Do not commit that file here because its resource limits are host-specific.
 

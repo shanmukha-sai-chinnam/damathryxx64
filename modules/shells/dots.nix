@@ -27,12 +27,6 @@
     echo "  nix-tree                       → Interactive TUI for exploring store closure trees"
     echo "  nix-inspect                    → Interactive TUI data explorer"
     echo ""
-    echo -e "\033[1;33mHerdr Multi-Agent Orchestration:\033[0m"
-    echo "  herdr agent list               → List active AI agents"
-    echo "  herdr integration status       → Check agent hook health"
-    echo "  herdr workspace list           → List workspaces"
-    echo "  herdr pane list                → List active panes"
-    echo ""
     echo -e "\033[1;33mAntigravity Superpowers & AI Agents:\033[0m"
     echo "  antigravity-superpowers init   → Scaffold .agents directory"
     echo "  antigravity-superpowers doctor → Diagnose agent environment"
@@ -40,11 +34,11 @@
     echo "  antigravity-superpowers sync   → Synchronize skills and rules"
     echo "  dots-sync-skills status        → Check fork sync & flake lock status"
     echo "  dots-sync-skills all           → Full sync: fetch, merge, audit, push & bump flake"
+    echo "  refresh-skills                 → Sync, rewrite, and audit skills"
     echo "  agy -p <prompt>                → Execute non-interactive AGY prompt"
     echo "  agy -i <prompt>                → Interactive AGY prompt session"
     echo "  agy -c                         → Continue most recent AGY conversation"
     echo "  agy / gemini-cli               → Antigravity CLI & Gemini AI Toolkit"
-    echo "  ollama run / ps / list         → Ollama CLI"
     echo ""
     echo -e "\033[1;33mWSL Interop & Productivity:\033[0m"
     echo "  cb                             → WSL bidirectional clipboard bridge (pipe to copy, bare to paste)"
@@ -66,9 +60,6 @@ in {
       helpNix
       dotsSyncSkills
       refreshSkills
-
-      # AI Agent Orchestration
-      herdr
 
       # Formatters & Linters
       alejandra

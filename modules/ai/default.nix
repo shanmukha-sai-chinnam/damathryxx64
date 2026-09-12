@@ -3,14 +3,6 @@
   antigravity-superpowers ? null,
   ...
 }: let
-  # ── Herdr Integration Setup ────────────────────────────────────────────
-  # Installs Herdr agent-state hooks for Antigravity coding agents.
-  herdrIntegrationSetup = pkgs.writeShellScript "herdr-integration-setup" ''
-    set -eu
-    mkdir -p "$HOME/.gemini/config/hooks"
-    ${pkgs.herdr}/bin/herdr integration install antigravity-cli || true
-  '';
-
   # ── Ponytail Plugin & Rules Installer ──────────────────────────────────
   # Installs the ponytail plugin (https://github.com/DietrichGebert/ponytail)
   # for Antigravity CLI and symlinks its ruleset into ~/.gemini/config/rules.
@@ -58,20 +50,7 @@ in {
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli
-    herdr
-    ollama
   ];
-
-  # ── Herdr Integrations ─────────────────────────────────────────────────
-  systemd.user.services.herdr-integrations = {
-    description = "Install Herdr integrations for coding agents";
-    wantedBy = ["default.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = herdrIntegrationSetup;
-      RemainAfterExit = true;
-    };
-  };
 
   programs.antigravity-superpowers =
     {

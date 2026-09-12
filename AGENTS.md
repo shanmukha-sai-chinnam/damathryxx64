@@ -12,13 +12,13 @@ Repository-wide guidance and operating constraints for Antigravity agents in thi
 - **Flake Entrypoint**: `flake.nix` defines the NixOS-WSL system (`nixosConfigurations.nixos`), development shells (`devShells.python`, `devShells.devops`), and the code formatter (`formatter.alejandra`).
 - **Core Configuration**: `modules/configuration.nix` orchestrates imported system modules.
 - **Module Architecture**:
-  - `modules/ai/`: Herdr, coding agent runtimes (Claude Code, Codex, Copilot CLI, OpenCode), Ollama, `herdr-integrations.service`, declarative agent skills synchronizer (`skills.nix`), and `dots-sync-skills`.
+  - `modules/ai/`: Antigravity CLI, Gemini CLI, `antigravity-superpowers`, declarative agent skills synchronizer (`skills.nix`), `dots-sync-skills`, and `refresh-skills`.
   - `modules/development/`: Compilers, language runtimes (Python, Node, GCC, Clang, CMake, GnuMake), and Nix language servers (`nixd`).
   - `modules/fonts/`: System and monospace font packages (Cascadia Code, Fira Code nerd font).
   - `modules/mcp/`: Native Model Context Protocol servers (`mcp-nixos`, `github-mcp-server`, `mcp-server-git`, etc.).
   - `modules/nixos-maintenance/`: Nix store optimization, automatic weekly garbage collection, and diagnostic utilities (`nix-tree`, `nix-du`, `nom`).
   - `modules/packages/`: General system CLI utilities and packages.
-  - `modules/shells/`: Shell configuration (Zsh, Starship, direnv, bat, fzf) and standalone devShell definitions (`python.nix`, `devops.nix`).
+  - `modules/shells/`: Shell configuration (Zsh, Starship, direnv, bat, fzf) and standalone devShell definitions (`python.nix`, `devops.nix`, `cv.nix`).
 
 ## Available Skills
 
@@ -28,14 +28,13 @@ Agents MUST load the relevant skill via `view_file` on its `SKILL.md` before per
 
 | Skill | Path | Use When |
 |---|---|---|
-| **herdr** | `.agents/skills/herdr/SKILL.md` | User explicitly mentions Herdr or asks to control panes, tabs, workspaces, or other agents. Requires `HERDR_ENV=1`. |
-| **nixos-wsl** | `.agents/skills/nixos-wsl/SKILL.md` | Modifying system modules, devShells, updating flakes, building NixOS, or managing Herdr-managed agent integrations. |
+| **nixos-wsl** | `.agents/skills/nixos-wsl/SKILL.md` | Modifying system modules, devShells, updating flakes, or building NixOS. |
 
 ### Global Skills (`~/.gemini/config/skills/`)
 
 | Skill | Use When |
 |---|---|
-| **antigravity-mcp-integration** | Configuring, developing, debugging, or invoking MCP servers in Antigravity or Herdr. |
+| **antigravity-mcp-integration** | Configuring, developing, debugging, or invoking MCP servers in Antigravity. |
 | **brainstorming** | Before any creative work — creating features, building components, adding functionality, or modifying behavior. |
 | **continuous-codebase-watching** | Setting up background verification, auto-formatting, and static analysis watchers during implementation. |
 | **executing-plans** | Executing a written implementation plan in Antigravity single-flow mode. |
