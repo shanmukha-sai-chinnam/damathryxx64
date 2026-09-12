@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  nix-alien,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     gh
     tree
@@ -16,5 +20,6 @@
     openssl
     libnotify
     yt-dlp # Video downloader
+    nix-alien.packages.${pkgs.system}.nix-alien
   ];
 }

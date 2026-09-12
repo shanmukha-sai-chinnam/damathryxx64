@@ -10,5 +10,6 @@
     gnumake
     pkg-config
     nixd
+    zx
   ];
 }

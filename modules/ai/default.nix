@@ -67,6 +67,18 @@
       ln -sf "$HOME/.gemini/config/plugins/ponytail/.agents/rules/ponytail.md" "$HOME/.gemini/config/rules/ponytail.md"
     fi
   '';
+
+  # ── Specify CLI Installer (GitHub Spec-Kit) ───────────────────────────
+  # Installs specify-cli via uv tool if not already present.
+  specifyCliInstaller = pkgs.writeShellScript "specify-cli-install" ''
+    set -eu
+    export PATH="${pkgs.lib.makeBinPath (with pkgs; [uv coreutils bash])}:$PATH"
+
+    if [ ! -x "$HOME/.local/bin/specify" ]; then
+      echo "specify-cli: installing via uv tool..."
+      ${pkgs.uv}/bin/uv tool install specify-cli || true
+    fi
+  '';
 in {
   imports = [
     ./skills.nix
@@ -129,5 +141,11 @@ in {
   # and its ruleset is linked into ~/.gemini/config/rules.
   system.userActivationScripts.ponytail = {
     text = "${ponytailInstaller}";
+  };
+
+  # ── Spec Kit CLI Activation Script ─────────────────────────────────────
+  # Ensures specify CLI is installed via uv tool for Spec-Driven Development.
+  system.userActivationScripts.specifyCli = {
+    text = "${specifyCliInstaller}";
   };
 }

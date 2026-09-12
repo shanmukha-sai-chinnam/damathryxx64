@@ -26,6 +26,11 @@
       url = "git+file:///home/damathryxx64/repositories/i-have-adhd";
       flake = false;
     };
+    nix-alien = {
+      url = "github:thiagokokada/nix-alien";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nix-index-database.follows = "nix-index-database";
+    };
   };
 
   outputs = {
@@ -37,6 +42,7 @@
     google-skills,
     superpowers,
     i-have-adhd,
+    nix-alien,
     ...
   }: let
     system = "x86_64-linux";
@@ -50,6 +56,7 @@
     dotsEnv = import ./modules/shells/dots.nix {inherit pkgs;};
     pythonEnv = import ./modules/shells/python.nix {inherit pkgs;};
     devopsEnv = import ./modules/shells/devops.nix {inherit pkgs;};
+    cvEnv = import ./modules/shells/cv.nix {inherit pkgs;};
     hostName = "nixos";
     userName = "damathryxx64";
   in {
@@ -63,6 +70,7 @@
             google-skills
             superpowers
             i-have-adhd
+            nix-alien
             hostName
             userName
             ;
@@ -107,6 +115,7 @@
       default = dotsEnv.devShell;
       python = pythonEnv.devShell;
       devops = devopsEnv.devShell;
+      cv = cvEnv.devShell;
     };
 
     formatter.${system} = pkgs.alejandra;
