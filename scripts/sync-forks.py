@@ -82,6 +82,232 @@ MANAGED_REPOS = [
     },
 ]
 
+FOREIGN_DIR_NAMES = {
+    ".claude-plugin",
+    ".codex-plugin",
+    ".cursor-plugin",
+    ".cursor",
+    ".devin-plugin",
+    ".hermes-plugin",
+    ".kimi-plugin",
+    ".opencode",
+    ".pi",
+    ".grok-plugin",
+    ".qoder",
+    ".kiro",
+    ".windsurf",
+    "pi-extension",
+    ".openclaw",
+    ".claude",
+    ".copilot",
+    ".zed",
+    "explicit-skill-requests",
+    "__pycache__",
+}
+
+FOREIGN_EXACT_FILES = {
+    "CLAUDE.md",
+    "CURSOR.md",
+    "kimi.plugin.json",
+    "qwen-extension.json",
+    "opencode.json",
+    "openai.yaml",
+    "cursor-skill-sync.yml",
+    "claude.yml",
+    "pi-load-check.yml",
+    "test_opencode_plugin.py",
+    "opencode_plugin_driver.mjs",
+    "check_pi_extension.py",
+    "package-codex-plugin.sh",
+    "sync-to-codex-plugin.sh",
+    "README.opencode.md",
+    "README.kimi.md",
+    "2025-11-22-opencode-support-design.md",
+    "2025-11-22-opencode-support-implementation.md",
+    "hermes-tools.md",
+    "codex-tools.md",
+    "anthropic-best-practices.md",
+    "CLAUDE_MD_TESTING.md",
+    "claude-suggested-it.txt",
+    "cursor.md",
+    "claude_code.md",
+    "github_copilot.md",
+    "other_agents.md",
+    "copilot-instructions.md",
+    "claude-codex-hooks.json",
+    "copilot-hooks.json",
+    "qoder-hooks.json",
+    "devin.json",
+    "hermes.json",
+    "2026-07-30-codex-efficiency-fixes-design.md",
+    "2026-08-05-hermes-version-bump-wiring-design.md",
+    "2026-03-23-codex-app-compatibility-design.md",
+    "2026-07-30-codex-efficiency-fixes.md",
+    "2026-08-06-hermes-version-bump-wiring.md",
+    "2026-03-23-codex-app-compatibility.md",
+}
+
+FOREIGN_REL_PATHS = [
+    "tests/devin",
+    "tests/claude-code",
+    "tests/hermes",
+    "tests/kimi",
+    "tests/opencode",
+    "tests/codex",
+    "tests/codex-plugin-sync",
+    "tests/explicit-skill-requests",
+    "hooks/hooks-cursor.json",
+    "skills/cloud/firebase-basics/references/refresh/claude.md",
+    "docs/superpowers/specs/2026-07-30-codex-efficiency-fixes-design.md",
+    "docs/superpowers/specs/2026-08-05-hermes-version-bump-wiring-design.md",
+    "docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md",
+    "docs/superpowers/plans/2026-07-30-codex-efficiency-fixes.md",
+    "docs/superpowers/plans/2026-08-06-hermes-version-bump-wiring.md",
+    "docs/superpowers/plans/2026-03-23-codex-app-compatibility.md",
+]
+
+# Skills in superpowers that are already maintained natively in antigravity-superpowers
+SUPERPOWERS_SUPERSEDED_SKILLS = {
+    "brainstorming",
+    "executing-plans",
+    "finishing-a-development-branch",
+    "receiving-code-review",
+    "requesting-code-review",
+    "systematic-debugging",
+    "test-driven-development",
+    "using-git-worktrees",
+    "using-superpowers",
+    "verification-before-completion",
+    "writing-plans",
+    "writing-skills",
+}
+
+# Skills in superpowers that rely on phantom subagents (incompatible with Antigravity single-flow)
+SUPERPOWERS_INCOMPATIBLE_SKILLS = {
+    "dispatching-parallel-agents",
+    "subagent-driven-development",
+}
+
+
+def classify_upstream_file(repo_name, rel_path, status):
+    """
+    Classify an incoming file from upstream into triage categories:
+      - PURGE: Foreign provider baggage (delete immediately)
+      - INCOMPATIBLE: Incompatible subagent skills (purge/exclude from Antigravity)
+      - SUPERSEDED: Skills maintained natively in antigravity-superpowers
+      - ADAPT: Skill markdown requiring native Antigravity/Gemini tools
+      - VALIDATE: Scripts/manifests requiring validation tests
+    """
+    p = Path(rel_path)
+    parts = p.parts
+    filename = p.name
+
+    # 1. Exact foreign directories or exact files
+    if any(part in FOREIGN_DIR_NAMES for part in parts) or filename in FOREIGN_EXACT_FILES:
+        return "PURGE", f"{RED}DELETE{RESET}", "Foreign provider platform baggage"
+
+    # 2. Foreign keyword patterns in path
+    lower_path = rel_path.lower()
+    for kw in ["claude", "codex", "hermes", "cursor", "kimi", "opencode", "devin", "qoder", "kiro", "windsurf"]:
+        if kw in lower_path:
+            return "PURGE", f"{RED}DELETE{RESET}", f"Foreign provider '{kw}' artifact"
+
+    # 3. Superpowers-specific skill triage
+    if repo_name == "superpowers" and len(parts) >= 2 and parts[0] == "skills":
+        skill_name = parts[1]
+        if skill_name in SUPERPOWERS_INCOMPATIBLE_SKILLS:
+            return "INCOMPATIBLE", f"{RED}PURGE{RESET}", "Phantom subagent skill (Antigravity uses single-flow-task-execution)"
+        if skill_name in SUPERPOWERS_SUPERSEDED_SKILLS:
+            return "SUPERSEDED", f"{YELLOW}SUPERSEDED{RESET}", "Maintained natively in antigravity-superpowers (authoritative)"
+
+    # 4. Skill markdown files
+    if p.suffix == ".md":
+        return "ADAPT", f"{CYAN}ADAPT{RESET}", "Prompt update (enforce native Antigravity/Gemini tools)"
+
+    # 5. Executable code / manifests / nix
+    return "VALIDATE", f"{GREEN}VALIDATE{RESET}", "Script/manifest (run syntax & test checks)"
+
+
+def audit_upstream_commits(repo, behind_count=None, max_commits=5):
+    """
+    Audit upstream commits and changed files for a repository.
+    Returns dict of categorized files: {"purge": [...], "incompatible": [...], "superseded": [...], "adapt": [...], "validate": [...]}
+    """
+    path = repo["path"]
+    name = repo["name"]
+    branch = repo["main_branch"]
+
+    results = {
+        "purge": [],
+        "incompatible": [],
+        "superseded": [],
+        "adapt": [],
+        "validate": [],
+    }
+
+    if not path.exists():
+        return results
+
+    ensure_remotes(repo)
+
+    if behind_count is None:
+        try:
+            behind_count = int(
+                run_cmd(["git", "rev-list", "--count", f"HEAD..upstream/{branch}"], cwd=path).stdout.strip()
+            )
+        except Exception:
+            behind_count = 0
+
+    if behind_count > 0:
+        rev_range = f"HEAD..upstream/{branch}"
+        commit_count = behind_count
+    else:
+        rev_range = f"upstream/{branch}~{max_commits}..upstream/{branch}"
+        commit_count = max_commits
+
+    try:
+        commits_raw = run_cmd(
+            ["git", "log", "--oneline", "-n", str(commit_count), rev_range], cwd=path
+        ).stdout.strip().splitlines()
+    except Exception:
+        commits_raw = []
+
+    try:
+        diff_raw = run_cmd(
+            ["git", "diff", "--name-status", rev_range], cwd=path
+        ).stdout.strip().splitlines()
+    except Exception:
+        diff_raw = []
+
+    print(f"\n{BOLD}{CYAN}┌── Upstream Commit Audit:{RESET} {BOLD}{name}{RESET} ({CYAN}{len(commits_raw)} commit(s){RESET} in {rev_range})")
+    if commits_raw:
+        print(f"{CYAN}│{RESET} {BOLD}Incoming Commits:{RESET}")
+        for c in commits_raw[:8]:
+            print(f"{CYAN}│{RESET}   • {c}")
+        if len(commits_raw) > 8:
+            print(f"{CYAN}│{RESET}   ... and {len(commits_raw) - 8} more commits.")
+
+    if diff_raw:
+        print(f"{CYAN}│{RESET} {BOLD}File Triage & Action Analysis ({len(diff_raw)} files changed):{RESET}")
+        for line in diff_raw:
+            parts = line.split(maxsplit=1)
+            if len(parts) != 2:
+                continue
+            status, rel_file = parts[0], parts[1]
+            cat, action_str, reason = classify_upstream_file(name, rel_file, status)
+            results[cat.lower()].append(rel_file)
+            print(f"{CYAN}│{RESET}   [{action_str}] {status} {rel_file} → {GRAY}{reason}{RESET}")
+    else:
+        print(f"{CYAN}│{RESET}   {GREEN}No file differences detected.{RESET}")
+
+    print(f"{BOLD}{CYAN}└── Summary:{RESET} {RED}{len(results['purge'])} to purge{RESET}, "
+          f"{YELLOW}{len(results['incompatible'])} incompatible subagent skills{RESET}, "
+          f"{CYAN}{len(results['superseded'])} superseded{RESET}, "
+          f"{BLUE}{len(results['adapt'])} to adapt{RESET}, "
+          f"{GREEN}{len(results['validate'])} to validate{RESET}\n")
+
+    return results
+
 
 def run_cmd(cmd, cwd=None, check=True, capture=True):
     """Run a shell command and return CompletedProcess."""
@@ -217,7 +443,8 @@ def cmd_fetch():
 
 
 def cmd_sync():
-    """Sync and merge upstream commits into our fork branches."""
+    """Sync and merge upstream commits into our fork branches with commit auditing & triage."""
+    import shutil
     cmd_fetch()
     print(f"{BOLD}{BLUE}Synchronizing with upstream...{RESET}")
     for repo in MANAGED_REPOS:
@@ -235,7 +462,10 @@ def cmd_sync():
             print(f"    {GREEN}✓ Already up-to-date with upstream/{branch}.{RESET}")
             continue
 
-        print(f"    {YELLOW}Found {behind_count} upstream commit(s). Merging...{RESET}")
+        print(f"    {YELLOW}Found {behind_count} upstream commit(s). Auditing changes...{RESET}")
+        audit = audit_upstream_commits(repo, behind_count=behind_count)
+
+        print(f"    Merging upstream/{branch}...")
         try:
             run_cmd(
                 ["git", "merge", f"upstream/{branch}", "-m", f"sync: merge upstream/{branch} into {branch}"],
@@ -246,10 +476,34 @@ def cmd_sync():
             print(f"    {RED}Merge conflict detected in {name}! Manual resolution required.{RESET}")
             sys.exit(1)
 
+        # Immediately purge audited foreign baggage and incompatible subagent files
+        for rel in audit["purge"] + audit["incompatible"]:
+            target = path / rel
+            if target.exists():
+                if target.is_dir():
+                    shutil.rmtree(target, ignore_errors=True)
+                else:
+                    try:
+                        target.unlink()
+                    except OSError:
+                        pass
+                print(f"    {RED}✗ Purged foreign artifact:{RESET} {rel}")
+
     print(f"\n{GREEN}✓ Upstream synchronization complete.{RESET}\n")
 
     # Always purge foreign providers & enforce Antigravity/Gemini immediately after sync
     cmd_rewrite()
+
+
+def cmd_audit_upstream():
+    """Audit recent upstream commits across all managed repositories without merging."""
+    print(f"\n{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}")
+    print(f"{BOLD}{CYAN} Upstream Commit & File Triage Audit (Antigravity & Gemini Matrix){RESET}")
+    print(f"{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}\n")
+    cmd_fetch()
+    for repo in MANAGED_REPOS:
+        audit_upstream_commits(repo, max_commits=5)
+
 
 
 def cmd_audit():
@@ -365,90 +619,6 @@ def cmd_rewrite():
 
     print(f"\n{BOLD}{BLUE}Purging non-Antigravity/non-Gemini providers & rewriting forks...{RESET}")
 
-    foreign_dir_names = {
-        ".claude-plugin",
-        ".codex-plugin",
-        ".cursor-plugin",
-        ".cursor",
-        ".devin-plugin",
-        ".hermes-plugin",
-        ".kimi-plugin",
-        ".opencode",
-        ".pi",
-        ".grok-plugin",
-        ".qoder",
-        ".kiro",
-        ".windsurf",
-        "pi-extension",
-        ".openclaw",
-        ".claude",
-        ".copilot",
-        ".zed",
-        "explicit-skill-requests",
-        "__pycache__",
-    }
-
-    foreign_exact_files = {
-        "CLAUDE.md",
-        "CURSOR.md",
-        "kimi.plugin.json",
-        "qwen-extension.json",
-        "opencode.json",
-        "openai.yaml",
-        "cursor-skill-sync.yml",
-        "claude.yml",
-        "pi-load-check.yml",
-        "test_opencode_plugin.py",
-        "opencode_plugin_driver.mjs",
-        "check_pi_extension.py",
-        "package-codex-plugin.sh",
-        "sync-to-codex-plugin.sh",
-        "README.opencode.md",
-        "README.kimi.md",
-        "2025-11-22-opencode-support-design.md",
-        "2025-11-22-opencode-support-implementation.md",
-        "hermes-tools.md",
-        "codex-tools.md",
-        "anthropic-best-practices.md",
-        "CLAUDE_MD_TESTING.md",
-        "claude-suggested-it.txt",
-        "cursor.md",
-        "claude_code.md",
-        "github_copilot.md",
-        "other_agents.md",
-        "copilot-instructions.md",
-        "claude-codex-hooks.json",
-        "copilot-hooks.json",
-        "qoder-hooks.json",
-        "devin.json",
-        "hermes.json",
-        "2026-07-30-codex-efficiency-fixes-design.md",
-        "2026-08-05-hermes-version-bump-wiring-design.md",
-        "2026-03-23-codex-app-compatibility-design.md",
-        "2026-07-30-codex-efficiency-fixes.md",
-        "2026-08-06-hermes-version-bump-wiring.md",
-        "2026-03-23-codex-app-compatibility.md",
-    }
-
-    foreign_rel_paths = [
-        "tests/devin",
-        "tests/claude-code",
-        "tests/hermes",
-        "tests/kimi",
-        "tests/opencode",
-        "tests/codex",
-        "tests/codex-plugin-sync",
-        "tests/explicit-skill-requests",
-        "hooks/hooks-cursor.json",
-        "skills/cloud/firebase-basics/references/refresh/claude.md",
-        "docs/superpowers/specs/2026-07-30-codex-efficiency-fixes-design.md",
-        "docs/superpowers/specs/2026-08-05-hermes-version-bump-wiring-design.md",
-        "docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md",
-        "docs/superpowers/plans/2026-07-30-codex-efficiency-fixes.md",
-        "docs/superpowers/plans/2026-08-06-hermes-version-bump-wiring.md",
-        "docs/superpowers/plans/2026-03-23-codex-app-compatibility.md",
-    ]
-
     for repo in MANAGED_REPOS:
         path = repo["path"]
         name = repo["name"]
@@ -459,7 +629,7 @@ def cmd_rewrite():
         removed_count = 0
 
         # Remove explicit relative paths
-        for rel in foreign_rel_paths:
+        for rel in FOREIGN_REL_PATHS:
             target = path / rel
             if target.exists():
                 if target.is_dir():
@@ -475,7 +645,7 @@ def cmd_rewrite():
             
             # Remove matching directories
             for d in list(dirs):
-                if d in foreign_dir_names:
+                if d in FOREIGN_DIR_NAMES:
                     full_d = Path(root) / d
                     shutil.rmtree(full_d, ignore_errors=True)
                     dirs.remove(d)
@@ -483,7 +653,7 @@ def cmd_rewrite():
 
             # Remove matching files
             for f in files:
-                if f in foreign_exact_files:
+                if f in FOREIGN_EXACT_FILES:
                     full_f = Path(root) / f
                     try:
                         full_f.unlink()
@@ -671,6 +841,22 @@ def cmd_rewrite():
                 if bvtext != orig_bvtext:
                     bv_f.write_text(bvtext, encoding="utf-8")
 
+            # Purge incompatible subagent skills
+            for subagent_skill in SUPERPOWERS_INCOMPATIBLE_SKILLS:
+                sk_dir = path / "skills" / subagent_skill
+                if sk_dir.exists():
+                    shutil.rmtree(sk_dir, ignore_errors=True)
+                    removed_count += 1
+
+            # Run test suites in superpowers
+            try:
+                run_cmd(["node", "tests/brainstorm-server/branding.test.js"], cwd=path)
+                run_cmd(["bash", "tests/version-bump/test-bump-version.sh"], cwd=path)
+                run_cmd(["bash", "tests/antigravity/run-tests.sh"], cwd=path)
+                print(f"    {GREEN}✓ Test suites passed in superpowers.{RESET}")
+            except Exception as e:
+                print(f"    {YELLOW}Warning running tests in superpowers:{RESET} {e}")
+
         # Enforce Antigravity / Gemini native structure across all files
         scan_extensions = [".md", ".json", ".sh", ".yaml", ".yml"]
         all_files = []
@@ -718,6 +904,121 @@ def cmd_rewrite():
     print(f"\n{GREEN}✓ Provider clean & rewrite completed.{RESET}\n")
 
 
+def sync_active_skills_to_config():
+    """
+    Synchronize active declared skills, rules, and plugins directly into ~/.gemini/config/
+    with strict declarative pruning of foreign, duplicate, and orphan skills.
+    """
+    import shutil
+    config_dir = Path.home() / ".gemini" / "config"
+    skills_dir = config_dir / "skills"
+    rules_dir = config_dir / "rules"
+    plugins_dir = config_dir / "plugins"
+
+    skills_dir.mkdir(parents=True, exist_ok=True)
+    rules_dir.mkdir(parents=True, exist_ok=True)
+    plugins_dir.mkdir(parents=True, exist_ok=True)
+
+    declared_skills = {}
+    declared_rules = {}
+    declared_plugins = {}
+
+    # 1. Karpathy Guidelines
+    k_path = WORKSPACE_ROOT / "andrej-karpathy-skills"
+    if (k_path / "skills" / "karpathy-guidelines").exists():
+        declared_skills["karpathy-guidelines"] = k_path / "skills" / "karpathy-guidelines"
+    if (k_path / "GEMINI.md").exists():
+        declared_rules["karpathy-guidelines.md"] = k_path / "GEMINI.md"
+    if (k_path / "plugins" / "karpathy-guidelines").exists():
+        declared_plugins["karpathy-guidelines"] = k_path / "plugins" / "karpathy-guidelines"
+
+    # 2. Google Skills & Plugins
+    g_path = WORKSPACE_ROOT / "skills"
+    if (g_path / "skills").exists():
+        for cat in (g_path / "skills").iterdir():
+            if cat.is_dir():
+                for sk in cat.iterdir():
+                    if sk.is_dir() and (sk / "SKILL.md").exists():
+                        declared_skills[sk.name] = sk
+    if (g_path / "plugins").exists():
+        for pl in (g_path / "plugins").iterdir():
+            if pl.is_dir():
+                declared_plugins[pl.name] = pl
+
+    # 3. i-have-adhd
+    adhd_path = WORKSPACE_ROOT / "i-have-adhd"
+    if (adhd_path / "skills" / "i-have-adhd").exists():
+        declared_skills["i-have-adhd"] = adhd_path / "skills" / "i-have-adhd"
+    if (adhd_path / "GEMINI.md").exists():
+        declared_rules["i-have-adhd.md"] = adhd_path / "GEMINI.md"
+
+    # 4. Antigravity Superpowers (Authoritative for all superpowers & system skills)
+    asp_path = WORKSPACE_ROOT / "antigravity-superpowers" / "templates" / ".agents" / "skills"
+    if asp_path.exists():
+        for sk in asp_path.iterdir():
+            if sk.is_dir() and (sk / "SKILL.md").exists():
+                declared_skills[sk.name] = sk
+
+    # Prune orphan/foreign skills from skills_dir
+    pruned_skills = 0
+    for existing in list(skills_dir.iterdir()):
+        if existing.is_dir() and existing.name not in declared_skills:
+            shutil.rmtree(existing, ignore_errors=True)
+            pruned_skills += 1
+
+    # Copy declared skills
+    for sname, src in declared_skills.items():
+        dst = skills_dir / sname
+        if dst.exists():
+            shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+
+    # Prune and copy rules (preserve system rules like declarative-dots.md, environment.md, workflow-discipline.md)
+    for rname, src in declared_rules.items():
+        dst = rules_dir / rname
+        shutil.copy2(src, dst)
+
+    # Copy declared plugins
+    for pname, src in declared_plugins.items():
+        dst = plugins_dir / pname
+        if dst.exists():
+            shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+
+    # Clean foreign artifacts from config_dir
+    for root, dirs, files in os.walk(config_dir, topdown=True):
+        for d in list(dirs):
+            if d in FOREIGN_DIR_NAMES:
+                shutil.rmtree(Path(root) / d, ignore_errors=True)
+                dirs.remove(d)
+        for f in files:
+            if f in FOREIGN_EXACT_FILES or any(kw in f.lower() for kw in ["claude", "codex", "hermes", "opencode", "kimi", "devin"]):
+                try:
+                    (Path(root) / f).unlink()
+                except OSError:
+                    pass
+
+    # Scrub mentions in config markdown
+    for mf in config_dir.rglob("*.md"):
+        try:
+            content = mf.read_text(encoding="utf-8", errors="replace")
+            orig = content
+            content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
+            content = content.replace("Claude Code", "Antigravity CLI")
+            content = content.replace("claude-code", "antigravity-cli")
+            content = content.replace("Claude Desktop", "Antigravity IDE")
+            content = content.replace("OpenCode", "Antigravity CLI")
+            content = content.replace("opencode", "antigravity-cli")
+            content = content.replace("CLAUDE.md", "AGENTS.md")
+            content = content.replace("CURSOR.md", "AGENTS.md")
+            if content != orig:
+                mf.write_text(content, encoding="utf-8")
+        except Exception:
+            pass
+
+    print(f"  {GREEN}✓ Synchronized {len(declared_skills)} declared skills to ~/.gemini/config/skills/ (pruned {pruned_skills} orphan/incompatible skills).{RESET}")
+
+
 def cmd_refresh():
     """Fetch/sync upstream commits, purge non-Antigravity/non-Gemini providers, and rewrite."""
     print(f"\n{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}")
@@ -727,10 +1028,12 @@ def cmd_refresh():
     cmd_sync()
     cmd_audit()
 
-    # Declarative sync to ~/.gemini/config
+    # Declarative direct sync & pruning to ~/.gemini/config
     print(f"{BOLD}{BLUE}Synchronizing active skills to ~/.gemini/config...{RESET}")
+    sync_active_skills_to_config()
     run_cmd(["systemctl", "--user", "start", "agent-skills-sync.service"], check=False)
     print(f"{GREEN}✓ Skills successfully refreshed in ~/.gemini/config!{RESET}\n")
+
 
 
 def main():
@@ -742,6 +1045,7 @@ def main():
     subparsers.add_parser("status", help="Show status of all fork repositories and flake lock pins")
     subparsers.add_parser("fetch", help="Fetch origin and upstream for all repositories")
     subparsers.add_parser("sync", help="Merge upstream changes into fork branches")
+    subparsers.add_parser("audit-upstream", help="Audit upstream commits and file triage for Antigravity & Gemini")
     subparsers.add_parser("rewrite", help="Purge foreign providers and rewrite to Antigravity & Gemini")
     subparsers.add_parser("refresh", help="Full refresh: fetch, sync, rewrite to Antigravity/Gemini, audit & sync")
     subparsers.add_parser("audit", help="Audit skill frontmatter and Antigravity compliance")
@@ -759,6 +1063,8 @@ def main():
         cmd_fetch()
     elif cmd == "sync":
         cmd_sync()
+    elif cmd == "audit-upstream":
+        cmd_audit_upstream()
     elif cmd == "rewrite":
         cmd_rewrite()
     elif cmd == "refresh":

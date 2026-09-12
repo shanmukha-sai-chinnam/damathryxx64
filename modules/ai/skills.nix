@@ -31,27 +31,34 @@
 
     mkdir -p "$SKILLS_DIR" "$RULES_DIR" "$PLUGINS_DIR"
 
-    # ── 1. Synchronize Karpathy Guidelines ─────────────────────────────────
+    STAGING_SKILLS=$(mktemp -d)
+    STAGING_RULES=$(mktemp -d)
+    STAGING_PLUGINS=$(mktemp -d)
+
+    cleanup() {
+      rm -rf "$STAGING_SKILLS" "$STAGING_RULES" "$STAGING_PLUGINS"
+    }
+    trap cleanup EXIT
+
+    # ── 1. Stage Karpathy Guidelines ───────────────────────────────────────
     ${lib.optionalString (andrej-karpathy-skills != null) ''
       KARPATHY_SRC="${andrej-karpathy-skills}"
       if [ -d "$KARPATHY_SRC/skills/karpathy-guidelines" ]; then
-        rm -rf "$SKILLS_DIR/karpathy-guidelines"
-        mkdir -p "$SKILLS_DIR/karpathy-guidelines"
-        cp -r "$KARPATHY_SRC/skills/karpathy-guidelines"/* "$SKILLS_DIR/karpathy-guidelines/"
+        mkdir -p "$STAGING_SKILLS/karpathy-guidelines"
+        cp -r "$KARPATHY_SRC/skills/karpathy-guidelines"/* "$STAGING_SKILLS/karpathy-guidelines/"
       fi
 
       if [ -f "$KARPATHY_SRC/GEMINI.md" ]; then
-        cp "$KARPATHY_SRC/GEMINI.md" "$RULES_DIR/karpathy-guidelines.md"
+        cp "$KARPATHY_SRC/GEMINI.md" "$STAGING_RULES/karpathy-guidelines.md"
       fi
 
       if [ -d "$KARPATHY_SRC/plugins/karpathy-guidelines" ]; then
-        rm -rf "$PLUGINS_DIR/karpathy-guidelines"
-        mkdir -p "$PLUGINS_DIR/karpathy-guidelines"
-        cp -r "$KARPATHY_SRC/plugins/karpathy-guidelines"/* "$PLUGINS_DIR/karpathy-guidelines/"
+        mkdir -p "$STAGING_PLUGINS/karpathy-guidelines"
+        cp -r "$KARPATHY_SRC/plugins/karpathy-guidelines"/* "$STAGING_PLUGINS/karpathy-guidelines/"
       fi
     ''}
 
-    # ── 2. Synchronize Google Skills ───────────────────────────────────────
+    # ── 2. Stage Google Skills & Plugins ───────────────────────────────────
     ${lib.optionalString (google-skills != null) ''
       GOOGLE_SRC="${google-skills}"
       if [ -d "$GOOGLE_SRC/skills" ]; then
@@ -60,9 +67,8 @@
             for skill in "$cat"/*; do
               if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
                 sname=$(basename "$skill")
-                rm -rf "$SKILLS_DIR/$sname"
-                mkdir -p "$SKILLS_DIR/$sname"
-                cp -r "$skill"/* "$SKILLS_DIR/$sname/"
+                mkdir -p "$STAGING_SKILLS/$sname"
+                cp -r "$skill"/* "$STAGING_SKILLS/$sname/"
               fi
             done
           fi
@@ -73,59 +79,75 @@
         for plugin in "$GOOGLE_SRC/plugins"/*; do
           if [ -d "$plugin" ]; then
             pname=$(basename "$plugin")
-            rm -rf "$PLUGINS_DIR/$pname"
-            mkdir -p "$PLUGINS_DIR/$pname"
-            cp -r "$plugin"/* "$PLUGINS_DIR/$pname/"
+            mkdir -p "$STAGING_PLUGINS/$pname"
+            cp -r "$plugin"/* "$STAGING_PLUGINS/$pname/"
           fi
         done
       fi
     ''}
 
-    # ── 3. Synchronize Upstream Superpowers Skills ─────────────────────────
-    ${lib.optionalString (superpowers != null) ''
-      SUPERPOWERS_SRC="${superpowers}"
-      if [ -d "$SUPERPOWERS_SRC/skills" ]; then
-        for skill in "$SUPERPOWERS_SRC/skills"/*; do
-          if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
-            sname=$(basename "$skill")
-            # Only provision if not already present from specialized sources
-            if [ ! -d "$SKILLS_DIR/$sname" ]; then
-              mkdir -p "$SKILLS_DIR/$sname"
-              cp -r "$skill"/* "$SKILLS_DIR/$sname/"
-            fi
-          fi
-        done
-      fi
-    ''}
-
-    # ── 4. Synchronize i-have-adhd ─────────────────────────────────────────
+    # ── 3. Stage i-have-adhd ───────────────────────────────────────────────
     ${lib.optionalString (i-have-adhd != null) ''
       ADHD_SRC="${i-have-adhd}"
       if [ -d "$ADHD_SRC/skills/i-have-adhd" ]; then
-        rm -rf "$SKILLS_DIR/i-have-adhd"
-        mkdir -p "$SKILLS_DIR/i-have-adhd"
-        cp -r "$ADHD_SRC/skills/i-have-adhd"/* "$SKILLS_DIR/i-have-adhd/"
+        mkdir -p "$STAGING_SKILLS/i-have-adhd"
+        cp -r "$ADHD_SRC/skills/i-have-adhd"/* "$STAGING_SKILLS/i-have-adhd/"
       fi
 
       if [ -f "$ADHD_SRC/GEMINI.md" ]; then
-        cp "$ADHD_SRC/GEMINI.md" "$RULES_DIR/i-have-adhd.md"
+        cp "$ADHD_SRC/GEMINI.md" "$STAGING_RULES/i-have-adhd.md"
       fi
     ''}
 
-    # ── 5. Synchronize Antigravity Superpowers Skills ──────────────────────
+    # ── 4. Stage Antigravity Superpowers Skills (Authoritative Source) ─────
     ${lib.optionalString (antigravity-superpowers != null) ''
       SUPERPOWERS_CUSTOM_SRC="${antigravity-superpowers}"
       if [ -d "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills" ]; then
         for skill in "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills"/*; do
           if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
             sname=$(basename "$skill")
-            rm -rf "$SKILLS_DIR/$sname"
-            mkdir -p "$SKILLS_DIR/$sname"
-            cp -r "$skill"/* "$SKILLS_DIR/$sname/"
+            mkdir -p "$STAGING_SKILLS/$sname"
+            cp -r "$skill"/* "$STAGING_SKILLS/$sname/"
           fi
         done
       fi
     ''}
+
+    # ── 5. Declarative Pruning & Synchronization ───────────────────────────
+    # Prune any skill directory not in declared sources
+    for existing in "$SKILLS_DIR"/*; do
+      if [ -d "$existing" ]; then
+        sname=$(basename "$existing")
+        if [ ! -d "$STAGING_SKILLS/$sname" ]; then
+          rm -rf "$existing"
+        fi
+      fi
+    done
+
+    # Prune any rule file not in declared sources
+    for existing in "$RULES_DIR"/*; do
+      if [ -f "$existing" ]; then
+        rname=$(basename "$existing")
+        if [ ! -f "$STAGING_RULES/$rname" ]; then
+          rm -f "$existing"
+        fi
+      fi
+    done
+
+    # Prune any plugin directory not in declared sources
+    for existing in "$PLUGINS_DIR"/*; do
+      if [ -d "$existing" ]; then
+        pname=$(basename "$existing")
+        if [ ! -d "$STAGING_PLUGINS/$pname" ]; then
+          rm -rf "$existing"
+        fi
+      fi
+    done
+
+    # Copy staged items into active config
+    cp -r "$STAGING_SKILLS"/* "$SKILLS_DIR/" 2>/dev/null || true
+    cp -r "$STAGING_RULES"/* "$RULES_DIR/" 2>/dev/null || true
+    cp -r "$STAGING_PLUGINS"/* "$PLUGINS_DIR/" 2>/dev/null || true
 
     # ── 6. Purge Foreign Provider Artifacts from Config ────────────────────
     find "$CONFIG_DIR" -depth \( \
