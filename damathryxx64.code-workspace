@@ -30,9 +30,9 @@
         "version": "2.0.0",
         "tasks": [
             {
-                "label": "NixOS: Build (Dry Run)",
+                "label": "NixOS: Fast Build (Dry Run)",
                 "type": "shell",
-                "command": "nixos-rebuild build --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "command": "dots-build",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
@@ -41,22 +41,32 @@
                     "kind": "build",
                     "isDefault": true
                 },
-                "detail": "Build the NixOS system derivation without applying or activating changes."
+                "detail": "Fast dry build of system derivation using nh with visual progress."
             },
             {
                 "label": "NixOS: Rebuild & Apply (Switch)",
                 "type": "shell",
-                "command": "sudo nixos-rebuild switch --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "command": "dots-switch",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Rebuild and apply the current NixOS configuration (activates live changes)."
+                "detail": "Apply current configuration live using nh os switch."
+            },
+            {
+                "label": "NixOS: Upgrade All & Switch (One Step)",
+                "type": "shell",
+                "command": "dots-upgrade",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Validate quality gates, update all flake inputs, and switch live system in one command."
             },
             {
                 "label": "NixOS: Test Configuration (Session Only)",
                 "type": "shell",
-                "command": "sudo nixos-rebuild test --flake ${workspaceFolder:damathryxx64}#nixos --impure",
+                "command": "nh os test",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
@@ -64,19 +74,20 @@
                 "detail": "Build and activate configuration for current session without modifying bootloader."
             },
             {
-                "label": "NixOS: Check Flake",
+                "label": "NixOS: Validate All Quality Gates",
                 "type": "shell",
-                "command": "nix flake check --impure",
+                "command": "dots-validate",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Validate flake schema, inputs, and devShell derivations."
+                "group": "test",
+                "detail": "Run full 4-stage validation: Alejandra format, Statix anti-patterns, Deadnix dead code, and flake check."
             },
             {
                 "label": "NixOS: Format Code (Alejandra)",
                 "type": "shell",
-                "command": "nix fmt -- .",
+                "command": "dots-fmt",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
@@ -84,15 +95,34 @@
                 "detail": "Format all Nix expressions using Alejandra."
             },
             {
-                "label": "NixOS: Validate All (Format + Check + Build)",
+                "label": "NixOS: Lint & Audit (Statix + Deadnix)",
                 "type": "shell",
-                "command": "${workspaceFolder:damathryxx64}/.agents/skills/nixos-wsl/scripts/validate.sh",
+                "command": "dots-lint",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "group": "test",
-                "detail": "Run full verification: format check, flake check, and system derivation build."
+                "detail": "Scan for anti-patterns and unused code using Statix and Deadnix."
+            },
+            {
+                "label": "NixOS: Auto-Fix Lints",
+                "type": "shell",
+                "command": "statix fix . && dots-fmt",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Automatically remediate statix anti-patterns and reformat with Alejandra."
+            },
+            {
+                "label": "NixOS: Clean Generations & Cache",
+                "type": "shell",
+                "command": "dots-clean",
+                "options": {
+                    "cwd": "${workspaceFolder:damathryxx64}"
+                },
+                "problemMatcher": [],
+                "detail": "Garbage collect old NixOS generations and clean cache using nh."
             },
             {
                 "label": "NixOS: Rollback Generation",
@@ -105,16 +135,6 @@
                 "detail": "Rollback to the previous working NixOS generation."
             },
             {
-                "label": "NixOS: Garbage Collect & Optimize",
-                "type": "shell",
-                "command": "nix-collect-garbage -d && sudo nix-collect-garbage -d && nix store optimise",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Clean up old generations and optimize the Nix store."
-            },
-            {
                 "label": "NixOS: Update Flake Inputs",
                 "type": "shell",
                 "command": "nix flake update",
@@ -123,26 +143,6 @@
                 },
                 "problemMatcher": [],
                 "detail": "Update flake.lock with latest revisions from inputs."
-            },
-            {
-                "label": "NixOS: Enter Python Shell",
-                "type": "shell",
-                "command": "nix develop ${workspaceFolder:damathryxx64}#python",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Launch the dedicated Python 3.12 devShell."
-            },
-            {
-                "label": "NixOS: Enter DevOps Shell",
-                "type": "shell",
-                "command": "nix develop ${workspaceFolder:damathryxx64}#devops",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Launch the DevOps devShell with AWS, Terraform, Docker, and Kubernetes tools."
             },
             {
                 "label": "Skills: Inspect Sync Status",
@@ -165,57 +165,37 @@
                 "detail": "Fetch upstream, sync commits, rewrite to Antigravity format, and audit YAML frontmatter."
             },
             {
-                "label": "NixOS: Fast Build (nh)",
+                "label": "NixOS: Enter Python Shell",
                 "type": "shell",
-                "command": "nh os build",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#python",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Build system derivation using nh with visual NOM progress."
+                "detail": "Launch the dedicated Python 3.12 devShell."
             },
             {
-                "label": "NixOS: Lint & Audit (statix + deadnix)",
+                "label": "NixOS: Enter DevOps Shell",
                 "type": "shell",
-                "command": "statix check . && deadnix .",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#devops",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Run static analysis linter and scan for dead code."
+                "detail": "Launch the DevOps devShell with AWS, Terraform, Docker, and Kubernetes tools."
             },
             {
-                "label": "NixOS: Auto-Fix Lints (statix fix)",
+                "label": "NixOS: Enter Resume / LaTeX Shell",
                 "type": "shell",
-                "command": "statix fix . && nix fmt -- .",
+                "command": "nix develop ${workspaceFolder:damathryxx64}#resume",
                 "options": {
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Automatically remediate statix anti-patterns and format with Alejandra."
+                "detail": "Launch the Resume authoring devShell with XeLaTeX and fontconfig."
             },
             {
-                "label": "NixOS: Clean Generations (nh clean)",
-                "type": "shell",
-                "command": "nh clean all",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Garbage collect old NixOS generations and clean cache using nh."
-            },
-            {
-                "label": "NixOS: Explore Store Closures (nix-tree)",
-                "type": "shell",
-                "command": "nix-tree",
-                "options": {
-                    "cwd": "${workspaceFolder:damathryxx64}"
-                },
-                "problemMatcher": [],
-                "detail": "Interactively explore package store closures and tree dependencies."
-            },
-            {
-                "label": "NixOS: Enter Developer Shell (Dots)",
+                "label": "NixOS: Enter Dots Developer Shell",
                 "type": "shell",
                 "command": "nix develop ${workspaceFolder:damathryxx64}#default",
                 "options": {
@@ -269,7 +249,7 @@
                     "cwd": "${workspaceFolder:damathryxx64}"
                 },
                 "problemMatcher": [],
-                "detail": "Synchronize all 21 skills into ~/.gemini/config/skills without overwriting custom settings."
+                "detail": "Synchronize all skills into ~/.gemini/config/skills without overwriting custom settings."
             }
         ]
     },
