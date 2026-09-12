@@ -39,12 +39,8 @@ Add `gemini-cli` to `environment.systemPackages`:
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli
-    herdr
-    opencode
-    claude-code
-    codex
-    github-copilot-cli
-    ollama
+    # Note: herdr, opencode, claude-code, codex, github-copilot-cli, and ollama
+    # have been purged from the system configuration.
   ];
 ```
 

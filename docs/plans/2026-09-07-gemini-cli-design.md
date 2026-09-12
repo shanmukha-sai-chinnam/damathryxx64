@@ -6,7 +6,7 @@
 
 ## 1. Context & Motivation
 The system configuration manages AI coding agent runtimes in `modules/ai/default.nix`.
-Previously, `gemini-cli` was declared alongside `antigravity-cli`, `herdr`, `opencode`, `claude-code`, etc. In recent updates, `gemini-cli` was omitted from `environment.systemPackages`, leaving the `gemini` command absent from system `$PATH`.
+Previously, `gemini-cli` was declared alongside `antigravity-cli` and other AI CLI tools. In recent updates, `gemini-cli` was omitted from `environment.systemPackages`, leaving the `gemini` command absent from system `$PATH`. (Note: foreign AI CLI tools like `herdr`, `opencode`, `claude-code`, `codex`, `github-copilot-cli`, and `ollama` have since been purged from the system configuration.)
 
 The user confirmed they want the standalone `pkgs.gemini-cli` package installed system-wide.
 
