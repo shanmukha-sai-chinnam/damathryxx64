@@ -724,9 +724,7 @@ def cmd_refresh():
     print(f"{BOLD}{CYAN} Refresh Skills: Sync Upstream & Rewrite to Antigravity/Gemini{RESET}")
     print(f"{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}\n")
 
-    cmd_fetch()
     cmd_sync()
-    cmd_rewrite()
     cmd_audit()
 
     # Declarative sync to ~/.gemini/config
@@ -774,9 +772,7 @@ def main():
     elif cmd == "validate":
         cmd_validate()
     elif cmd == "all":
-        cmd_fetch()
         cmd_sync()
-        cmd_rewrite()
         cmd_audit()
         cmd_push()
         cmd_bump_flake()
