@@ -113,11 +113,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1789208339,
-        "narHash": "sha256-xgrs+qkzkUtnqQGdiKWEjvJ5NeQEWk/RjtceGNzg8i8=",
+        "lastModified": 1789208447,
+        "narHash": "sha256-Sps4MLp972dIWNIVzPoFkGr1DC0AvXTLf2tZGFkxtbQ=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "NixOS-WSL",
-        "rev": "00936ca71b614d5d7373e57750deeef63d3512f3",
+        "rev": "805c735feb148cac48c1ef4728b2064ee59ab63c",
         "type": "github"
       },
       "original": {
