@@ -2,30 +2,9 @@
     "folders": [
         {
             "name": "repositories",
-            "path": ".."
-        },
-        {
-            "name": "damathryxx64",
-            "path": "."
-        },
-        {
-            "name": "SpoilsOfTheShatteredFates",
-            "path": "../SpoilsOfTheShatteredFates"
-        },
-        {
-            "name": "antigravity-superpowers",
-            "path": "../antigravity-superpowers"
+            "path": "/home/damathryxx64/repositories/"
         }
     ],
-    "extensions": {
-        "recommendations": [
-            "googlecloudtools.datacloud",
-            "ms-python.python",
-            "ms-python.debugpy",
-            "ms-python.vscode-python-envs",
-            "ms-toolsai.jupyter"
-        ]
-    },
     "tasks": {
         "version": "2.0.0",
         "tasks": [
@@ -256,18 +235,15 @@
     "settings": {
         "workbench.settings.editor": "json",
         "task.allowAutomaticTasks": "on",
-
         // Antigravity Engine & Semantic Codebase Search
         "antigravity.searchMaxWorkspaceFileCount": 10000,
         "antigravity.persistentLanguageServer": true,
-
         // Editor Font & Display
         "editor.fontFamily": "'CaskaydiaCove Nerd Font', 'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontLigatures": true,
         "editor.fontVariations": true,
         "editor.codeLensFontFamily": "'CaskaydiaCove Nerd Font', 'CaskaydiaCove NF', 'FiraCode Nerd Font', 'Cascadia Code NF', Consolas, 'Courier New', 'MesloLGS NF', monospace",
         "editor.fontSize": 15,
-
         // Editor Behavior
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
@@ -279,7 +255,6 @@
         "editor.acceptSuggestionOnEnter": "smart",
         "editor.quickSuggestionsDelay": 0,
         "editor.snippetSuggestions": "top",
-
         // Editor Display & Visual Layout
         "editor.minimap.enabled": false,
         "editor.scrollbar.verticalScrollbarSize": 0,
@@ -290,7 +265,6 @@
         "editor.guides.bracketPairs": true,
         "editor.guides.indentation": true,
         "editor.stickyScroll.enabled": true,
-
         // Diff Editor & Antigravity Agent Review
         "diffEditor.codeLens": true,
         "diffEditor.wordWrap": "inherit",
@@ -298,7 +272,6 @@
         "diffEditor.renderSideBySide": false,
         "diffEditor.experimental.showMoves": true,
         "scm.diffDecorations": "all",
-
         // File Management
         "files.autoSave": "onWindowChange",
         "files.autoSaveWorkspaceFilesOnly": true,
@@ -307,7 +280,6 @@
         "files.trimTrailingWhitespace": true,
         "files.insertFinalNewline": true,
         "files.trimFinalNewlines": true,
-
         // File Watcher Exclusions (Protect Antigravity & Nix Store from Derivation Flooding)
         "files.watcherExclude": {
             "**/.git/objects/**": true,
@@ -317,7 +289,6 @@
             "**/.venv/**": true,
             "**/target/**": true
         },
-
         // Search & Indexing Exclusions
         "search.showLineNumbers": true,
         "search.smartCase": true,
@@ -329,7 +300,6 @@
             "**/.venv": true,
             "**/target": true
         },
-
         // Terminal & WSL Integration
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.cursorBlinking": true,
@@ -339,13 +309,11 @@
         "terminal.integrated.unicodeVersion": "11",
         "terminal.integrated.scrollback": 10000,
         "terminal.integrated.smoothScrolling": true,
-
         // Explorer
         "explorer.excludeGitIgnore": true,
         "explorer.autoReveal": true,
         "explorer.confirmDelete": false,
         "explorer.confirmDragAndDrop": false,
-
         // Workbench
         "workbench.startupEditor": "none",
         "workbench.editor.enablePreview": false,
@@ -354,7 +322,6 @@
         "workbench.editor.limit.value": 8,
         "workbench.statusBar.visible": true,
         "window.zoomLevel": 0.5,
-
         // Git Version Control
         "git.autofetch": true,
         "git.suggestSmartCommit": false,
@@ -364,7 +331,6 @@
         "git.rebaseWhenSync": true,
         "git.defaultBranchName": "trunk",
         "git.enableCommitSigning": false,
-
         // Nix Language Server (nixd) & Formatter (Alejandra)
         "alejandra.program": "alejandra",
         "nix.enableLanguageServer": true,
@@ -383,7 +349,6 @@
                 }
             }
         },
-
         // Language-Specific Formatting & Indentation
         "[nix]": {
             "editor.formatOnSave": true,
