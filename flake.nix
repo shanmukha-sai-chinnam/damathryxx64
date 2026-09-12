@@ -18,6 +18,10 @@
       url = "github:shanmukha-sai-chinnam/skills";
       flake = false;
     };
+    superpowers = {
+      url = "github:shanmukha-sai-chinnam/superpowers";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -27,6 +31,7 @@
     antigravity-superpowers,
     andrej-karpathy-skills,
     google-skills,
+    superpowers,
     ...
   }: let
     system = "x86_64-linux";
@@ -48,6 +53,7 @@
             antigravity-superpowers
             andrej-karpathy-skills
             google-skills
+            superpowers
             hostName
             userName
             ;

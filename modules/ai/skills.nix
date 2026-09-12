@@ -3,6 +3,7 @@
   pkgs,
   andrej-karpathy-skills ? null,
   google-skills ? null,
+  superpowers ? null,
   ...
 }: let
   syncForksScript = pkgs.writeShellScriptBin "dots-sync-skills" ''
@@ -73,6 +74,23 @@
             rm -rf "$PLUGINS_DIR/$pname"
             mkdir -p "$PLUGINS_DIR/$pname"
             cp -r "$plugin"/* "$PLUGINS_DIR/$pname/"
+          fi
+        done
+      fi
+    ''}
+
+    # ── 3. Synchronize Upstream Superpowers Skills ─────────────────────────
+    ${lib.optionalString (superpowers != null) ''
+      SUPERPOWERS_SRC="${superpowers}"
+      if [ -d "$SUPERPOWERS_SRC/skills" ]; then
+        for skill in "$SUPERPOWERS_SRC/skills"/*; do
+          if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
+            sname=$(basename "$skill")
+            # Only provision if not already present from specialized sources
+            if [ ! -d "$SKILLS_DIR/$sname" ]; then
+              mkdir -p "$SKILLS_DIR/$sname"
+              cp -r "$skill"/* "$SKILLS_DIR/$sname/"
+            fi
           fi
         done
       fi

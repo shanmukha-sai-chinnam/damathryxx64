@@ -56,6 +56,14 @@ MANAGED_REPOS = [
         "flake_input": "google-skills",
         "main_branch": "main",
     },
+    {
+        "name": "superpowers",
+        "path": WORKSPACE_ROOT / "superpowers",
+        "fork_url": "https://github.com/shanmukha-sai-chinnam/superpowers.git",
+        "upstream_url": "https://github.com/obra/superpowers.git",
+        "flake_input": "superpowers",
+        "main_branch": "main",
+    },
 ]
 
 
