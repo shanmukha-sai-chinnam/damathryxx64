@@ -89,11 +89,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789210353,
-        "narHash": "sha256-86me347iX068ey1ezoOy5Pc/3m6pWx/TslR1CBYjLFw=",
+        "lastModified": 1789212375,
+        "narHash": "sha256-2rQlsguo5rImQb7cFl5a3/OA+hiNmiQjqyz4M0JvgLY=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "ee83d239ba1f16f3252e1f65992b06bc7fdfe513",
+        "rev": "bc2a49ebc01b2b7ac6ac0be4fc5e901764f02186",
         "type": "github"
       },
       "original": {
@@ -105,11 +105,11 @@
     "i-have-adhd": {
       "flake": false,
       "locked": {
-        "lastModified": 1789210353,
-        "narHash": "sha256-hLEfTRxjyl5dxaC6U0/K39jNT8j860cyfyQXCFXd1Vg=",
+        "lastModified": 1789212402,
+        "narHash": "sha256-Kx6qwuL6yRUfakOTCk47ENSDF41q8yqY7X/ojDYoOPU=",
         "ref": "refs/heads/main",
-        "rev": "366bb36e65a03d5fab1f6edb0641110b61e7847e",
-        "revCount": 216,
+        "rev": "34850a8d18095cceab6637fc64a8c9afe8b690a6",
+        "revCount": 217,
         "type": "git",
         "url": "file:///home/damathryxx64/repositories/i-have-adhd"
       },
