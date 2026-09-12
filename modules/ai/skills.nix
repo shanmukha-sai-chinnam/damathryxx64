@@ -4,6 +4,7 @@
   andrej-karpathy-skills ? null,
   google-skills ? null,
   superpowers ? null,
+  i-have-adhd ? null,
   ...
 }: let
   syncForksScript = pkgs.writeShellScriptBin "dots-sync-skills" ''
@@ -93,6 +94,20 @@
             fi
           fi
         done
+      fi
+    ''}
+
+    # ── 4. Synchronize i-have-adhd ─────────────────────────────────────────
+    ${lib.optionalString (i-have-adhd != null) ''
+      ADHD_SRC="${i-have-adhd}"
+      if [ -d "$ADHD_SRC/skills/i-have-adhd" ]; then
+        rm -rf "$SKILLS_DIR/i-have-adhd"
+        mkdir -p "$SKILLS_DIR/i-have-adhd"
+        cp -r "$ADHD_SRC/skills/i-have-adhd"/* "$SKILLS_DIR/i-have-adhd/"
+      fi
+
+      if [ -f "$ADHD_SRC/GEMINI.md" ]; then
+        cp "$ADHD_SRC/GEMINI.md" "$RULES_DIR/i-have-adhd.md"
       fi
     ''}
 

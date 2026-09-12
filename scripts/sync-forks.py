@@ -72,6 +72,14 @@ MANAGED_REPOS = [
         "flake_input": "nixos-wsl",
         "main_branch": "main",
     },
+    {
+        "name": "i-have-adhd",
+        "path": WORKSPACE_ROOT / "i-have-adhd",
+        "fork_url": "https://github.com/shanmukha-sai-chinnam/i-have-adhd.git",
+        "upstream_url": "https://github.com/ayghri/i-have-adhd.git",
+        "flake_input": "i-have-adhd",
+        "main_branch": "main",
+    },
 ]
 
 

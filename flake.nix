@@ -22,6 +22,10 @@
       url = "github:shanmukha-sai-chinnam/superpowers";
       flake = false;
     };
+    i-have-adhd = {
+      url = "git+file:///home/damathryxx64/repositories/i-have-adhd";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -32,6 +36,7 @@
     andrej-karpathy-skills,
     google-skills,
     superpowers,
+    i-have-adhd,
     ...
   }: let
     system = "x86_64-linux";
@@ -57,6 +62,7 @@
             andrej-karpathy-skills
             google-skills
             superpowers
+            i-have-adhd
             hostName
             userName
             ;

@@ -87,6 +87,22 @@
         "type": "github"
       }
     },
+    "i-have-adhd": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789209030,
+        "narHash": "sha256-J3ANlLgBN90/N5+ABbz2esS0l8EjajME1iv09x5pSrc=",
+        "ref": "refs/heads/main",
+        "rev": "a838144454d957b9998511f69831ae9160e67949",
+        "revCount": 215,
+        "type": "git",
+        "url": "file:///home/damathryxx64/repositories/i-have-adhd"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/damathryxx64/repositories/i-have-adhd"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -164,6 +180,7 @@
         "andrej-karpathy-skills": "andrej-karpathy-skills",
         "antigravity-superpowers": "antigravity-superpowers",
         "google-skills": "google-skills",
+        "i-have-adhd": "i-have-adhd",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2",
