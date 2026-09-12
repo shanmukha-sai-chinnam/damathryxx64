@@ -50,12 +50,17 @@
     echo "  cb                             → WSL bidirectional clipboard bridge (pipe to copy, bare to paste)"
     echo ""
   '';
+
+  dotsSyncSkills = pkgs.writeShellScriptBin "dots-sync-skills" ''
+    exec ${pkgs.python3}/bin/python3 /home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py "$@"
+  '';
 in {
   devShell = pkgs.mkShell {
     name = "damathryxx64-dots-devshell";
 
     packages = with pkgs; [
       helpNix
+      dotsSyncSkills
 
       # AI Agent Orchestration
       herdr
