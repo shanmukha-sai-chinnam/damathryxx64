@@ -12,7 +12,7 @@ Repository-wide guidance and operating constraints for Antigravity agents in thi
 - **Flake Entrypoint**: `flake.nix` defines the NixOS-WSL system (`nixosConfigurations.nixos`), development shells (`devShells.python`, `devShells.devops`), and the code formatter (`formatter.alejandra`).
 - **Core Configuration**: `modules/configuration.nix` orchestrates imported system modules.
 - **Module Architecture**:
-  - `modules/ai/`: Herdr, coding agent runtimes (Claude Code, Codex, Copilot CLI, OpenCode), Ollama, and `herdr-integrations.service`.
+  - `modules/ai/`: Herdr, coding agent runtimes (Claude Code, Codex, Copilot CLI, OpenCode), Ollama, `herdr-integrations.service`, declarative agent skills synchronizer (`skills.nix`), and `dots-sync-skills`.
   - `modules/development/`: Compilers, language runtimes (Python, Node, GCC, Clang, CMake, GnuMake), and Nix language servers (`nixd`).
   - `modules/fonts/`: System and monospace font packages (Cascadia Code, Fira Code nerd font).
   - `modules/mcp/`: Native Model Context Protocol servers (`mcp-nixos`, `github-mcp-server`, `mcp-server-git`, etc.).
@@ -40,6 +40,7 @@ Agents MUST load the relevant skill via `view_file` on its `SKILL.md` before per
 | **continuous-codebase-watching** | Setting up background verification, auto-formatting, and static analysis watchers during implementation. |
 | **executing-plans** | Executing a written implementation plan in Antigravity single-flow mode. |
 | **finishing-a-development-branch** | Implementation is complete, all tests pass, and you need to decide how to integrate the work. |
+| **karpathy-guidelines** | Enforce Think Before Coding, Simplicity First, Surgical Changes, and Goal-Driven Execution. |
 | **nix-code-audit** | Before committing Nix code or when auditing NixOS modules for code quality, formatting, dead declarations, and antipatterns. |
 | **nix-derivation-debugging** | Diagnosing failing Nix builds, compilation errors, missing shared libraries, or packaging issues. |
 | **nix-flake-management** | Creating, updating, auditing, or refactoring Nix flakes, inputs, overlays, devShells, or package outputs. |
