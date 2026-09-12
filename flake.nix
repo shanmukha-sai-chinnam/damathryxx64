@@ -23,7 +23,7 @@
       flake = false;
     };
     i-have-adhd = {
-      url = "git+file:///home/damathryxx64/repositories/i-have-adhd";
+      url = "github:shanmukha-sai-chinnam/i-have-adhd";
       flake = false;
     };
     nix-alien = {

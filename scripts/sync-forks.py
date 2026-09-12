@@ -941,9 +941,9 @@ def sync_active_skills_to_config():
                     if sk.is_dir() and (sk / "SKILL.md").exists():
                         declared_skills[sk.name] = sk
     if (g_path / "plugins").exists():
-        for pl in (g_path / "plugins").iterdir():
-            if pl.is_dir():
-                declared_plugins[pl.name] = pl
+        for pjson in (g_path / "plugins").rglob("plugin.json"):
+            pl = pjson.parent
+            declared_plugins[pl.name] = pl
 
     # 3. i-have-adhd
     adhd_path = WORKSPACE_ROOT / "i-have-adhd"

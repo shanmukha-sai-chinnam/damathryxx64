@@ -4,7 +4,6 @@
   antigravity-superpowers ? null,
   andrej-karpathy-skills ? null,
   google-skills ? null,
-  superpowers ? null,
   i-have-adhd ? null,
   ...
 }: let
@@ -76,12 +75,11 @@
       fi
 
       if [ -d "$GOOGLE_SRC/plugins" ]; then
-        for plugin in "$GOOGLE_SRC/plugins"/*; do
-          if [ -d "$plugin" ]; then
-            pname=$(basename "$plugin")
-            mkdir -p "$STAGING_PLUGINS/$pname"
-            cp -r "$plugin"/* "$STAGING_PLUGINS/$pname/"
-          fi
+        find "$GOOGLE_SRC/plugins" -type f -name "plugin.json" | while read -r pjson; do
+          pdir=$(dirname "$pjson")
+          pname=$(basename "$pdir")
+          mkdir -p "$STAGING_PLUGINS/$pname"
+          cp -r "$pdir"/* "$STAGING_PLUGINS/$pname/"
         done
       fi
     ''}
