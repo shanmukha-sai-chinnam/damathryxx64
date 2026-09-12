@@ -64,6 +64,14 @@ MANAGED_REPOS = [
         "flake_input": "superpowers",
         "main_branch": "main",
     },
+    {
+        "name": "NixOS-WSL",
+        "path": WORKSPACE_ROOT / "NixOS-WSL",
+        "fork_url": "https://github.com/shanmukha-sai-chinnam/NixOS-WSL.git",
+        "upstream_url": "https://github.com/nix-community/NixOS-WSL.git",
+        "flake_input": "nixos-wsl",
+        "main_branch": "main",
+    },
 ]
 
 
