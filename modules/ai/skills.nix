@@ -1,10 +1,7 @@
 {
   lib,
   pkgs,
-  antigravity-superpowers ? null,
-  andrej-karpathy-skills ? null,
-  google-skills ? null,
-  i-have-adhd ? null,
+  gemini-skills ? null,
   ...
 }: let
   syncForksScript = pkgs.writeShellScriptBin "dots-sync-skills" ''
@@ -39,29 +36,11 @@
     }
     trap cleanup EXIT
 
-    # ── 1. Stage Karpathy Guidelines ───────────────────────────────────────
-    ${lib.optionalString (andrej-karpathy-skills != null) ''
-      KARPATHY_SRC="${andrej-karpathy-skills}"
-      if [ -d "$KARPATHY_SRC/skills/karpathy-guidelines" ]; then
-        mkdir -p "$STAGING_SKILLS/karpathy-guidelines"
-        cp -r "$KARPATHY_SRC/skills/karpathy-guidelines"/* "$STAGING_SKILLS/karpathy-guidelines/"
-      fi
-
-      if [ -f "$KARPATHY_SRC/GEMINI.md" ]; then
-        cp "$KARPATHY_SRC/GEMINI.md" "$STAGING_RULES/karpathy-guidelines.md"
-      fi
-
-      if [ -d "$KARPATHY_SRC/plugins/karpathy-guidelines" ]; then
-        mkdir -p "$STAGING_PLUGINS/karpathy-guidelines"
-        cp -r "$KARPATHY_SRC/plugins/karpathy-guidelines"/* "$STAGING_PLUGINS/karpathy-guidelines/"
-      fi
-    ''}
-
-    # ── 2. Stage Google Skills & Plugins ───────────────────────────────────
-    ${lib.optionalString (google-skills != null) ''
-      GOOGLE_SRC="${google-skills}"
-      if [ -d "$GOOGLE_SRC/skills" ]; then
-        for cat in "$GOOGLE_SRC/skills"/*; do
+    # ── 1. Stage from Unified gemini-skills Hub ────────────────────────────
+    ${lib.optionalString (gemini-skills != null) ''
+      SKILLS_SRC="${gemini-skills}"
+      if [ -d "$SKILLS_SRC/skills" ]; then
+        for cat in "$SKILLS_SRC/skills"/*; do
           if [ -d "$cat" ]; then
             for skill in "$cat"/*; do
               if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
@@ -74,38 +53,16 @@
         done
       fi
 
-      if [ -d "$GOOGLE_SRC/plugins" ]; then
-        find "$GOOGLE_SRC/plugins" -type f -name "plugin.json" | while read -r pjson; do
-          pdir=$(dirname "$pjson")
-          pname=$(basename "$pdir")
-          mkdir -p "$STAGING_PLUGINS/$pname"
-          cp -r "$pdir"/* "$STAGING_PLUGINS/$pname/"
-        done
-      fi
-    ''}
-
-    # ── 3. Stage i-have-adhd ───────────────────────────────────────────────
-    ${lib.optionalString (i-have-adhd != null) ''
-      ADHD_SRC="${i-have-adhd}"
-      if [ -d "$ADHD_SRC/skills/i-have-adhd" ]; then
-        mkdir -p "$STAGING_SKILLS/i-have-adhd"
-        cp -r "$ADHD_SRC/skills/i-have-adhd"/* "$STAGING_SKILLS/i-have-adhd/"
+      if [ -d "$SKILLS_SRC/rules" ]; then
+        cp -r "$SKILLS_SRC/rules"/* "$STAGING_RULES/" 2>/dev/null || true
       fi
 
-      if [ -f "$ADHD_SRC/GEMINI.md" ]; then
-        cp "$ADHD_SRC/GEMINI.md" "$STAGING_RULES/i-have-adhd.md"
-      fi
-    ''}
-
-    # ── 4. Stage Antigravity Superpowers Skills (Authoritative Source) ─────
-    ${lib.optionalString (antigravity-superpowers != null) ''
-      SUPERPOWERS_CUSTOM_SRC="${antigravity-superpowers}"
-      if [ -d "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills" ]; then
-        for skill in "$SUPERPOWERS_CUSTOM_SRC/templates/.agents/skills"/*; do
-          if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
-            sname=$(basename "$skill")
-            mkdir -p "$STAGING_SKILLS/$sname"
-            cp -r "$skill"/* "$STAGING_SKILLS/$sname/"
+      if [ -d "$SKILLS_SRC/plugins" ]; then
+        for plugin in "$SKILLS_SRC/plugins"/*; do
+          if [ -d "$plugin" ] && [ -f "$plugin/plugin.json" ]; then
+            pname=$(basename "$plugin")
+            mkdir -p "$STAGING_PLUGINS/$pname"
+            cp -r "$plugin"/* "$STAGING_PLUGINS/$pname/"
           fi
         done
       fi
@@ -183,14 +140,40 @@ in {
     refreshSkillsScript
   ];
 
-  # Systemd user service to sync skills on login
-  systemd.user.services.agent-skills-sync = {
-    description = "Declarative synchronization of AI agent skills into ~/.gemini/config";
-    wantedBy = ["default.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = skillsSyncScript;
-      RemainAfterExit = true;
+  # Systemd user services and timers
+  systemd.user = {
+    services.agent-skills-sync = {
+      description = "Declarative synchronization of AI agent skills into ~/.gemini/config";
+      wantedBy = ["default.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = skillsSyncScript;
+        RemainAfterExit = true;
+      };
+    };
+
+    services.agent-skills-daily-sync = {
+      description = "Daily synchronization and verification of agent skills from upstreams";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.writeShellScript "daily-skills-sync" ''
+          set -eu
+          export PATH="${pkgs.lib.makeBinPath (with pkgs; [git python3 coreutils nix])}:$PATH"
+          SKILLS_REPO="/home/damathryxx64/repositories/skills"
+          if [ -d "$SKILLS_REPO" ] && [ -f "$SKILLS_REPO/scripts/sync-upstreams.py" ]; then
+            ${pkgs.python3}/bin/python3 "$SKILLS_REPO/scripts/sync-upstreams.py" daily || true
+          fi
+        ''}";
+      };
+    };
+
+    timers.agent-skills-daily-sync = {
+      description = "Run agent skills upstream sync daily";
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnCalendar = "daily";
+        Persistent = true;
+      };
     };
   };
 

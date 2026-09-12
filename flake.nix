@@ -10,20 +10,8 @@
       url = "github:shanmukha-sai-chinnam/antigravity-superpowers";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    andrej-karpathy-skills = {
-      url = "github:shanmukha-sai-chinnam/andrej-karpathy-skills";
-      flake = false;
-    };
-    google-skills = {
+    gemini-skills = {
       url = "github:shanmukha-sai-chinnam/skills";
-      flake = false;
-    };
-    superpowers = {
-      url = "github:shanmukha-sai-chinnam/superpowers";
-      flake = false;
-    };
-    i-have-adhd = {
-      url = "github:shanmukha-sai-chinnam/i-have-adhd";
       flake = false;
     };
     nix-alien = {
@@ -38,10 +26,7 @@
     nixos-wsl,
     nix-index-database,
     antigravity-superpowers,
-    andrej-karpathy-skills,
-    google-skills,
-    superpowers,
-    i-have-adhd,
+    gemini-skills,
     nix-alien,
     ...
   }: let
@@ -66,10 +51,7 @@
         specialArgs = {
           inherit
             antigravity-superpowers
-            andrej-karpathy-skills
-            google-skills
-            superpowers
-            i-have-adhd
+            gemini-skills
             nix-alien
             hostName
             userName

@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "andrej-karpathy-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789226329,
-        "narHash": "sha256-dAafDUA0VIoV8R/YmGuQ8VVRj703UEGU1FtuKMC90TQ=",
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "andrej-karpathy-skills",
-        "rev": "1c22dce1ac3737c30ad66f00ded45e65191e664e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "andrej-karpathy-skills",
-        "type": "github"
-      }
-    },
     "antigravity-superpowers": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -86,35 +70,19 @@
         "type": "github"
       }
     },
-    "google-skills": {
+    "gemini-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789232244,
-        "narHash": "sha256-4HQLR8eSUL8Z9kTbRBC5k08+mDF2hgRgyMQUWLvaa40=",
+        "lastModified": 1789233687,
+        "narHash": "sha256-1RFOoX33FTPQO9AzL6v1/riSLinHApTGlnBQ8UAcA+M=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "5f38b210cafb738288410776d10b4054bacb634d",
+        "rev": "97062b91bc8f870240a0cab04695a1d1451994f8",
         "type": "github"
       },
       "original": {
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "type": "github"
-      }
-    },
-    "i-have-adhd": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789226329,
-        "narHash": "sha256-5DXZD8bXbfRt3aJjfipWNC9Eq6F8jirTpNrgRCA/XBg=",
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "i-have-adhd",
-        "rev": "10b61857d00e673cab36ef7a92a96caeaa7829bf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "i-have-adhd",
         "type": "github"
       }
     },
@@ -216,31 +184,12 @@
     },
     "root": {
       "inputs": {
-        "andrej-karpathy-skills": "andrej-karpathy-skills",
         "antigravity-superpowers": "antigravity-superpowers",
-        "google-skills": "google-skills",
-        "i-have-adhd": "i-have-adhd",
+        "gemini-skills": "gemini-skills",
         "nix-alien": "nix-alien",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_2",
-        "superpowers": "superpowers"
-      }
-    },
-    "superpowers": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789232099,
-        "narHash": "sha256-b+VrbB/S6d4sXN9J4Juxwgz0j3XFA0EaOvBGlcP3Xhw=",
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "superpowers",
-        "rev": "c516666b6cc565734519611fe6acadf6bd6d272c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "shanmukha-sai-chinnam",
-        "repo": "superpowers",
-        "type": "github"
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "systems": {

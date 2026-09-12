@@ -33,6 +33,14 @@ DOTS_REPO = WORKSPACE_ROOT / "damathryxx64"
 
 MANAGED_REPOS = [
     {
+        "name": "skills",
+        "path": WORKSPACE_ROOT / "skills",
+        "fork_url": "https://github.com/shanmukha-sai-chinnam/skills.git",
+        "upstream_url": "https://github.com/google/skills.git",
+        "flake_input": "gemini-skills",
+        "main_branch": "main",
+    },
+    {
         "name": "antigravity-superpowers",
         "path": WORKSPACE_ROOT / "antigravity-superpowers",
         "fork_url": "https://github.com/shanmukha-sai-chinnam/antigravity-superpowers.git",
@@ -41,43 +49,11 @@ MANAGED_REPOS = [
         "main_branch": "main",
     },
     {
-        "name": "andrej-karpathy-skills",
-        "path": WORKSPACE_ROOT / "andrej-karpathy-skills",
-        "fork_url": "https://github.com/shanmukha-sai-chinnam/andrej-karpathy-skills.git",
-        "upstream_url": "https://github.com/forrestchang/andrej-karpathy-skills.git",
-        "flake_input": "andrej-karpathy-skills",
-        "main_branch": "main",
-    },
-    {
-        "name": "skills",
-        "path": WORKSPACE_ROOT / "skills",
-        "fork_url": "https://github.com/shanmukha-sai-chinnam/skills.git",
-        "upstream_url": "https://github.com/google/skills.git",
-        "flake_input": "google-skills",
-        "main_branch": "main",
-    },
-    {
-        "name": "superpowers",
-        "path": WORKSPACE_ROOT / "superpowers",
-        "fork_url": "https://github.com/shanmukha-sai-chinnam/superpowers.git",
-        "upstream_url": "https://github.com/obra/superpowers.git",
-        "flake_input": "superpowers",
-        "main_branch": "main",
-    },
-    {
         "name": "NixOS-WSL",
         "path": WORKSPACE_ROOT / "NixOS-WSL",
         "fork_url": "https://github.com/shanmukha-sai-chinnam/NixOS-WSL.git",
         "upstream_url": "https://github.com/nix-community/NixOS-WSL.git",
         "flake_input": "nixos-wsl",
-        "main_branch": "main",
-    },
-    {
-        "name": "i-have-adhd",
-        "path": WORKSPACE_ROOT / "i-have-adhd",
-        "fork_url": "https://github.com/shanmukha-sai-chinnam/i-have-adhd.git",
-        "upstream_url": "https://github.com/ayghri/i-have-adhd.git",
-        "flake_input": "i-have-adhd",
         "main_branch": "main",
     },
 ]
@@ -923,41 +899,22 @@ def sync_active_skills_to_config():
     declared_rules = {}
     declared_plugins = {}
 
-    # 1. Karpathy Guidelines
-    k_path = WORKSPACE_ROOT / "andrej-karpathy-skills"
-    if (k_path / "skills" / "karpathy-guidelines").exists():
-        declared_skills["karpathy-guidelines"] = k_path / "skills" / "karpathy-guidelines"
-    if (k_path / "GEMINI.md").exists():
-        declared_rules["karpathy-guidelines.md"] = k_path / "GEMINI.md"
-    if (k_path / "plugins" / "karpathy-guidelines").exists():
-        declared_plugins["karpathy-guidelines"] = k_path / "plugins" / "karpathy-guidelines"
-
-    # 2. Google Skills & Plugins
-    g_path = WORKSPACE_ROOT / "skills"
-    if (g_path / "skills").exists():
-        for cat in (g_path / "skills").iterdir():
+    # Stage from unified skills repository
+    s_path = WORKSPACE_ROOT / "skills"
+    if (s_path / "skills").exists():
+        for cat in (s_path / "skills").iterdir():
             if cat.is_dir():
                 for sk in cat.iterdir():
                     if sk.is_dir() and (sk / "SKILL.md").exists():
                         declared_skills[sk.name] = sk
-    if (g_path / "plugins").exists():
-        for pjson in (g_path / "plugins").rglob("plugin.json"):
-            pl = pjson.parent
-            declared_plugins[pl.name] = pl
-
-    # 3. i-have-adhd
-    adhd_path = WORKSPACE_ROOT / "i-have-adhd"
-    if (adhd_path / "skills" / "i-have-adhd").exists():
-        declared_skills["i-have-adhd"] = adhd_path / "skills" / "i-have-adhd"
-    if (adhd_path / "GEMINI.md").exists():
-        declared_rules["i-have-adhd.md"] = adhd_path / "GEMINI.md"
-
-    # 4. Antigravity Superpowers (Authoritative for all superpowers & system skills)
-    asp_path = WORKSPACE_ROOT / "antigravity-superpowers" / "templates" / ".agents" / "skills"
-    if asp_path.exists():
-        for sk in asp_path.iterdir():
-            if sk.is_dir() and (sk / "SKILL.md").exists():
-                declared_skills[sk.name] = sk
+    if (s_path / "rules").exists():
+        for rf in (s_path / "rules").iterdir():
+            if rf.is_file() and rf.suffix == ".md":
+                declared_rules[rf.name] = rf
+    if (s_path / "plugins").exists():
+        for pl in (s_path / "plugins").iterdir():
+            if pl.is_dir() and (pl / "plugin.json").exists():
+                declared_plugins[pl.name] = pl
 
     # Prune orphan/foreign skills from skills_dir
     pruned_skills = 0
