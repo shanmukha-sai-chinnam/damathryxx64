@@ -36,7 +36,7 @@ MANAGED_REPOS = [
         "name": "skills",
         "path": WORKSPACE_ROOT / "skills",
         "fork_url": "https://github.com/shanmukha-sai-chinnam/skills.git",
-        "upstream_url": "https://github.com/google/skills.git",
+        "upstream_url": None,  # Multi-upstream hub managed via scripts/sync-upstreams.py
         "flake_input": "gemini-skills",
         "main_branch": "main",
     },
@@ -332,7 +332,7 @@ def ensure_remotes(repo):
     remotes = run_cmd(["git", "remote"], cwd=path).stdout.split()
     if "origin" not in remotes:
         run_cmd(["git", "remote", "add", "origin", repo["fork_url"]], cwd=path)
-    if "upstream" not in remotes:
+    if "upstream" not in remotes and repo.get("upstream_url"):
         run_cmd(["git", "remote", "add", "upstream", repo["upstream_url"]], cwd=path)
 
 
@@ -367,16 +367,19 @@ def cmd_status():
         head_msg = run_cmd(["git", "log", "-1", "--format=%s"], cwd=path).stdout.strip()
 
         # Upstream status
-        try:
-            ahead_behind = run_cmd(
-                ["git", "rev-list", "--left-right", "--count", f"HEAD...upstream/{repo['main_branch']}"],
-                cwd=path,
-            ).stdout.strip().split()
-            ahead_up = ahead_behind[0]
-            behind_up = ahead_behind[1]
-            upstream_diff = f"{GREEN}+{ahead_up}{RESET} / {RED}-{behind_up}{RESET} vs upstream/{repo['main_branch']}"
-        except Exception:
-            upstream_diff = f"{YELLOW}upstream not fetched yet{RESET}"
+        if repo.get("upstream_url"):
+            try:
+                ahead_behind = run_cmd(
+                    ["git", "rev-list", "--left-right", "--count", f"HEAD...upstream/{repo['main_branch']}"],
+                    cwd=path,
+                ).stdout.strip().split()
+                ahead_up = ahead_behind[0]
+                behind_up = ahead_behind[1]
+                upstream_diff = f"{GREEN}+{ahead_up}{RESET} / {RED}-{behind_up}{RESET} vs upstream/{repo['main_branch']}"
+            except Exception:
+                upstream_diff = f"{YELLOW}upstream not fetched yet{RESET}"
+        else:
+            upstream_diff = f"{GREEN}Multi-Upstream Hub (Superpowers, Karpathy, ADHD){RESET}"
 
         # Origin status
         try:
@@ -414,7 +417,10 @@ def cmd_fetch():
         print(f"  Fetching {CYAN}{repo['name']}{RESET}...")
         ensure_remotes(repo)
         run_cmd(["git", "fetch", "origin", "--quiet"], cwd=path)
-        run_cmd(["git", "fetch", "upstream", "--quiet"], cwd=path)
+        if repo.get("upstream_url"):
+            run_cmd(["git", "fetch", "upstream", "--quiet"], cwd=path)
+        elif (path / "scripts" / "sync-upstreams.py").exists():
+            run_cmd(["python3", "scripts/sync-upstreams.py", "fetch"], cwd=path, capture=True)
     print(f"{GREEN}✓ All remotes fetched successfully.{RESET}\n")
 
 
@@ -428,6 +434,12 @@ def cmd_sync():
         name = repo["name"]
         branch = repo["main_branch"]
         print(f"  Checking {CYAN}{name}{RESET}...")
+
+        if not repo.get("upstream_url"):
+            if (path / "scripts" / "sync-upstreams.py").exists():
+                print(f"    Running multi-upstream sync engine for {name}...")
+                run_cmd(["python3", "scripts/sync-upstreams.py", "sync"], cwd=path, capture=True)
+            continue
 
         # Check if behind upstream
         behind_count = int(
