@@ -2,25 +2,26 @@
 """
 sync-forks.py (dots-sync-skills)
 
-Comprehensive management & synchronization workflow for AI agent skill fork repositories:
-- antigravity-superpowers (upstream: skainguyen1412/antigravity-superpowers)
-- andrej-karpathy-skills (upstream: forrestchang/andrej-karpathy-skills)
-- skills (upstream: google/skills)
+Central CLI orchestrator for AI agent skills and managed repositories in damathryxx64:
+- skills (Unified Gemini & Antigravity skills hub)
+- antigravity-superpowers (CLI package derivation provider)
+- NixOS-WSL (NixOS WSL distro builder)
 
-Integrated with damathryxx64 Nix flake pins and Antigravity specifications.
+Maintains zero drift across Git remotes, Nix flakes, and ~/.gemini/config/.
 """
 
 import argparse
 import json
 import os
+from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
-from pathlib import Path
 
-# ANSI color codes
-RESET = "\033[0m"
+# Terminal Colors
 BOLD = "\033[1m"
+RESET = "\033[0m"
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
 BLUE = "\033[34m"
@@ -30,6 +31,7 @@ GRAY = "\033[90m"
 
 WORKSPACE_ROOT = Path("/home/damathryxx64/repositories")
 DOTS_REPO = WORKSPACE_ROOT / "damathryxx64"
+CONFIG_DIR = Path.home() / ".gemini" / "config"
 
 MANAGED_REPOS = [
     {
@@ -72,12 +74,6 @@ FOREIGN_DIR_NAMES = {
     ".qoder",
     ".kiro",
     ".windsurf",
-    "pi-extension",
-    ".openclaw",
-    ".claude",
-    ".copilot",
-    ".zed",
-    "explicit-skill-requests",
     "__pycache__",
 }
 
@@ -91,239 +87,49 @@ FOREIGN_EXACT_FILES = {
     "cursor-skill-sync.yml",
     "claude.yml",
     "pi-load-check.yml",
-    "test_opencode_plugin.py",
-    "opencode_plugin_driver.mjs",
-    "check_pi_extension.py",
-    "package-codex-plugin.sh",
-    "sync-to-codex-plugin.sh",
-    "README.opencode.md",
-    "README.kimi.md",
-    "2025-11-22-opencode-support-design.md",
-    "2025-11-22-opencode-support-implementation.md",
-    "hermes-tools.md",
-    "codex-tools.md",
-    "anthropic-best-practices.md",
-    "CLAUDE_MD_TESTING.md",
-    "claude-suggested-it.txt",
-    "cursor.md",
-    "claude_code.md",
-    "github_copilot.md",
-    "other_agents.md",
-    "copilot-instructions.md",
-    "claude-codex-hooks.json",
-    "copilot-hooks.json",
-    "qoder-hooks.json",
-    "devin.json",
-    "hermes.json",
-    "2026-07-30-codex-efficiency-fixes-design.md",
-    "2026-08-05-hermes-version-bump-wiring-design.md",
-    "2026-03-23-codex-app-compatibility-design.md",
-    "2026-07-30-codex-efficiency-fixes.md",
-    "2026-08-06-hermes-version-bump-wiring.md",
-    "2026-03-23-codex-app-compatibility.md",
 }
-
-FOREIGN_REL_PATHS = [
-    "tests/devin",
-    "tests/claude-code",
-    "tests/hermes",
-    "tests/kimi",
-    "tests/opencode",
-    "tests/codex",
-    "tests/codex-plugin-sync",
-    "tests/explicit-skill-requests",
-    "hooks/hooks-cursor.json",
-    "skills/cloud/firebase-basics/references/refresh/claude.md",
-    "docs/superpowers/specs/2026-07-30-codex-efficiency-fixes-design.md",
-    "docs/superpowers/specs/2026-08-05-hermes-version-bump-wiring-design.md",
-    "docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md",
-    "docs/superpowers/plans/2026-07-30-codex-efficiency-fixes.md",
-    "docs/superpowers/plans/2026-08-06-hermes-version-bump-wiring.md",
-    "docs/superpowers/plans/2026-03-23-codex-app-compatibility.md",
-]
-
-# Skills in superpowers that are already maintained natively in antigravity-superpowers
-SUPERPOWERS_SUPERSEDED_SKILLS = {
-    "brainstorming",
-    "executing-plans",
-    "finishing-a-development-branch",
-    "receiving-code-review",
-    "requesting-code-review",
-    "systematic-debugging",
-    "test-driven-development",
-    "using-git-worktrees",
-    "using-superpowers",
-    "verification-before-completion",
-    "writing-plans",
-    "writing-skills",
-}
-
-# Skills in superpowers that rely on phantom subagents (incompatible with Antigravity single-flow)
-SUPERPOWERS_INCOMPATIBLE_SKILLS = {
-    "dispatching-parallel-agents",
-    "subagent-driven-development",
-}
-
-
-def classify_upstream_file(repo_name, rel_path, status):
-    """
-    Classify an incoming file from upstream into triage categories:
-      - PURGE: Foreign provider baggage (delete immediately)
-      - INCOMPATIBLE: Incompatible subagent skills (purge/exclude from Antigravity)
-      - SUPERSEDED: Skills maintained natively in antigravity-superpowers
-      - ADAPT: Skill markdown requiring native Antigravity/Gemini tools
-      - VALIDATE: Scripts/manifests requiring validation tests
-    """
-    p = Path(rel_path)
-    parts = p.parts
-    filename = p.name
-
-    # 1. Exact foreign directories or exact files
-    if any(part in FOREIGN_DIR_NAMES for part in parts) or filename in FOREIGN_EXACT_FILES:
-        return "PURGE", f"{RED}DELETE{RESET}", "Foreign provider platform baggage"
-
-    # 2. Foreign keyword patterns in path
-    lower_path = rel_path.lower()
-    for kw in ["claude", "codex", "hermes", "cursor", "kimi", "opencode", "devin", "qoder", "kiro", "windsurf"]:
-        if kw in lower_path:
-            return "PURGE", f"{RED}DELETE{RESET}", f"Foreign provider '{kw}' artifact"
-
-    # 3. Superpowers-specific skill triage
-    if repo_name == "superpowers" and len(parts) >= 2 and parts[0] == "skills":
-        skill_name = parts[1]
-        if skill_name in SUPERPOWERS_INCOMPATIBLE_SKILLS:
-            return "INCOMPATIBLE", f"{RED}PURGE{RESET}", "Phantom subagent skill (Antigravity uses single-flow-task-execution)"
-        if skill_name in SUPERPOWERS_SUPERSEDED_SKILLS:
-            return "SUPERSEDED", f"{YELLOW}SUPERSEDED{RESET}", "Maintained natively in antigravity-superpowers (authoritative)"
-
-    # 4. Skill markdown files
-    if p.suffix == ".md":
-        return "ADAPT", f"{CYAN}ADAPT{RESET}", "Prompt update (enforce native Antigravity/Gemini tools)"
-
-    # 5. Executable code / manifests / nix
-    return "VALIDATE", f"{GREEN}VALIDATE{RESET}", "Script/manifest (run syntax & test checks)"
-
-
-def audit_upstream_commits(repo, behind_count=None, max_commits=5):
-    """
-    Audit upstream commits and changed files for a repository.
-    Returns dict of categorized files: {"purge": [...], "incompatible": [...], "superseded": [...], "adapt": [...], "validate": [...]}
-    """
-    path = repo["path"]
-    name = repo["name"]
-    branch = repo["main_branch"]
-
-    results = {
-        "purge": [],
-        "incompatible": [],
-        "superseded": [],
-        "adapt": [],
-        "validate": [],
-    }
-
-    if not path.exists():
-        return results
-
-    ensure_remotes(repo)
-
-    if behind_count is None:
-        try:
-            behind_count = int(
-                run_cmd(["git", "rev-list", "--count", f"HEAD..upstream/{branch}"], cwd=path).stdout.strip()
-            )
-        except Exception:
-            behind_count = 0
-
-    if behind_count > 0:
-        rev_range = f"HEAD..upstream/{branch}"
-        commit_count = behind_count
-    else:
-        rev_range = f"upstream/{branch}~{max_commits}..upstream/{branch}"
-        commit_count = max_commits
-
-    try:
-        commits_raw = run_cmd(
-            ["git", "log", "--oneline", "-n", str(commit_count), rev_range], cwd=path
-        ).stdout.strip().splitlines()
-    except Exception:
-        commits_raw = []
-
-    try:
-        diff_raw = run_cmd(
-            ["git", "diff", "--name-status", rev_range], cwd=path
-        ).stdout.strip().splitlines()
-    except Exception:
-        diff_raw = []
-
-    print(f"\n{BOLD}{CYAN}┌── Upstream Commit Audit:{RESET} {BOLD}{name}{RESET} ({CYAN}{len(commits_raw)} commit(s){RESET} in {rev_range})")
-    if commits_raw:
-        print(f"{CYAN}│{RESET} {BOLD}Incoming Commits:{RESET}")
-        for c in commits_raw[:8]:
-            print(f"{CYAN}│{RESET}   • {c}")
-        if len(commits_raw) > 8:
-            print(f"{CYAN}│{RESET}   ... and {len(commits_raw) - 8} more commits.")
-
-    if diff_raw:
-        print(f"{CYAN}│{RESET} {BOLD}File Triage & Action Analysis ({len(diff_raw)} files changed):{RESET}")
-        for line in diff_raw:
-            parts = line.split(maxsplit=1)
-            if len(parts) != 2:
-                continue
-            status, rel_file = parts[0], parts[1]
-            cat, action_str, reason = classify_upstream_file(name, rel_file, status)
-            results[cat.lower()].append(rel_file)
-            print(f"{CYAN}│{RESET}   [{action_str}] {status} {rel_file} → {GRAY}{reason}{RESET}")
-    else:
-        print(f"{CYAN}│{RESET}   {GREEN}No file differences detected.{RESET}")
-
-    print(f"{BOLD}{CYAN}└── Summary:{RESET} {RED}{len(results['purge'])} to purge{RESET}, "
-          f"{YELLOW}{len(results['incompatible'])} incompatible subagent skills{RESET}, "
-          f"{CYAN}{len(results['superseded'])} superseded{RESET}, "
-          f"{BLUE}{len(results['adapt'])} to adapt{RESET}, "
-          f"{GREEN}{len(results['validate'])} to validate{RESET}\n")
-
-    return results
 
 
 def run_cmd(cmd, cwd=None, check=True, capture=True):
-    """Run a shell command and return CompletedProcess."""
-    res = subprocess.run(
-        cmd,
-        cwd=str(cwd) if cwd else None,
-        shell=isinstance(cmd, str),
-        text=True,
-        stdout=subprocess.PIPE if capture else None,
-        stderr=subprocess.PIPE if capture else None,
-    )
-    if check and res.returncode != 0:
-        err = res.stderr.strip() if res.stderr else "Unknown error"
-        print(f"{RED}Error executing command:{RESET} {cmd}\n{RED}{err}{RESET}")
-        raise subprocess.CalledProcessError(res.returncode, cmd, res.stdout, res.stderr)
-    return res
+    """Run shell command with robust error and output handling."""
+    try:
+        res = subprocess.run(
+            cmd,
+            cwd=cwd,
+            check=check,
+            text=True,
+            stdout=subprocess.PIPE if capture else None,
+            stderr=subprocess.PIPE if capture else None,
+        )
+        return res
+    except subprocess.CalledProcessError as e:
+        if capture and e.stderr:
+            print(f"{RED}Command failed: {' '.join(cmd)}{RESET}\n{e.stderr.strip()}", file=sys.stderr)
+        raise
 
 
 def get_flake_lock_revisions():
-    """Read pinned revisions from damathryxx64/flake.lock."""
-    lock_path = DOTS_REPO / "flake.lock"
-    if not lock_path.exists():
+    """Extract pinned git revisions from damathryxx64/flake.lock."""
+    lock_file = DOTS_REPO / "flake.lock"
+    if not lock_file.exists():
         return {}
     try:
-        with open(lock_path, "r", encoding="utf-8") as f:
+        with open(lock_file, "r", encoding="utf-8") as f:
             data = json.load(f)
         nodes = data.get("nodes", {})
-        revs = {}
-        for node_name, node_info in nodes.items():
-            locked = node_info.get("locked", {})
+        revisions = {}
+        for input_name, node_data in nodes.items():
+            locked = node_data.get("locked", {})
             if "rev" in locked:
-                revs[node_name] = locked["rev"]
-        return revs
+                revisions[input_name] = locked["rev"]
+        return revisions
     except Exception as e:
-        print(f"{YELLOW}Warning reading flake.lock:{RESET} {e}")
+        print(f"{YELLOW}Warning parsing flake.lock:{RESET} {e}")
         return {}
 
 
 def ensure_remotes(repo):
-    """Ensure origin and upstream remotes exist."""
+    """Ensure origin and upstream remotes exist for a managed repository."""
     path = repo["path"]
     if not path.exists():
         print(f"{YELLOW}Cloning {repo['name']} from {repo['fork_url']}...{RESET}")
@@ -425,8 +231,7 @@ def cmd_fetch():
 
 
 def cmd_sync():
-    """Sync and merge upstream commits into our fork branches with commit auditing & triage."""
-    import shutil
+    """Sync and merge upstream commits into managed repositories."""
     cmd_fetch()
     print(f"{BOLD}{BLUE}Synchronizing with upstream...{RESET}")
     for repo in MANAGED_REPOS:
@@ -438,7 +243,7 @@ def cmd_sync():
         if not repo.get("upstream_url"):
             if (path / "scripts" / "sync-upstreams.py").exists():
                 print(f"    Running multi-upstream sync engine for {name}...")
-                run_cmd(["python3", "scripts/sync-upstreams.py", "sync"], cwd=path, capture=True)
+                run_cmd(["python3", "scripts/sync-upstreams.py", "sync"], cwd=path, capture=False)
             continue
 
         # Check if behind upstream
@@ -450,10 +255,7 @@ def cmd_sync():
             print(f"    {GREEN}✓ Already up-to-date with upstream/{branch}.{RESET}")
             continue
 
-        print(f"    {YELLOW}Found {behind_count} upstream commit(s). Auditing changes...{RESET}")
-        audit = audit_upstream_commits(repo, behind_count=behind_count)
-
-        print(f"    Merging upstream/{branch}...")
+        print(f"    {YELLOW}Found {behind_count} upstream commit(s). Merging upstream/{branch}...{RESET}")
         try:
             run_cmd(
                 ["git", "merge", f"upstream/{branch}", "-m", f"sync: merge upstream/{branch} into {branch}"],
@@ -464,38 +266,87 @@ def cmd_sync():
             print(f"    {RED}Merge conflict detected in {name}! Manual resolution required.{RESET}")
             sys.exit(1)
 
-        # Immediately purge audited foreign baggage and incompatible subagent files
-        for rel in audit["purge"] + audit["incompatible"]:
-            target = path / rel
-            if target.exists():
-                if target.is_dir():
-                    shutil.rmtree(target, ignore_errors=True)
-                else:
-                    try:
-                        target.unlink()
-                    except OSError:
-                        pass
-                print(f"    {RED}✗ Purged foreign artifact:{RESET} {rel}")
-
     print(f"\n{GREEN}✓ Upstream synchronization complete.{RESET}\n")
-
-    # Always purge foreign providers & enforce Antigravity/Gemini immediately after sync
     cmd_rewrite()
 
 
-def cmd_audit_upstream():
-    """Audit recent upstream commits across all managed repositories without merging."""
-    print(f"\n{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}")
-    print(f"{BOLD}{CYAN} Upstream Commit & File Triage Audit (Antigravity & Gemini Matrix){RESET}")
-    print(f"{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}\n")
-    cmd_fetch()
-    for repo in MANAGED_REPOS:
-        audit_upstream_commits(repo, max_commits=5)
+def cmd_rewrite():
+    """Purge foreign provider configurations and enforce Antigravity / Gemini formats."""
+    print(f"\n{BOLD}{BLUE}Purging non-Antigravity/non-Gemini providers & rewriting forks...{RESET}")
 
+    for repo in MANAGED_REPOS:
+        path = repo["path"]
+        name = repo["name"]
+        if not path.exists() or name == "NixOS-WSL":
+            continue
+
+        print(f"  Processing {CYAN}{name}{RESET}...")
+
+        # Walk repository and purge foreign dirs and files (excluding .git)
+        for root, dirs, files in os.walk(path, topdown=True):
+            if ".git" in dirs:
+                dirs.remove(".git")
+            if "node_modules" in dirs:
+                dirs.remove("node_modules")
+
+            for d in list(dirs):
+                if d in FOREIGN_DIR_NAMES:
+                    shutil.rmtree(Path(root) / d, ignore_errors=True)
+                    dirs.remove(d)
+
+            for f in files:
+                if f in FOREIGN_EXACT_FILES:
+                    try:
+                        (Path(root) / f).unlink()
+                    except OSError:
+                        pass
+
+        # Text normalizations for Antigravity & Gemini
+        scan_extensions = [".md", ".json", ".sh", ".yaml", ".yml"]
+        for ext in scan_extensions:
+            for mf in path.rglob(f"*{ext}"):
+                if ".git" in mf.parts or "node_modules" in mf.parts:
+                    continue
+                try:
+                    content = mf.read_text(encoding="utf-8", errors="replace")
+                except Exception:
+                    continue
+
+                orig = content
+                content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
+                content = content.replace("Claude Code", "Antigravity CLI")
+                content = content.replace("claude-code", "antigravity-cli")
+                content = content.replace("Claude Desktop", "Antigravity IDE")
+                content = content.replace("OpenCode", "Antigravity CLI")
+                content = content.replace("opencode", "antigravity-cli")
+                content = content.replace("Hermes Agent", "Antigravity Agent")
+                content = content.replace("Devin CLI", "Antigravity CLI")
+                content = content.replace("Kimi Code CLI", "Antigravity CLI")
+                content = content.replace("Qwen Code", "Antigravity CLI")
+                content = content.replace("claude plugin install", "agy plugin install")
+                content = content.replace("CLAUDE.md", "AGENTS.md")
+                content = content.replace("CURSOR.md", "AGENTS.md")
+
+                if content != orig:
+                    mf.write_text(content, encoding="utf-8")
+
+        # Check git status and auto-commit changes
+        dirty = run_cmd(["git", "status", "--porcelain"], cwd=path).stdout.strip()
+        if dirty:
+            run_cmd(["git", "add", "-A"], cwd=path)
+            run_cmd(
+                ["git", "commit", "-m", "chore(provider-cleanup): purge foreign providers, adapt to Antigravity & Gemini format"],
+                cwd=path,
+            )
+            print(f"    {GREEN}✓ Cleaned and committed Antigravity/Gemini adaptations in {name}.{RESET}")
+        else:
+            print(f"    {GREEN}✓ Already compliant with Antigravity/Gemini specifications.{RESET}")
+
+    print(f"\n{GREEN}✓ Provider clean & rewrite completed.{RESET}\n")
 
 
 def cmd_audit():
-    """Audit skill frontmatter and metadata for Antigravity standards."""
+    """Audit all skills for YAML frontmatter and Antigravity compliance."""
     print(f"\n{BOLD}{BLUE}Auditing Skills for Antigravity Guidelines...{RESET}")
     total_skills = 0
     passed_skills = 0
@@ -503,16 +354,14 @@ def cmd_audit():
 
     for repo in MANAGED_REPOS:
         path = repo["path"]
-        if not path.exists():
+        if not path.exists() or repo["name"] == "NixOS-WSL":
             continue
 
-        skill_files = list(path.rglob("SKILL.md"))
-        for sf in skill_files:
+        for sf in path.rglob("SKILL.md"):
             total_skills += 1
             rel = sf.relative_to(WORKSPACE_ROOT)
             content = sf.read_text(encoding="utf-8", errors="replace")
 
-            # Validate Frontmatter
             fm_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
             if not fm_match:
                 warnings.append(f"{RED}[MISSING FRONTMATTER]{RESET} {rel}")
@@ -527,27 +376,18 @@ def cmd_audit():
             elif not re.match(r"^[a-zA-Z0-9_-]+$", name_match.group(1).strip()):
                 warnings.append(f"{YELLOW}[INVALID NAME FORMAT]{RESET} {rel}: {name_match.group(1)}")
 
-            if not desc_match:
+            if not desc_match or not desc_match.group(1).strip():
                 warnings.append(f"{RED}[MISSING DESCRIPTION]{RESET} {rel}")
             else:
-                desc_text = desc_match.group(1).strip()
-                if not desc_text:
-                    warnings.append(f"{RED}[EMPTY DESCRIPTION]{RESET} {rel}")
-                elif not desc_text.startswith("Use when") and not desc_text.startswith(">-"):
-                    # Informational suggestion
-                    pass
-
-            passed_skills += 1
+                passed_skills += 1
 
     print(f"  Scanned {total_skills} skills across repositories.")
     if warnings:
         print(f"  {YELLOW}Found {len(warnings)} issue(s):{RESET}")
         for w in warnings[:15]:
             print(f"    {w}")
-        if len(warnings) > 15:
-            print(f"    ... and {len(warnings) - 15} more.")
     else:
-        print(f"  {GREEN}✓ All {total_skills} skills passed frontmatter integrity checks.{RESET}\n")
+        print(f"  {GREEN}✓ All {passed_skills} skills passed frontmatter integrity checks.{RESET}\n")
 
 
 def cmd_push():
@@ -581,327 +421,29 @@ def cmd_bump_flake():
     print(f"  Running: {GRAY}{' '.join(cmd)}{RESET}")
     try:
         run_cmd(cmd, cwd=DOTS_REPO, capture=False)
-        print(f"{GREEN}✓ Flake lockfile successfully updated.{RESET}\n")
+        print(f"\n{GREEN}✓ Flake inputs updated and committed successfully.{RESET}\n")
     except Exception as e:
-        print(f"{RED}Failed to update flake inputs:{RESET} {e}")
-        # Try without --commit-lock-file if working tree had changes
-        run_cmd(["nix", "flake", "update"] + inputs, cwd=DOTS_REPO, capture=False)
-        print(f"{GREEN}✓ Flake lockfile updated (uncommitted).{RESET}\n")
+        print(f"\n{RED}Failed to bump flake inputs:{RESET} {e}\n")
 
 
 def cmd_validate():
-    """Format and validate damathryxx64 flake."""
-    print(f"\n{BOLD}{BLUE}Validating damathryxx64 flake...{RESET}")
-    print("  Formatting Nix expressions...")
-    run_cmd(["nix", "fmt", "--", "."], cwd=DOTS_REPO, capture=False)
-    print("  Running statix analysis...")
-    run_cmd(["statix", "check", "."], cwd=DOTS_REPO, capture=False)
-    print("  Running nix flake check --impure...")
-    run_cmd(["nix", "flake", "check", "--impure"], cwd=DOTS_REPO, capture=False)
-    print(f"{GREEN}✓ Flake validation completed successfully.{RESET}\n")
-
-
-def cmd_rewrite():
-    """Purge foreign provider configurations and enforce Antigravity / Gemini formats."""
-    import shutil
-
-    print(f"\n{BOLD}{BLUE}Purging non-Antigravity/non-Gemini providers & rewriting forks...{RESET}")
-
-    for repo in MANAGED_REPOS:
-        path = repo["path"]
-        name = repo["name"]
-        if not path.exists() or name == "NixOS-WSL":
-            continue
-
-        print(f"  Processing {CYAN}{name}{RESET}...")
-        removed_count = 0
-
-        # Remove explicit relative paths
-        for rel in FOREIGN_REL_PATHS:
-            target = path / rel
-            if target.exists():
-                if target.is_dir():
-                    shutil.rmtree(target)
-                else:
-                    target.unlink()
-                removed_count += 1
-
-        # Walk entire repository and remove foreign dirs and files (excluding .git)
-        for root, dirs, files in os.walk(path, topdown=True):
-            if ".git" in dirs:
-                dirs.remove(".git")
-            
-            # Remove matching directories
-            for d in list(dirs):
-                if d in FOREIGN_DIR_NAMES:
-                    full_d = Path(root) / d
-                    shutil.rmtree(full_d, ignore_errors=True)
-                    dirs.remove(d)
-                    removed_count += 1
-
-            # Remove matching files
-            for f in files:
-                if f in FOREIGN_EXACT_FILES:
-                    full_f = Path(root) / f
-                    try:
-                        full_f.unlink()
-                        removed_count += 1
-                    except OSError:
-                        pass
-
-        # Specific repository rewrites
-        if name == "andrej-karpathy-skills":
-            # Sanitize README.md and README.zh.md
-            for readme_name in ["README.md", "README.zh.md"]:
-                rf = path / readme_name
-                if rf.exists():
-                    text = rf.read_text(encoding="utf-8")
-                    orig_text = text
-                    # Remove Claude Code & Cursor from platform list
-                    text = text.replace(", **Claude Code**, **Cursor**,", ",")
-                    text = text.replace(" | [Cursor Guide](./CURSOR.md)", "")
-                    # Remove Claude Code and Cursor setup sections
-                    text = re.sub(r"### 2\. Claude Code.*?(?=## How to Know It's Working|## License|\Z)", "", text, flags=re.DOTALL)
-                    text = re.sub(r"## 在 Cursor 中使用.*?(?=## 如何验证效果|## 许可证|\Z)", "", text, flags=re.DOTALL)
-                    text = re.sub(r"\*\*选项 A：Claude Code 插件.*?(?=## 如何验证效果|## 许可证|\Z)", "", text, flags=re.DOTALL)
-                    if text != orig_text:
-                        rf.write_text(text, encoding="utf-8")
-
-        elif name == "i-have-adhd":
-            # Clean package.json
-            pkg_file = path / "package.json"
-            if pkg_file.exists():
-                try:
-                    with open(pkg_file, "r", encoding="utf-8") as f:
-                        pkg_data = json.load(f)
-                    pkg_data.pop("omp", None)
-                    pkg_data.pop("pi", None)
-                    if "keywords" in pkg_data and isinstance(pkg_data["keywords"], list):
-                        pkg_data["keywords"] = [k for k in pkg_data["keywords"] if k != "pi-package"]
-                    with open(pkg_file, "w", encoding="utf-8") as f:
-                        json.dump(pkg_data, f, indent=2)
-                        f.write("\n")
-                except Exception:
-                    pass
-
-            # Clean README.md
-            readme_f = path / "README.md"
-            if readme_f.exists():
-                rtext = readme_f.read_text(encoding="utf-8")
-                orig_rtext = rtext
-                rtext = re.sub(r"claude plugin uninstall.*?\n\s*Restart Claude Code, then re-invoke `/i-have-adhd`\.", "Refresh skills via `dots-sync-skills refresh` or `refresh-skills`.", rtext, flags=re.DOTALL)
-                if rtext != orig_rtext:
-                    readme_f.write_text(rtext, encoding="utf-8")
-
-            # Clean INSTALL.md
-            install_f = path / "INSTALL.md"
-            if install_f.exists():
-                itext = install_f.read_text(encoding="utf-8")
-                orig_itext = itext
-                # Remove sections for foreign providers in details tags
-                for provider in ["Claude Code", "Codex", "GitHub Copilot", "Hermes", "Kimi Code CLI", "OpenCode", "Qwen Code", "Cursor"]:
-                    pattern = rf"<details>\s*<summary><strong>{re.escape(provider)}.*?</strong></summary>.*?</details>"
-                    itext = re.sub(pattern, "", itext, flags=re.DOTALL | re.IGNORECASE)
-                # Remove claude plugin troubleshooting
-                itext = re.sub(r"In Claude Code, Qwen Code, and Codex.*", "", itext, flags=re.DOTALL)
-                if itext != orig_itext:
-                    install_f.write_text(itext, encoding="utf-8")
-
-        elif name == "superpowers":
-            # Clean hooks/session-start
-            h_file = path / "hooks" / "session-start"
-            if h_file.exists():
-                htext = h_file.read_text(encoding="utf-8")
-                orig_htext = htext
-                htext = re.sub(r"# Cursor hooks expect.*?(?=echo )", "", htext, flags=re.DOTALL)
-                if htext != orig_htext:
-                    h_file.write_text(htext, encoding="utf-8")
-
-            # Clean .version-bump.json
-            vb_file = path / ".version-bump.json"
-            if vb_file.exists():
-                try:
-                    vb_data = {
-                        "files": [
-                            {"path": "package.json", "field": "version"},
-                            {"path": "gemini-extension.json", "field": "version"}
-                        ],
-                        "audit": {
-                            "exclude": [
-                                "CHANGELOG.md",
-                                "RELEASE-NOTES.md",
-                                "node_modules",
-                                ".git",
-                                ".version-bump.json",
-                                "scripts/bump-version.sh"
-                            ]
-                        }
-                    }
-                    with open(vb_file, "w", encoding="utf-8") as f:
-                        json.dump(vb_data, f, indent=2)
-                        f.write("\n")
-                except Exception:
-                    pass
-
-            # Clean README.md
-            readme_f = path / "README.md"
-            if readme_f.exists():
-                rtext = readme_f.read_text(encoding="utf-8")
-                orig_rtext = rtext
-                # Clean TOC
-                rtext = re.sub(
-                    r"- \[Getting Started\]\(#installation\)\n(  - \[.*?\]\(#.*?\)\n)+",
-                    "- [Getting Started](#installation)\n  - [Antigravity](#antigravity)\n  - [Gemini CLI](#gemini-cli)\n",
-                    rtext
-                )
-                # Clean Installation section
-                clean_install = (
-                    "## Installation\n\n"
-                    "Installation for supported environments:\n\n"
-                    "### Antigravity\n\n"
-                    "Install Superpowers as a plugin from this repository:\n\n"
-                    "```bash\n"
-                    "agy plugin install https://github.com/shanmukha-sai-chinnam/superpowers\n"
-                    "```\n\n"
-                    "Antigravity runs the plugin's session-start hook, so Superpowers is active from\n"
-                    "the first message. Reinstall with the same command to update.\n\n"
-                    "### Gemini CLI\n\n"
-                    "Install the extension:\n\n"
-                    "```bash\n"
-                    "gemini extensions install https://github.com/shanmukha-sai-chinnam/superpowers\n"
-                    "```\n\n"
-                    "Update later:\n\n"
-                    "```bash\n"
-                    "gemini extensions update superpowers\n"
-                    "```\n"
-                )
-                rtext = re.sub(r"## Installation.*?(?=## The Basic Workflow)", clean_install + "\n", rtext, flags=re.DOTALL)
-                rtext = rtext.replace(" and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` opt-outs.", " opt-out.")
-                if rtext != orig_rtext:
-                    readme_f.write_text(rtext, encoding="utf-8")
-
-            # Clean branding.test.js
-            btest_f = path / "tests" / "brainstorm-server" / "branding.test.js"
-            if btest_f.exists():
-                btext = btest_f.read_text(encoding="utf-8")
-                orig_btext = btext
-                btext = btext.replace("packaged Codex plugin reads version from .codex-plugin manifest", "packaged plugin reads version from package manifest")
-                btext = btext.replace("brainstorm-branding-packaged-codex", "brainstorm-branding-packaged")
-                btext = btext.replace("fs.mkdirSync(path.join(root, '.codex-plugin'), { recursive: true });\n  fs.writeFileSync(\n    path.join(root, '.codex-plugin/plugin.json'),", "fs.writeFileSync(\n    path.join(root, 'package.json'),")
-                btext = btext.replace("DISABLE_TELEMETRY=true omits remote image for Claude Code telemetry opt-out", "DISABLE_TELEMETRY=true omits remote image for telemetry opt-out")
-                btext = btext.replace("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 omits remote image for Claude Code traffic opt-out", "DISABLE_NONESSENTIAL_TRAFFIC=1 omits remote image for traffic opt-out")
-                btext = btext.replace("brainstorm-branding-claude-disable-telemetry", "brainstorm-branding-disable-telemetry")
-                btext = btext.replace("brainstorm-branding-claude-disable-nonessential", "brainstorm-branding-disable-nonessential")
-                btext = btext.replace("env: { CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1' }", "env: { DISABLE_NONESSENTIAL_TRAFFIC: '1' }")
-                btext = btext.replace("Claude Code telemetry opt-out", "telemetry opt-out")
-                btext = btext.replace("Claude Code non-essential traffic opt-out", "non-essential traffic opt-out")
-                if btext != orig_btext:
-                    btest_f.write_text(btext, encoding="utf-8")
-
-            # Clean test-bump-version.sh
-            tbump_f = path / "tests" / "version-bump" / "test-bump-version.sh"
-            if tbump_f.exists():
-                tbtext = tbump_f.read_text(encoding="utf-8")
-                orig_tbtext = tbtext
-                tbtext = tbtext.replace(".hermes-plugin/plugin.yaml", "gemini-extension.json")
-                tbtext = tbtext.replace("$repo/.hermes-plugin", "")
-                tbtext = re.sub(r'mkdir -p "\$repo/scripts" "\$repo/\.hermes-plugin"', 'mkdir -p "$repo/scripts"', tbtext)
-                tbtext = re.sub(r'make_fixture "\$happy_repo" \$?\'name: superpowers\\nversion: 1\.2\.3\'', "make_fixture \"$happy_repo\" $'{\\n  \"name\": \"superpowers\",\\n  \"version\": \"1.2.3\"\\n}'", tbtext)
-                tbtext = re.sub(r'make_fixture "\$invalid_repo" \$?\'name: superpowers\\nversion: 123\'', "make_fixture \"$invalid_repo\" $'{\\n  \"name\": \"superpowers\",\\n  \"version\": 123\\n}'", tbtext)
-                tbtext = tbtext.replace("Hermes manifest is not registered", "Gemini extension manifest is not registered")
-                tbtext = tbtext.replace("[[ \"$(yq -r '.version' \"$happy_repo/gemini-extension.json\")\" == \"2.3.4\" ]]", "[[ \"$(jq -r '.version' \"$happy_repo/gemini-extension.json\")\" == \"2.3.4\" ]]")
-                tbtext = tbtext.replace("fail \"YAML manifest was not bumped\"", "fail \"gemini-extension.json was not bumped\"")
-                tbtext = tbtext.replace("fail \"bump accepted a non-string YAML version\"", "fail \"bump accepted a non-string version\"")
-                tbtext = tbtext.replace("fail \"JSON manifest changed before YAML validation failed\"", "fail \"JSON manifest changed before validation failed\"")
-                tbtext = tbtext.replace("fail \"invalid YAML manifest changed\"", "fail \"invalid manifest changed\"")
-                tbtext = tbtext.replace("JSON manifest was not bumped", "package.json was not bumped")
-                tbtext = tbtext.replace("plugin.yaml", "gemini-extension.json")
-                tbtext = tbtext.replace("plugin.before", "extension.before")
-                if tbtext != orig_tbtext:
-                    tbump_f.write_text(tbtext, encoding="utf-8")
-
-            # Clean bump-version.sh
-            bv_f = path / "scripts" / "bump-version.sh"
-            if bv_f.exists():
-                bvtext = bv_f.read_text(encoding="utf-8")
-                orig_bvtext = bvtext
-                bvtext = bvtext.replace('jq -r "$jq_path" "$file"', 'jq -er "$jq_path | select(type == \\"string\\")" "$file"')
-                if bvtext != orig_bvtext:
-                    bv_f.write_text(bvtext, encoding="utf-8")
-
-            # Purge incompatible subagent skills
-            for subagent_skill in SUPERPOWERS_INCOMPATIBLE_SKILLS:
-                sk_dir = path / "skills" / subagent_skill
-                if sk_dir.exists():
-                    shutil.rmtree(sk_dir, ignore_errors=True)
-                    removed_count += 1
-
-            # Run test suites in superpowers
-            try:
-                run_cmd(["node", "tests/brainstorm-server/branding.test.js"], cwd=path)
-                run_cmd(["bash", "tests/version-bump/test-bump-version.sh"], cwd=path)
-                run_cmd(["bash", "tests/antigravity/run-tests.sh"], cwd=path)
-                print(f"    {GREEN}✓ Test suites passed in superpowers.{RESET}")
-            except Exception as e:
-                print(f"    {YELLOW}Warning running tests in superpowers:{RESET} {e}")
-
-        # Enforce Antigravity / Gemini native structure across all files
-        scan_extensions = [".md", ".json", ".sh", ".yaml", ".yml"]
-        all_files = []
-        for ext in scan_extensions:
-            all_files.extend(path.rglob(f"*{ext}"))
-
-        for mf in all_files:
-            if ".git" in mf.parts or "node_modules" in mf.parts:
-                continue
-            try:
-                content = mf.read_text(encoding="utf-8", errors="replace")
-            except Exception:
-                continue
-            orig = content
-            # Strip disable-model-invocation: true
-            content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
-            # Normalize provider mentions
-            content = content.replace("Claude Code", "Antigravity CLI")
-            content = content.replace("claude-code", "antigravity-cli")
-            content = content.replace("Claude Desktop", "Antigravity IDE")
-            content = content.replace("OpenCode", "Antigravity CLI")
-            content = content.replace("opencode", "antigravity-cli")
-            content = content.replace("Hermes Agent", "Antigravity Agent")
-            content = content.replace("Devin CLI", "Antigravity CLI")
-            content = content.replace("Kimi Code CLI", "Antigravity CLI")
-            content = content.replace("Qwen Code", "Antigravity CLI")
-            content = content.replace("claude plugin install", "agy plugin install")
-            content = content.replace("CLAUDE.md", "AGENTS.md")
-            content = content.replace("CURSOR.md", "AGENTS.md")
-            if content != orig:
-                mf.write_text(content, encoding="utf-8")
-
-        # Check git status
-        dirty = run_cmd(["git", "status", "--porcelain"], cwd=path).stdout.strip()
-        if dirty:
-            run_cmd(["git", "add", "-A"], cwd=path)
-            run_cmd(
-                ["git", "commit", "-m", "chore(provider-cleanup): purge foreign providers, adapt to Antigravity & Gemini format"],
-                cwd=path,
-            )
-            print(f"    {GREEN}✓ Cleaned and committed Antigravity/Gemini adaptations in {name}.{RESET}")
-        else:
-            print(f"    {GREEN}✓ Already compliant with Antigravity/Gemini specifications.{RESET}")
-
-    print(f"\n{GREEN}✓ Provider clean & rewrite completed.{RESET}\n")
+    """Run full validation checks on damathryxx64."""
+    print(f"\n{BOLD}{BLUE}Running dots-validate on damathryxx64...{RESET}")
+    try:
+        run_cmd(["dots-validate"], cwd=DOTS_REPO, capture=False)
+    except Exception as e:
+        print(f"\n{RED}Validation failed:{RESET} {e}\n")
+        sys.exit(1)
 
 
 def sync_active_skills_to_config():
     """
     Synchronize active declared skills, rules, and plugins directly into ~/.gemini/config/
-    with strict declarative pruning of foreign, duplicate, and orphan skills.
+    with strict declarative pruning of orphan skills.
     """
-    import shutil
-    config_dir = Path.home() / ".gemini" / "config"
-    skills_dir = config_dir / "skills"
-    rules_dir = config_dir / "rules"
-    plugins_dir = config_dir / "plugins"
+    skills_dir = CONFIG_DIR / "skills"
+    rules_dir = CONFIG_DIR / "rules"
+    plugins_dir = CONFIG_DIR / "plugins"
 
     skills_dir.mkdir(parents=True, exist_ok=True)
     rules_dir.mkdir(parents=True, exist_ok=True)
@@ -919,16 +461,18 @@ def sync_active_skills_to_config():
                 for sk in cat.iterdir():
                     if sk.is_dir() and (sk / "SKILL.md").exists():
                         declared_skills[sk.name] = sk
+
     if (s_path / "rules").exists():
         for rf in (s_path / "rules").iterdir():
             if rf.is_file() and rf.suffix == ".md":
                 declared_rules[rf.name] = rf
+
     if (s_path / "plugins").exists():
         for pl in (s_path / "plugins").iterdir():
             if pl.is_dir() and (pl / "plugin.json").exists():
                 declared_plugins[pl.name] = pl
 
-    # Prune orphan/foreign skills from skills_dir
+    # Prune orphan skills from skills_dir
     pruned_skills = 0
     for existing in list(skills_dir.iterdir()):
         if existing.is_dir() and existing.name not in declared_skills:
@@ -942,7 +486,7 @@ def sync_active_skills_to_config():
             shutil.rmtree(dst, ignore_errors=True)
         shutil.copytree(src, dst)
 
-    # Prune and copy rules (preserve system rules like declarative-dots.md, environment.md, workflow-discipline.md)
+    # Prune and copy rules (preserve system rules like declarative-dots.md, environment.md)
     for rname, src in declared_rules.items():
         dst = rules_dir / rname
         shutil.copy2(src, dst)
@@ -955,41 +499,17 @@ def sync_active_skills_to_config():
         shutil.copytree(src, dst)
 
     # Clean foreign artifacts from config_dir
-    for root, dirs, files in os.walk(config_dir, topdown=True):
+    for root, dirs, files in os.walk(CONFIG_DIR, topdown=True):
         for d in list(dirs):
             if d in FOREIGN_DIR_NAMES:
                 shutil.rmtree(Path(root) / d, ignore_errors=True)
                 dirs.remove(d)
-        for f in files:
-            if f in FOREIGN_EXACT_FILES or any(kw in f.lower() for kw in ["claude", "codex", "hermes", "opencode", "kimi", "devin"]):
-                try:
-                    (Path(root) / f).unlink()
-                except OSError:
-                    pass
-
-    # Scrub mentions in config markdown
-    for mf in config_dir.rglob("*.md"):
-        try:
-            content = mf.read_text(encoding="utf-8", errors="replace")
-            orig = content
-            content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
-            content = content.replace("Claude Code", "Antigravity CLI")
-            content = content.replace("claude-code", "antigravity-cli")
-            content = content.replace("Claude Desktop", "Antigravity IDE")
-            content = content.replace("OpenCode", "Antigravity CLI")
-            content = content.replace("opencode", "antigravity-cli")
-            content = content.replace("CLAUDE.md", "AGENTS.md")
-            content = content.replace("CURSOR.md", "AGENTS.md")
-            if content != orig:
-                mf.write_text(content, encoding="utf-8")
-        except Exception:
-            pass
 
     print(f"  {GREEN}✓ Synchronized {len(declared_skills)} declared skills to ~/.gemini/config/skills/ (pruned {pruned_skills} orphan/incompatible skills).{RESET}")
 
 
 def cmd_refresh():
-    """Fetch/sync upstream commits, purge non-Antigravity/non-Gemini providers, and rewrite."""
+    """Full refresh: sync upstreams, rewrite to Antigravity/Gemini, audit, and sync to ~/.gemini/config."""
     print(f"\n{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}")
     print(f"{BOLD}{CYAN} Refresh Skills: Sync Upstream & Rewrite to Antigravity/Gemini{RESET}")
     print(f"{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}\n")
@@ -997,12 +517,10 @@ def cmd_refresh():
     cmd_sync()
     cmd_audit()
 
-    # Declarative direct sync & pruning to ~/.gemini/config
     print(f"{BOLD}{BLUE}Synchronizing active skills to ~/.gemini/config...{RESET}")
     sync_active_skills_to_config()
     run_cmd(["systemctl", "--user", "start", "agent-skills-sync.service"], check=False)
     print(f"{GREEN}✓ Skills successfully refreshed in ~/.gemini/config!{RESET}\n")
-
 
 
 def main():
@@ -1014,7 +532,6 @@ def main():
     subparsers.add_parser("status", help="Show status of all fork repositories and flake lock pins")
     subparsers.add_parser("fetch", help="Fetch origin and upstream for all repositories")
     subparsers.add_parser("sync", help="Merge upstream changes into fork branches")
-    subparsers.add_parser("audit-upstream", help="Audit upstream commits and file triage for Antigravity & Gemini")
     subparsers.add_parser("rewrite", help="Purge foreign providers and rewrite to Antigravity & Gemini")
     subparsers.add_parser("refresh", help="Full refresh: fetch, sync, rewrite to Antigravity/Gemini, audit & sync")
     subparsers.add_parser("audit", help="Audit skill frontmatter and Antigravity compliance")
@@ -1032,8 +549,6 @@ def main():
         cmd_fetch()
     elif cmd == "sync":
         cmd_sync()
-    elif cmd == "audit-upstream":
-        cmd_audit_upstream()
     elif cmd == "rewrite":
         cmd_rewrite()
     elif cmd == "refresh":
