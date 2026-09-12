@@ -22,7 +22,7 @@
 
   skillsSyncScript = pkgs.writeShellScript "agent-skills-sync" ''
     set -eu
-    export PATH="${pkgs.lib.makeBinPath (with pkgs; [coreutils bash findutils])}:$PATH"
+    export PATH="${pkgs.lib.makeBinPath (with pkgs; [coreutils bash findutils gnused])}:$PATH"
 
     CONFIG_DIR="$HOME/.gemini/config"
     SKILLS_DIR="$CONFIG_DIR/skills"
@@ -131,9 +131,24 @@
     find "$CONFIG_DIR" -depth \( \
       -name ".claude*" -o -name ".cursor*" -o -name ".codex*" -o \
       -name ".opencode*" -o -name ".hermes*" -o -name ".kimi*" -o \
-      -name ".devin*" -o -name "CLAUDE.md" -o -name "CURSOR.md" -o \
-      -name "*claude*.md" -o -name "*cursor*.md" \
+      -name ".devin*" -o -name ".qoder*" -o -name ".kiro*" -o \
+      -name ".windsurf*" -o -name ".openclaw*" -o -name "CLAUDE.md" -o \
+      -name "CURSOR.md" -o -name "*claude*.md" -o -name "*cursor*.md" -o \
+      -name "*codex*.md" -o -name "*opencode*.md" -o -name "*hermes*.md" \
     \) -exec rm -rf {} + 2>/dev/null || true
+
+    # ── 7. Enforce Google Gemini / Antigravity (AGY) in Synced Skills ───────
+    find "$CONFIG_DIR" -type f -name "*.md" | while read -r mf; do
+      sed -i -e 's/Claude Code/Antigravity CLI/g' \
+             -e 's/claude-code/antigravity-cli/g' \
+             -e 's/Claude Desktop/Antigravity IDE/g' \
+             -e 's/OpenCode/Antigravity CLI/g' \
+             -e 's/opencode/antigravity-cli/g' \
+             -e 's/CLAUDE\.md/AGENTS.md/g' \
+             -e 's/CURSOR\.md/AGENTS.md/g' \
+             -e '/^disable-model-invocation: true/d' \
+             "$mf" 2>/dev/null || true
+    done
 
     # Ensure all deployed configs are writable for the user
     chmod -R u+w "$CONFIG_DIR" 2>/dev/null || true

@@ -248,6 +248,9 @@ def cmd_sync():
 
     print(f"\n{GREEN}✓ Upstream synchronization complete.{RESET}\n")
 
+    # Always purge foreign providers & enforce Antigravity/Gemini immediately after sync
+    cmd_rewrite()
+
 
 def cmd_audit():
     """Audit skill frontmatter and metadata for Antigravity standards."""
@@ -378,6 +381,11 @@ def cmd_rewrite():
         ".windsurf",
         "pi-extension",
         ".openclaw",
+        ".claude",
+        ".copilot",
+        ".zed",
+        "explicit-skill-requests",
+        "__pycache__",
     }
 
     foreign_exact_files = {
@@ -412,6 +420,14 @@ def cmd_rewrite():
         "claude-codex-hooks.json",
         "copilot-hooks.json",
         "qoder-hooks.json",
+        "devin.json",
+        "hermes.json",
+        "2026-07-30-codex-efficiency-fixes-design.md",
+        "2026-08-05-hermes-version-bump-wiring-design.md",
+        "2026-03-23-codex-app-compatibility-design.md",
+        "2026-07-30-codex-efficiency-fixes.md",
+        "2026-08-06-hermes-version-bump-wiring.md",
+        "2026-03-23-codex-app-compatibility.md",
     }
 
     foreign_rel_paths = [
@@ -422,8 +438,15 @@ def cmd_rewrite():
         "tests/opencode",
         "tests/codex",
         "tests/codex-plugin-sync",
+        "tests/explicit-skill-requests",
         "hooks/hooks-cursor.json",
         "skills/cloud/firebase-basics/references/refresh/claude.md",
+        "docs/superpowers/specs/2026-07-30-codex-efficiency-fixes-design.md",
+        "docs/superpowers/specs/2026-08-05-hermes-version-bump-wiring-design.md",
+        "docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md",
+        "docs/superpowers/plans/2026-07-30-codex-efficiency-fixes.md",
+        "docs/superpowers/plans/2026-08-06-hermes-version-bump-wiring.md",
+        "docs/superpowers/plans/2026-03-23-codex-app-compatibility.md",
     ]
 
     for repo in MANAGED_REPOS:
@@ -599,9 +622,68 @@ def cmd_rewrite():
                 if rtext != orig_rtext:
                     readme_f.write_text(rtext, encoding="utf-8")
 
-        # Enforce Antigravity / Gemini native structure across all markdown files
-        for mf in path.rglob("*.md"):
-            content = mf.read_text(encoding="utf-8", errors="replace")
+            # Clean branding.test.js
+            btest_f = path / "tests" / "brainstorm-server" / "branding.test.js"
+            if btest_f.exists():
+                btext = btest_f.read_text(encoding="utf-8")
+                orig_btext = btext
+                btext = btext.replace("packaged Codex plugin reads version from .codex-plugin manifest", "packaged plugin reads version from package manifest")
+                btext = btext.replace("brainstorm-branding-packaged-codex", "brainstorm-branding-packaged")
+                btext = btext.replace("fs.mkdirSync(path.join(root, '.codex-plugin'), { recursive: true });\n  fs.writeFileSync(\n    path.join(root, '.codex-plugin/plugin.json'),", "fs.writeFileSync(\n    path.join(root, 'package.json'),")
+                btext = btext.replace("DISABLE_TELEMETRY=true omits remote image for Claude Code telemetry opt-out", "DISABLE_TELEMETRY=true omits remote image for telemetry opt-out")
+                btext = btext.replace("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 omits remote image for Claude Code traffic opt-out", "DISABLE_NONESSENTIAL_TRAFFIC=1 omits remote image for traffic opt-out")
+                btext = btext.replace("brainstorm-branding-claude-disable-telemetry", "brainstorm-branding-disable-telemetry")
+                btext = btext.replace("brainstorm-branding-claude-disable-nonessential", "brainstorm-branding-disable-nonessential")
+                btext = btext.replace("env: { CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1' }", "env: { DISABLE_NONESSENTIAL_TRAFFIC: '1' }")
+                btext = btext.replace("Claude Code telemetry opt-out", "telemetry opt-out")
+                btext = btext.replace("Claude Code non-essential traffic opt-out", "non-essential traffic opt-out")
+                if btext != orig_btext:
+                    btest_f.write_text(btext, encoding="utf-8")
+
+            # Clean test-bump-version.sh
+            tbump_f = path / "tests" / "version-bump" / "test-bump-version.sh"
+            if tbump_f.exists():
+                tbtext = tbump_f.read_text(encoding="utf-8")
+                orig_tbtext = tbtext
+                tbtext = tbtext.replace(".hermes-plugin/plugin.yaml", "gemini-extension.json")
+                tbtext = tbtext.replace("$repo/.hermes-plugin", "")
+                tbtext = re.sub(r'mkdir -p "\$repo/scripts" "\$repo/\.hermes-plugin"', 'mkdir -p "$repo/scripts"', tbtext)
+                tbtext = re.sub(r'make_fixture "\$happy_repo" \$?\'name: superpowers\\nversion: 1\.2\.3\'', "make_fixture \"$happy_repo\" $'{\\n  \"name\": \"superpowers\",\\n  \"version\": \"1.2.3\"\\n}'", tbtext)
+                tbtext = re.sub(r'make_fixture "\$invalid_repo" \$?\'name: superpowers\\nversion: 123\'', "make_fixture \"$invalid_repo\" $'{\\n  \"name\": \"superpowers\",\\n  \"version\": 123\\n}'", tbtext)
+                tbtext = tbtext.replace("Hermes manifest is not registered", "Gemini extension manifest is not registered")
+                tbtext = tbtext.replace("[[ \"$(yq -r '.version' \"$happy_repo/gemini-extension.json\")\" == \"2.3.4\" ]]", "[[ \"$(jq -r '.version' \"$happy_repo/gemini-extension.json\")\" == \"2.3.4\" ]]")
+                tbtext = tbtext.replace("fail \"YAML manifest was not bumped\"", "fail \"gemini-extension.json was not bumped\"")
+                tbtext = tbtext.replace("fail \"bump accepted a non-string YAML version\"", "fail \"bump accepted a non-string version\"")
+                tbtext = tbtext.replace("fail \"JSON manifest changed before YAML validation failed\"", "fail \"JSON manifest changed before validation failed\"")
+                tbtext = tbtext.replace("fail \"invalid YAML manifest changed\"", "fail \"invalid manifest changed\"")
+                tbtext = tbtext.replace("JSON manifest was not bumped", "package.json was not bumped")
+                tbtext = tbtext.replace("plugin.yaml", "gemini-extension.json")
+                tbtext = tbtext.replace("plugin.before", "extension.before")
+                if tbtext != orig_tbtext:
+                    tbump_f.write_text(tbtext, encoding="utf-8")
+
+            # Clean bump-version.sh
+            bv_f = path / "scripts" / "bump-version.sh"
+            if bv_f.exists():
+                bvtext = bv_f.read_text(encoding="utf-8")
+                orig_bvtext = bvtext
+                bvtext = bvtext.replace('jq -r "$jq_path" "$file"', 'jq -er "$jq_path | select(type == \\"string\\")" "$file"')
+                if bvtext != orig_bvtext:
+                    bv_f.write_text(bvtext, encoding="utf-8")
+
+        # Enforce Antigravity / Gemini native structure across all files
+        scan_extensions = [".md", ".json", ".sh", ".yaml", ".yml"]
+        all_files = []
+        for ext in scan_extensions:
+            all_files.extend(path.rglob(f"*{ext}"))
+
+        for mf in all_files:
+            if ".git" in mf.parts or "node_modules" in mf.parts:
+                continue
+            try:
+                content = mf.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
             orig = content
             # Strip disable-model-invocation: true
             content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
@@ -611,6 +693,11 @@ def cmd_rewrite():
             content = content.replace("Claude Desktop", "Antigravity IDE")
             content = content.replace("OpenCode", "Antigravity CLI")
             content = content.replace("opencode", "antigravity-cli")
+            content = content.replace("Hermes Agent", "Antigravity Agent")
+            content = content.replace("Devin CLI", "Antigravity CLI")
+            content = content.replace("Kimi Code CLI", "Antigravity CLI")
+            content = content.replace("Qwen Code", "Antigravity CLI")
+            content = content.replace("claude plugin install", "agy plugin install")
             content = content.replace("CLAUDE.md", "AGENTS.md")
             content = content.replace("CURSOR.md", "AGENTS.md")
             if content != orig:
