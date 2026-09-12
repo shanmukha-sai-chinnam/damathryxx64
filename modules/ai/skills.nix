@@ -46,7 +46,7 @@
               if [ -d "$skill" ] && [ -f "$skill/SKILL.md" ]; then
                 sname=$(basename "$skill")
                 mkdir -p "$STAGING_SKILLS/$sname"
-                cp -r "$skill"/* "$STAGING_SKILLS/$sname/"
+                cp -r --no-preserve=mode "$skill"/* "$STAGING_SKILLS/$sname/"
               fi
             done
           fi
@@ -54,7 +54,7 @@
       fi
 
       if [ -d "$SKILLS_SRC/rules" ]; then
-        cp -r "$SKILLS_SRC/rules"/* "$STAGING_RULES/" 2>/dev/null || true
+        cp -r --no-preserve=mode "$SKILLS_SRC/rules"/* "$STAGING_RULES/" 2>/dev/null || true
       fi
 
       if [ -d "$SKILLS_SRC/plugins" ]; then
@@ -62,7 +62,7 @@
           if [ -d "$plugin" ] && [ -f "$plugin/plugin.json" ]; then
             pname=$(basename "$plugin")
             mkdir -p "$STAGING_PLUGINS/$pname"
-            cp -r "$plugin"/* "$STAGING_PLUGINS/$pname/"
+            cp -r --no-preserve=mode "$plugin"/* "$STAGING_PLUGINS/$pname/"
           fi
         done
       fi
