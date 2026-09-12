@@ -230,11 +230,11 @@
     "superpowers": {
       "flake": false,
       "locked": {
-        "lastModified": 1789226329,
-        "narHash": "sha256-JQz81IalZ78cJBT/SZpu+BKN706CDHp4pP27uREJd8I=",
+        "lastModified": 1789230183,
+        "narHash": "sha256-wz1eQLvKIIdhZPnILOunMNrH/nR76IjDosydqaxkczQ=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "superpowers",
-        "rev": "41fa2bf950de1de4a2cff3c7bf8bca18df8a13b4",
+        "rev": "b3854e5011d176e53260c557dfaf3484953822e4",
         "type": "github"
       },
       "original": {
