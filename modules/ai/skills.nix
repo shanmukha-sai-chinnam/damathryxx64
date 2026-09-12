@@ -114,9 +114,14 @@
     # Ensure all deployed configs are writable for the user
     chmod -R u+w "$CONFIG_DIR" 2>/dev/null || true
   '';
+  refreshSkillsScript = pkgs.writeShellScriptBin "refresh-skills" ''
+    set -eu
+    exec ${syncForksScript}/bin/dots-sync-skills refresh "$@"
+  '';
 in {
   environment.systemPackages = [
     syncForksScript
+    refreshSkillsScript
   ];
 
   # Systemd user service to sync skills on login

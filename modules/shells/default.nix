@@ -133,18 +133,15 @@ in {
         source ${pkgs.zsh-autopair}/share/zsh/zsh-autopair/autopair.zsh
 
         # ── Autoload & Wire Custom Completions ─────────────────────────────────
-        autoload -Uz _agy _nh _antigravity_superpowers _claude _ollama
+        autoload -Uz _agy _nh _antigravity_superpowers _ollama
         compdef _agy agy antigravity-cli
         compdef _nh nh
         compdef _antigravity_superpowers antigravity-superpowers
-        compdef _claude claude
         compdef _ollama ollama
 
         # ── Dynamic Tool Completions ───────────────────────────────────────────
         eval "$(${pkgs.nix-your-shell}/bin/nix-your-shell zsh)"
-        which codex >/dev/null 2>&1 && eval "$(codex completion zsh 2>/dev/null)"
         which herdr >/dev/null 2>&1 && eval "$(herdr completion zsh 2>/dev/null)"
-        which opencode >/dev/null 2>&1 && eval "$(opencode completion 2>/dev/null)"
         which gh >/dev/null 2>&1 && eval "$(gh completion -s zsh 2>/dev/null)"
         which uv >/dev/null 2>&1 && eval "$(uv generate-shell-completion zsh 2>/dev/null)"
 

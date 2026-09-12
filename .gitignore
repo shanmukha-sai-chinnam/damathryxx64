@@ -3,3 +3,5 @@
 result
 result*
 .env
+__pycache__/
+*.pyc

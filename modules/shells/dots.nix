@@ -43,7 +43,7 @@
     echo "  agy -p <prompt>                → Execute non-interactive AGY prompt"
     echo "  agy -i <prompt>                → Interactive AGY prompt session"
     echo "  agy -c                         → Continue most recent AGY conversation"
-    echo "  claude / codex / opencode      → Claude Code / Codex / OpenCode CLI"
+    echo "  agy / gemini-cli               → Antigravity CLI & Gemini AI Toolkit"
     echo "  ollama run / ps / list         → Ollama CLI"
     echo ""
     echo -e "\033[1;33mWSL Interop & Productivity:\033[0m"
@@ -54,6 +54,10 @@
   dotsSyncSkills = pkgs.writeShellScriptBin "dots-sync-skills" ''
     exec ${pkgs.python3}/bin/python3 /home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py "$@"
   '';
+
+  refreshSkills = pkgs.writeShellScriptBin "refresh-skills" ''
+    exec ${pkgs.python3}/bin/python3 /home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py refresh "$@"
+  '';
 in {
   devShell = pkgs.mkShell {
     name = "damathryxx64-dots-devshell";
@@ -61,6 +65,7 @@ in {
     packages = with pkgs; [
       helpNix
       dotsSyncSkills
+      refreshSkills
 
       # AI Agent Orchestration
       herdr

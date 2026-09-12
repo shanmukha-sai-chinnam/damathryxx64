@@ -1,15 +1,9 @@
-{
-  pkgs ? import <nixpkgs> {},
-  nixpkgs ? null,
-}: let
-  usedPkgs =
-    if nixpkgs != null
-    then nixpkgs
-    else pkgs;
+{pkgs, ...}: let
+  usedPkgs = pkgs;
 in {
   allowUnfree = true;
-  devShell = usedPkgs.mkShell {
-    buildInputs = with usedPkgs; [
+  devShell = pkgs.mkShell {
+    buildInputs = with pkgs; [
       # AWS Tools
       awscli2
       awsls

@@ -11,6 +11,7 @@
     ./nixos-maintenance
     ./packages
     ./shells
+    ./wsl
   ];
 
   # Enable needed services for VS Code Remote Development

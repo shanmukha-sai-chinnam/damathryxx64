@@ -356,6 +356,102 @@ def cmd_validate():
     print(f"{GREEN}✓ Flake validation completed successfully.{RESET}\n")
 
 
+def cmd_rewrite():
+    """Purge foreign provider configurations and enforce Antigravity / Gemini formats."""
+    import shutil
+
+    print(f"\n{BOLD}{BLUE}Purging non-Antigravity/non-Gemini providers & rewriting forks...{RESET}")
+
+    foreign_dirs = [
+        ".claude-plugin",
+        ".codex-plugin",
+        ".cursor-plugin",
+        ".cursor",
+        ".devin-plugin",
+        ".hermes-plugin",
+        ".kimi-plugin",
+        ".opencode",
+        ".pi",
+    ]
+
+    foreign_files = [
+        "CLAUDE.md",
+        "CURSOR.md",
+        "kimi.plugin.json",
+        "qwen-extension.json",
+        "opencode.json",
+        "hooks/hooks-cursor.json",
+    ]
+
+    for repo in MANAGED_REPOS:
+        path = repo["path"]
+        name = repo["name"]
+        if not path.exists() or name == "NixOS-WSL":
+            continue
+
+        print(f"  Processing {CYAN}{name}{RESET}...")
+        removed_count = 0
+
+        # Remove foreign directories
+        for fdir in foreign_dirs:
+            target = path / fdir
+            if target.exists() and target.is_dir():
+                shutil.rmtree(target)
+                removed_count += 1
+
+        # Remove foreign files
+        for ffile in foreign_files:
+            target = path / ffile
+            if target.exists() and target.is_file():
+                target.unlink()
+                removed_count += 1
+
+        # Enforce Antigravity / Gemini native structure in SKILL.md files
+        for sf in path.rglob("SKILL.md"):
+            content = sf.read_text(encoding="utf-8", errors="replace")
+            orig = content
+            # Strip disable-model-invocation: true
+            content = re.sub(r"^disable-model-invocation:\s*true\s*$\n?", "", content, flags=re.MULTILINE)
+            # Normalize provider mentions
+            content = content.replace("Claude Code", "Antigravity CLI")
+            content = content.replace("claude-code", "antigravity-cli")
+            content = content.replace("OpenCode", "Antigravity CLI")
+            content = content.replace("opencode", "antigravity-cli")
+            if content != orig:
+                sf.write_text(content, encoding="utf-8")
+
+        # Check git status
+        dirty = run_cmd(["git", "status", "--porcelain"], cwd=path).stdout.strip()
+        if dirty:
+            run_cmd(["git", "add", "-A"], cwd=path)
+            run_cmd(
+                ["git", "commit", "-m", "chore(provider-cleanup): purge foreign providers, adapt to Antigravity & Gemini format"],
+                cwd=path,
+            )
+            print(f"    {GREEN}✓ Cleaned and committed Antigravity/Gemini adaptations in {name}.{RESET}")
+        else:
+            print(f"    {GREEN}✓ Already compliant with Antigravity/Gemini specifications.{RESET}")
+
+    print(f"\n{GREEN}✓ Provider clean & rewrite completed.{RESET}\n")
+
+
+def cmd_refresh():
+    """Fetch/sync upstream commits, purge non-Antigravity/non-Gemini providers, and rewrite."""
+    print(f"\n{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}")
+    print(f"{BOLD}{CYAN} Refresh Skills: Sync Upstream & Rewrite to Antigravity/Gemini{RESET}")
+    print(f"{BOLD}{CYAN}══════════════════════════════════════════════════════════════════════{RESET}\n")
+
+    cmd_fetch()
+    cmd_sync()
+    cmd_rewrite()
+    cmd_audit()
+
+    # Declarative sync to ~/.gemini/config
+    print(f"{BOLD}{BLUE}Synchronizing active skills to ~/.gemini/config...{RESET}")
+    run_cmd(["systemctl", "--user", "start", "agent-skills-sync.service"], check=False)
+    print(f"{GREEN}✓ Skills successfully refreshed in ~/.gemini/config!{RESET}\n")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Manage and synchronize AI agent skill fork repositories with Nix flake and Antigravity."
@@ -365,11 +461,13 @@ def main():
     subparsers.add_parser("status", help="Show status of all fork repositories and flake lock pins")
     subparsers.add_parser("fetch", help="Fetch origin and upstream for all repositories")
     subparsers.add_parser("sync", help="Merge upstream changes into fork branches")
+    subparsers.add_parser("rewrite", help="Purge foreign providers and rewrite to Antigravity & Gemini")
+    subparsers.add_parser("refresh", help="Full refresh: fetch, sync, rewrite to Antigravity/Gemini, audit & sync")
     subparsers.add_parser("audit", help="Audit skill frontmatter and Antigravity compliance")
     subparsers.add_parser("push", help="Push updated forks to origin/main")
     subparsers.add_parser("bump-flake", help="Update flake inputs in damathryxx64")
     subparsers.add_parser("validate", help="Validate damathryxx64 flake and formatting")
-    subparsers.add_parser("all", help="Run full pipeline: fetch, sync, audit, push, bump-flake, validate")
+    subparsers.add_parser("all", help="Run full pipeline: fetch, sync, rewrite, audit, push, bump-flake, validate")
 
     args = parser.parse_args()
     cmd = args.command or "status"
@@ -380,6 +478,10 @@ def main():
         cmd_fetch()
     elif cmd == "sync":
         cmd_sync()
+    elif cmd == "rewrite":
+        cmd_rewrite()
+    elif cmd == "refresh":
+        cmd_refresh()
     elif cmd == "audit":
         cmd_audit()
     elif cmd == "push":
@@ -391,6 +493,7 @@ def main():
     elif cmd == "all":
         cmd_fetch()
         cmd_sync()
+        cmd_rewrite()
         cmd_audit()
         cmd_push()
         cmd_bump_flake()

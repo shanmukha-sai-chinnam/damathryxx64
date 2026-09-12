@@ -1,22 +1,13 @@
-# cv.nix - Reproducible environment for Awesome-CV and LaTeX documents
-{
-  pkgs ? import <nixpkgs> {},
-  nixpkgs ? null,
-}: let
-  usedPkgs =
-    if nixpkgs != null
-    then nixpkgs
-    else pkgs;
-
-  fontsConf = usedPkgs.makeFontsConf {
-    fontDirectories = with usedPkgs; [
+{pkgs, ...}: let
+  fontsConf = pkgs.makeFontsConf {
+    fontDirectories = with pkgs; [
       source-sans
       roboto
     ];
   };
 in {
-  devShell = usedPkgs.mkShell {
-    buildInputs = with usedPkgs; [
+  devShell = pkgs.mkShell {
+    buildInputs = with pkgs; [
       (texliveSmall.withPackages (ps:
         with ps; [
           ifmtarg
