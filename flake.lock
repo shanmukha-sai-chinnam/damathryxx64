@@ -3,11 +3,11 @@
     "andrej-karpathy-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789206582,
-        "narHash": "sha256-F++1Pv/xAD4rVi068DZpaD32reKXK7vvZvMlFtUsFWY=",
+        "lastModified": 1789210353,
+        "narHash": "sha256-Q17B/DRr6iFtcc75uoAe142HA8aIy3k3mXEtlgkS3lY=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "andrej-karpathy-skills",
-        "rev": "18242080a990a163fe37abae4e608a6525d51b72",
+        "rev": "9755155706f1628d53e10c7ef8d05f8285cc0910",
         "type": "github"
       },
       "original": {
@@ -89,11 +89,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1789206765,
-        "narHash": "sha256-SQJNpPLRd1El6K/L3w7i2QqoMrL8qlEZeFXRlmsC5zw=",
+        "lastModified": 1789210353,
+        "narHash": "sha256-86me347iX068ey1ezoOy5Pc/3m6pWx/TslR1CBYjLFw=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "9f316eac40b73519bec8bf2ad7de939e07b23705",
+        "rev": "ee83d239ba1f16f3252e1f65992b06bc7fdfe513",
         "type": "github"
       },
       "original": {
@@ -105,11 +105,11 @@
     "i-have-adhd": {
       "flake": false,
       "locked": {
-        "lastModified": 1789209030,
-        "narHash": "sha256-J3ANlLgBN90/N5+ABbz2esS0l8EjajME1iv09x5pSrc=",
+        "lastModified": 1789210353,
+        "narHash": "sha256-hLEfTRxjyl5dxaC6U0/K39jNT8j860cyfyQXCFXd1Vg=",
         "ref": "refs/heads/main",
-        "rev": "a838144454d957b9998511f69831ae9160e67949",
-        "revCount": 215,
+        "rev": "366bb36e65a03d5fab1f6edb0641110b61e7847e",
+        "revCount": 216,
         "type": "git",
         "url": "file:///home/damathryxx64/repositories/i-have-adhd"
       },
@@ -200,11 +200,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1788316716,
-        "narHash": "sha256-bc7rSpXIdn9QWGNqfWcPZWOhEVF8NoeAZkWq0XWnf/k=",
+        "lastModified": 1789006805,
+        "narHash": "sha256-xB8mKMOx1IA9vTDNLmJZ6n4wCMq/cuWBBOzGCRnqxrU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3ed67ec0a4d3c7ab4ae1f04f8ee8df07bfa506a2",
+        "rev": "8ce4ef6cb6f871616146b9fe26d2a5ae594e94fe",
         "type": "github"
       },
       "original": {
@@ -230,11 +230,11 @@
     "superpowers": {
       "flake": false,
       "locked": {
-        "lastModified": 1786553601,
-        "narHash": "sha256-EsGNO0dULWf5Bx6bGrCv2kI2Z8aKH0kRvGiuN23wChQ=",
+        "lastModified": 1789211196,
+        "narHash": "sha256-DfilCyecNWpV5gLQ3QxQi7A/z+uy1VQENWLQcFdjBpk=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "superpowers",
-        "rev": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+        "rev": "62ccdb8f0e9feb670e5f76f60f9ff2ea9c0a1fa7",
         "type": "github"
       },
       "original": {

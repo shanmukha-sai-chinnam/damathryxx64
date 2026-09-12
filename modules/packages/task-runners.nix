@@ -42,6 +42,23 @@
     exec ${pkgs.nh}/bin/nh os build "$@"
   '';
 
+  dotsSwitch = pkgs.writeShellScriptBin "dots-switch" ''
+    set -euo pipefail
+    REPO_DIR="/home/damathryxx64/repositories/damathryxx64"
+    cd "$REPO_DIR"
+    exec ${pkgs.nh}/bin/nh os switch "$@"
+  '';
+
+  dotsUpgrade = pkgs.writeShellScriptBin "dots-upgrade" ''
+    set -euo pipefail
+    REPO_DIR="/home/damathryxx64/repositories/damathryxx64"
+    cd "$REPO_DIR"
+    echo -e "\033[1;34m==>\033[0m \033[1m[1/2] Checking quality gates...\033[0m"
+    ${dotsValidate}/bin/dots-validate
+    echo -e "\033[1;34m==>\033[0m \033[1m[2/2] Updating flake inputs and switching system...\033[0m"
+    exec ${pkgs.nh}/bin/nh os switch --update "$@"
+  '';
+
   dotsClean = pkgs.writeShellScriptBin "dots-clean" ''
     set -euo pipefail
     exec ${pkgs.nh}/bin/nh clean all "$@"
@@ -52,6 +69,8 @@ in {
     dotsFmt
     dotsLint
     dotsBuild
+    dotsSwitch
+    dotsUpgrade
     dotsClean
   ];
 }
