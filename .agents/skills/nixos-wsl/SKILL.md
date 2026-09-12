@@ -1,8 +1,8 @@
 ---
 name: nixos-wsl
 description: >-
-  Work on NixOS, WSL configuration, Nix flakes, development shells (python, devops),
-  modular system configurations, package definitions, and Herdr-managed agent integrations.
+  Work on NixOS, WSL configuration, Nix flakes, development shells (python, devops, resume),
+  modular system configurations, package definitions, and declarative dots management.
   Use this skill when modifying system modules, devShells, updating flakes, or building NixOS.
 ---
 
@@ -17,7 +17,7 @@ When adding packages or changing configuration, target the owning module:
 | Domain | File Path | Notes |
 | :--- | :--- | :--- |
 | **System Orchestration** | `flake.nix`, `modules/configuration.nix` | Imports and host settings (`nixos-wsl`) |
-| **AI & Agent Integration** | `modules/ai/default.nix` | Herdr, Claude, Codex, Copilot CLI, OpenCode, Ollama, Antigravity CLI |
+| **AI & Agent Integration** | `modules/ai/default.nix` | Antigravity CLI, Gemini CLI, `antigravity-superpowers`, `skills.nix`, `dots-sync-skills`, `refresh-skills` |
 | **Development Toolchain** | `modules/development/default.nix` | Compilers, runtimes, build tools, nixd |
 | **MCP Servers** | `modules/mcp/default.nix` | Model Context Protocol servers |
 | **Fonts & Typography** | `modules/fonts/default.nix` | Cascadia Code, Fira Code nerd font, fontconfig |
@@ -125,6 +125,7 @@ help-nix
 # Other specialized devShells:
 nix develop .#python --command python --version
 nix develop .#devops --command which terraform kubectl aws
+nix develop .#resume --command typst --version
 ```
 
 ### 7. Universal Shell Shortcuts (Aliases)
@@ -141,23 +142,23 @@ Available system-wide in Zsh and Bash:
 | `nfmt` | `nix fmt -- .` | Format all Nix expressions with Alejandra |
 | `nlint` | `statix check . && deadnix .` | Check for anti-patterns and dead code |
 | `nfix` | `statix fix . && nix fmt -- .` | Automatically fix anti-patterns and format |
-| `nval` | `validate.sh` | Run the full 5-stage validation pipeline |
+| `nval` | `dots-validate` | Run the full validation pipeline (Alejandra, Statix, Deadnix, Flake check) |
 | `comma` | `,` | Run any nixpkgs binary on-the-fly |
 | `nman` | `manix` | Search NixOS options & nixpkgs functions |
 | `ndiff` | `nix-diff` | Compare two derivations |
 | `ntree` | `nix-tree` | TUI store closure tree explorer |
 | `ninspect` | `nix-inspect` | TUI data explorer |
 
-### 8. Managing Coding Agents (Herdr)
+### 8. Declarative Task Runners
 
-- **Check Service**: `systemctl --user status herdr-integrations.service`
-- **Check Integration Status**: `herdr integration status`
-- **List Agents**: `herdr agent list`
-- **Launch Agent**: `herdr agent start <name> --kind <kind> --pane <pane-id>`
+Available system-wide via `modules/packages/task-runners.nix`:
 
----
-
-## One-Step Validation Helper Script
-
-For quick complete verification, run the upgraded pipeline:
-- [validate.sh](./scripts/validate.sh)
+| Command | Purpose |
+| :--- | :--- |
+| `dots-validate` | Full validation pipeline: format check, Statix/Deadnix linter, Flake check |
+| `dots-fmt` | Format code with Alejandra |
+| `dots-lint` | Lint anti-patterns and dead code |
+| `dots-build` | Dry-build system toplevel derivation without switching |
+| `dots-switch` | Safely validate and switch live NixOS configuration |
+| `dots-upgrade` | Update flake inputs, validate, and switch |
+| `dots-clean` | Clean old generations and optimize Nix store |

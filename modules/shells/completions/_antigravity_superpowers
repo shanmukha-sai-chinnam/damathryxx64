@@ -8,10 +8,9 @@ _antigravity_superpowers() {
   commands=(
     'init:Initialize .agents profile in a project or globally'
     'check:Validate installed Antigravity Superpowers profile integrity'
-    'doctor:Run diagnostic healthcheck on Nix, Herdr, Node, Git, and AGY'
+    'doctor:Run diagnostic healthcheck on Nix, Node, Git, and AGY'
     'sync:Synchronize latest skills and rules without overwriting custom files'
-    'mcp:Model Context Protocol server (NixOS, Herdr, Quotas, Skills)'
-    'swarm:Herdr multi-agent orchestrator (Trio, Pair, DevOps, Review)'
+    'mcp:Model Context Protocol server (NixOS, Quotas, Skills)'
     'watch:Continuous filesystem watcher with automated linters'
     'quota:Inspect Antigravity token quotas and reset countdowns'
     'preset:Scaffold full language/stack profile (nixos, web, rust, python)'
@@ -66,16 +65,6 @@ _antigravity_superpowers() {
             'config:Show declarative MCP configuration'
           )
           _describe -t mcp_actions 'mcp action' mcp_actions
-          ;;
-        swarm)
-          local -a swarm_actions
-          swarm_actions=(
-            'start:Start Herdr swarm session'
-            'status:Show status of active swarm agents and panes'
-            'broadcast:Broadcast prompt across all swarm agents'
-            'stop:Stop swarm session'
-          )
-          _describe -t swarm_actions 'swarm action' swarm_actions
           ;;
         watch)
           _arguments \
