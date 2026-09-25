@@ -19,20 +19,51 @@ def log(msg):
 
 
 def get_api_key():
-    key = os.environ.get("TYPESAFE_API_KEY", "").strip()
-    if key:
-        return key
+    # 1. Environment variables
+    for env_var in (
+        "TYPESAFE_API_KEY",
+        "TYPESAFE_AI",
+        "typesafe_ai",
+        "typesafe_api_key",
+    ):
+        val = os.environ.get(env_var, "").strip()
+        if val:
+            return val.strip("\"'")
 
-    # Config file fallbacks
-    candidates = [
+    # 2. Check .env files
+    env_candidates = [
+        Path("/home/damathryxx64/repositories/.env"),
+        Path.cwd() / ".env",
+        Path.home() / ".config" / "typesafe" / ".env",
+    ]
+    for p in env_candidates:
+        if p.exists():
+            try:
+                for line in p.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, _, v = line.partition("=")
+                    if k.strip().lower() in (
+                        "typesafe_ai",
+                        "typesafe_api_key",
+                    ):
+                        val = v.strip().strip("\"'")
+                        if val:
+                            return val
+            except Exception:
+                pass
+
+    # 3. Plaintext key file fallbacks
+    plain_candidates = [
         Path.home() / ".config" / "typesafe" / "api_key",
         Path.home() / ".gemini" / "typesafe_api_key",
         Path.home() / ".typesafe_api_key",
     ]
-    for p in candidates:
+    for p in plain_candidates:
         if p.exists():
             try:
-                k = p.read_text().strip()
+                k = p.read_text(encoding="utf-8").strip().strip("\"'")
                 if k:
                     return k
             except Exception:
@@ -225,10 +256,18 @@ def handle_tool_call(name, args):
         )
 
     elif name == "typesafe_choice":
+        options = args.get("options", [])
+        if isinstance(options, list):
+            criteria = {str(opt): None for opt in options}
+        elif isinstance(options, dict):
+            criteria = options
+        else:
+            criteria = {}
+
         question = {
             "type": "choice",
             "instructions": args.get("instructions"),
-            "criteria": args.get("options", []),
+            "criteria": criteria,
         }
         payload = {
             "model": model,
@@ -249,10 +288,11 @@ def handle_tool_call(name, args):
         )
 
     elif name == "typesafe_score":
+        levels = args.get("levels", [])
         question = {
             "type": "score",
             "instructions": args.get("instructions"),
-            "criteria": args.get("levels", []),
+            "criteria": levels,
         }
         payload = {
             "model": model,
@@ -266,6 +306,7 @@ def handle_tool_call(name, args):
                 "model": res.get("model"),
                 "score": ans.get("score"),
                 "confidence": ans.get("confidence"),
+                "legend": ans.get("legend"),
                 "probabilities": ans.get("probabilities"),
                 "usage": res.get("usage"),
             },
