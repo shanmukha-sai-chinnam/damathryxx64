@@ -84,9 +84,13 @@
           cd "$repo_path"
           branch=$( ${pkgs.git}/bin/git branch --show-current || echo "" )
           if [ -n "$branch" ]; then
-            ${pkgs.git}/bin/git pull --rebase --autostash origin "$branch" || {
+            if ${pkgs.git}/bin/git fetch --no-write-fetch-head origin "$branch" && \
+               ${pkgs.git}/bin/git rebase --autostash "origin/$branch"; then
+              :
+            else
+              ${pkgs.git}/bin/git rebase --abort 2>/dev/null || true
               echo -e "    \033[33m⚠️  Could not cleanly pull $repo from origin. Continuing...\033[0m"
-            }
+            fi
           fi
         )
       fi
