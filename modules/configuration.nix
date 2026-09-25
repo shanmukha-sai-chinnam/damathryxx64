@@ -11,6 +11,7 @@
     ./nixos-maintenance
     ./packages
     ./shells
+    ./virtualisation
     ./wsl
   ];
 
