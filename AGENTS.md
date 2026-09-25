@@ -77,6 +77,15 @@ These MCP servers are configured in `.agents/mcp_config.json` and available for 
 | **sequential-thinking** | `mcp-server-sequential-thinking` | Structured multi-step reasoning and problem decomposition. |
 | **typesafe** | `mcp-server-typesafe` | TypeSafe AI (Jev) System One evaluation (choice, score, noul true/false judgments). |
 
+## Jev (TypeSafe AI) Pre-Edit Advisory Protocol
+
+1. **Pre-Edit Semantic Consultation**:
+   - **Approach Selection**: When multiple valid implementation approaches exist, consult Jev (`typesafe_choice`) to evaluate the cleanest and most surgical path before editing.
+   - **Policy & Regression Checks**: For structural or high-impact edits, query Jev (`typesafe_noul` / `typesafe_score`) to verify constraints (e.g., no hardcoded machine paths, no unmanaged mutable state, surgical diffs).
+2. **Fail-Open Usage Fallback**:
+   - If TypeSafe API usage is exhausted, rate-limited (HTTP 429), or unreachable, fall back immediately to standard internal reasoning without halting or blocking the task.
+   - Jev consultation is an advisory enhancement; execution must never stall on external API unavailability.
+
 ## Confirmation & Autonomy Discipline
 
 1. **Confirm only for destructive/irreversible/outward-facing actions**: System switches, data deletion, publishing, sending messages to external services.
