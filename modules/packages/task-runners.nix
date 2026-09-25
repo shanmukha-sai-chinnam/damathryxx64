@@ -102,7 +102,7 @@
     echo -e "\n\033[1;32m✓ All flakes pulled from origin and NixOS switched successfully!\033[0m"
 
     if [ -x "${pkgs.libnotify}/bin/notify-send" ]; then
-      ${pkgs.libnotify}/bin/notify-send -u normal -a "Antigravity Workspace" "Workspace Flakes Synced" "All repositories pulled and NixOS configuration applied." || true
+      ${pkgs.libnotify}/bin/notify-send -u normal -a "Antigravity Workspace" "Workspace Flakes Synced" "All repositories pulled and NixOS configuration applied." 2>/dev/null || true
     fi
   '';
 in {
