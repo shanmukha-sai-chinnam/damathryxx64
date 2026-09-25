@@ -1,0 +1,23 @@
+# Global WSL 2 Configuration
+# Managed declaratively via damathryxx64/modules/wsl/.wslconfig
+# Documentation: https://learn.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig
+
+[wsl2]
+# Limit VM memory to ~30% of 32GB total physical host RAM
+memory=9GB
+
+# Limit VM to 4 virtual processors
+processors=4
+
+# Set swap storage to 4GB
+swap=4GB
+
+# Default connection to bind WSL 2 localhost to Windows localhost
+localhostforwarding=true
+
+[experimental]
+# Automatically reclaim cached memory back to Windows host (shrinks VmmemWSL footprint)
+autoMemoryReclaim=gradual
+
+# Automatically shrink disk image space when files are deleted
+sparseVhd=true

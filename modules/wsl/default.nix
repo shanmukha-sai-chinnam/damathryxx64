@@ -36,5 +36,19 @@
     startMenuLaunchers = true;
   };
 
+  # Declaratively synchronize host .wslconfig to the active Windows user profile
+  system.userActivationScripts.wslHostConfigSync = {
+    text = ''
+      for user_profile in /mnt/c/Users/*; do
+        if [ -d "$user_profile" ] && [ -d "$user_profile/AppData" ]; then
+          if [ -w "$user_profile" ]; then
+            cp -f ${./.wslconfig} "$user_profile/.wslconfig"
+            chmod 644 "$user_profile/.wslconfig" 2>/dev/null || true
+          fi
+        fi
+      done
+    '';
+  };
+
   system.stateVersion = "25.05";
 }
