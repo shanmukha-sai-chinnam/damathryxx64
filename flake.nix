@@ -19,6 +19,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-index-database.follows = "nix-index-database";
     };
+    clamav-scanner = {
+      url = "github:shanmukha-sai-chinnam/clamav-scanner";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -28,6 +32,7 @@
     antigravity-superpowers,
     gemini-skills,
     nix-alien,
+    clamav-scanner,
     ...
   }: let
     system = "x86_64-linux";
@@ -61,6 +66,7 @@
           nixos-wsl.nixosModules.default
           nix-index-database.nixosModules.nix-index
           antigravity-superpowers.nixosModules.default
+          clamav-scanner.nixosModules.default
           ./modules/configuration.nix
         ];
       };

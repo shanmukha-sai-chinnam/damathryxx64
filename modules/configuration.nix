@@ -44,4 +44,12 @@
       enableSSHSupport = true;
     };
   };
+
+  # Real-time ClamAV antivirus sentinel for repositories
+  services.clamav-sentinel = {
+    enable = true;
+    watchDir = "/home/damathryxx64/repositories";
+    quarantineDir = "/home/damathryxx64/repositories/.quarantine";
+    autoQuarantine = true;
+  };
 }
