@@ -3,13 +3,9 @@
   userName ? "damathryxx64",
   ...
 }: {
-  virtualisation.docker = {
-    enable = true;
-    autoPrune = {
-      enable = true;
-      dates = "weekly";
-    };
-  };
+  # Docker Desktop integration is active (via wsl.docker-desktop.enable in modules/wsl).
+  # Native dockerd is disabled to eliminate duplicate engines and save RAM.
+  virtualisation.docker.enable = false;
 
   users.users.${userName}.extraGroups = ["docker"];
 
