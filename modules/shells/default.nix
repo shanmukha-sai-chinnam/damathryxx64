@@ -57,6 +57,7 @@ in {
           "colored-man-pages"
           "extract"
           "docker"
+          "docker-compose"
           "kubectl"
         ];
       };
@@ -212,6 +213,10 @@ in {
       nix-direnv.enable = true;
     };
 
+    bash = {
+      completion.enable = true;
+    };
+
     nix-index-database.comma.enable = true;
     command-not-found.enable = false;
   };
@@ -228,7 +233,10 @@ in {
       zsh-autopair
     ];
 
-    pathsToLink = ["/share/zsh"];
+    pathsToLink = [
+      "/share/zsh"
+      "/share/bash-completion"
+    ];
     shells = [pkgs.zsh];
   };
 
