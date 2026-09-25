@@ -50,6 +50,7 @@
     enable = true;
     watchDir = "/home/damathryxx64/repositories";
     quarantineDir = "/home/damathryxx64/repositories/.quarantine";
+    auditLog = "/home/damathryxx64/repositories/clamav-audit.jsonl";
     autoQuarantine = true;
   };
 }

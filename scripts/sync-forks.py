@@ -58,6 +58,14 @@ MANAGED_REPOS = [
         "flake_input": "nixos-wsl",
         "main_branch": "main",
     },
+    {
+        "name": "clamav-scanner",
+        "path": WORKSPACE_ROOT / "clamav-scanner",
+        "fork_url": "https://github.com/shanmukha-sai-chinnam/clamav-scanner.git",
+        "upstream_url": None,
+        "flake_input": "clamav-scanner",
+        "main_branch": "trunk",
+    },
 ]
 
 FOREIGN_DIR_NAMES = {

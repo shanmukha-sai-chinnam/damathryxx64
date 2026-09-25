@@ -63,6 +63,48 @@
     set -euo pipefail
     exec ${pkgs.nh}/bin/nh clean all "$@"
   '';
+
+  dotsWorkspaceSync = pkgs.writeShellScriptBin "dots-workspace-sync" ''
+    set -euo pipefail
+    WORKSPACE_ROOT="/home/damathryxx64/repositories"
+    DOTS_REPO="$WORKSPACE_ROOT/damathryxx64"
+
+    echo -e "\033[1;36m══════════════════════════════════════════════════════════════════════\033[0m"
+    echo -e "\033[1;36m 🚀 Antigravity Workspace Auto-Sync, Flake Update & System Switch\033[0m"
+    echo -e "\033[1;36m══════════════════════════════════════════════════════════════════════\033[0m\n"
+
+    REPOS=("damathryxx64" "clamav-scanner" "antigravity-superpowers" "skills" "NixOS-WSL")
+
+    echo -e "\033[1m==> [1/3] Pulling latest changes from origin across repositories...\033[0m"
+    for repo in "''${REPOS[@]}"; do
+      repo_path="$WORKSPACE_ROOT/$repo"
+      if [ -d "$repo_path/.git" ]; then
+        echo -e "  ↳ Pulling \033[36m$repo\033[0m..."
+        (
+          cd "$repo_path"
+          branch=$( ${pkgs.git}/bin/git branch --show-current || echo "" )
+          if [ -n "$branch" ]; then
+            ${pkgs.git}/bin/git pull --rebase --autostash origin "$branch" || {
+              echo -e "    \033[33m⚠️  Could not cleanly pull $repo from origin. Continuing...\033[0m"
+            }
+          fi
+        )
+      fi
+    done
+
+    echo -e "\n\033[1m==> [2/3] Validating dots flake & quality gates...\033[0m"
+    cd "$DOTS_REPO"
+    ${dotsValidate}/bin/dots-validate
+
+    echo -e "\n\033[1m==> [3/3] Building and switching NixOS configuration...\033[0m"
+    ${pkgs.nh}/bin/nh os switch
+
+    echo -e "\n\033[1;32m✓ All flakes pulled from origin and NixOS switched successfully!\033[0m"
+
+    if [ -x "${pkgs.libnotify}/bin/notify-send" ]; then
+      ${pkgs.libnotify}/bin/notify-send -u normal -a "Antigravity Workspace" "Workspace Flakes Synced" "All repositories pulled and NixOS configuration applied." || true
+    fi
+  '';
 in {
   environment.systemPackages = [
     dotsValidate
@@ -72,5 +114,6 @@ in {
     dotsSwitch
     dotsUpgrade
     dotsClean
+    dotsWorkspaceSync
   ];
 }

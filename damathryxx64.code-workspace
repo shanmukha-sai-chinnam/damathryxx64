@@ -205,6 +205,23 @@
                 "detail": "Runs on every Antigravity window reload to display remaining model quotas and reset countdowns."
             },
             {
+                "label": "Antigravity: Workspace Auto-Sync, Update Flakes & Switch (Auto on Open)",
+                "type": "shell",
+                "command": "dots-workspace-sync",
+                "runOptions": {
+                    "runOn": "folderOpen"
+                },
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared",
+                    "clear": false,
+                    "focus": false,
+                    "showReuseMessage": false
+                },
+                "problemMatcher": [],
+                "detail": "Runs automatically when opening the workspace in Antigravity to pull latest changes across all repositories, update flake inputs from origin, and build & switch the live system."
+            },
+            {
                 "label": "Superpowers: Doctor Health Check",
                 "type": "shell",
                 "command": "antigravity-superpowers doctor",
