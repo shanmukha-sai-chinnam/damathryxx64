@@ -352,6 +352,8 @@
         "git.rebaseWhenSync": true,
         "git.defaultBranchName": "trunk",
         "git.enableCommitSigning": false,
+        "git.detectSubmodules": false,
+        "git.detectSubmodulesLimit": 100,
         // Nix Language Server (nixd) & Formatter (Alejandra)
         "alejandra.program": "alejandra",
         "nix.enableLanguageServer": true,
