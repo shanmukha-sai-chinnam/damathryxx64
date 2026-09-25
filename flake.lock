@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790362973,
-        "narHash": "sha256-Zy7TMqoRYPW3KrKQ1jRgbbR6BEnj5UXHnvDt/s58tUg=",
+        "lastModified": 1790363249,
+        "narHash": "sha256-WZuC9ZKwv7qZzPLZusdM0WIrHnqUKzEewuhmvbEimaA=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "clamav-scanner",
-        "rev": "1eccd04cd6a04def2af9f66b280bf235d32ea932",
+        "rev": "81294df9cef9fbc59d5f16e77f8fd21f5503baa3",
         "type": "github"
       },
       "original": {
