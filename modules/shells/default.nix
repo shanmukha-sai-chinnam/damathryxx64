@@ -135,7 +135,7 @@ in {
 
         # ── Autoload & Wire Custom Completions ─────────────────────────────────
         autoload -Uz _agy _nh _antigravity_superpowers
-        compdef _agy agy antigravity-cli
+        compdef _agy agy antigravity-cli agy2 antigravity2
         compdef _nh nh
         compdef _antigravity_superpowers antigravity-superpowers
 

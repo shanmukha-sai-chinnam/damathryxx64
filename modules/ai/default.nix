@@ -46,6 +46,58 @@
       ${pkgs.uv}/bin/uv tool install specify-cli || true
     fi
   '';
+
+  # ── Antigravity 2.0 Host Launcher ──────────────────────────────────────
+  # Launches the Antigravity 2.0 desktop application on the Windows host,
+  # attached to this NixOS WSL distribution.
+  agy2Launcher = pkgs.writeShellScriptBin "agy2" ''
+    set -euo pipefail
+
+    WIN_BIN=""
+    if command -v cmd.exe >/dev/null 2>&1; then
+      LOCAL_APP_DATA="$(cmd.exe /c 'echo %LOCALAPPDATA%' 2>/dev/null | tr -d '\r')"
+      if [ -n "$LOCAL_APP_DATA" ]; then
+        CANDIDATE="$(wslpath -u "$LOCAL_APP_DATA/Programs/antigravity/Antigravity.exe" 2>/dev/null || true)"
+        if [ -f "$CANDIDATE" ]; then
+          WIN_BIN="$CANDIDATE"
+        fi
+      fi
+    fi
+
+    if [ -z "$WIN_BIN" ]; then
+      for candidate in /mnt/c/Users/*/AppData/Local/Programs/antigravity/Antigravity.exe; do
+        if [ -f "$candidate" ]; then
+          WIN_BIN="$candidate"
+          break
+        fi
+      done
+    fi
+
+    if [ -z "$WIN_BIN" ] || [ ! -f "$WIN_BIN" ]; then
+      echo "Error: Antigravity 2.0 executable not found on Windows host." >&2
+      exit 1
+    fi
+
+    if [ $# -eq 0 ]; then
+      nohup "$WIN_BIN" --wsl-distro=NixOS >/dev/null 2>&1 &
+    else
+      ARGS=()
+      for arg in "$@"; do
+        if [[ "$arg" == -* ]]; then
+          ARGS+=("$arg")
+        elif [[ -e "$arg" ]]; then
+          ARGS+=("$(wslpath -w "$arg")")
+        else
+          ARGS+=("$arg")
+        fi
+      done
+      nohup "$WIN_BIN" --wsl-distro=NixOS "''${ARGS[@]}" >/dev/null 2>&1 &
+    fi
+  '';
+
+  antigravity2Launcher = pkgs.writeShellScriptBin "antigravity2" ''
+    exec ${agy2Launcher}/bin/agy2 "$@"
+  '';
 in {
   imports = [
     ./skills.nix
@@ -57,6 +109,8 @@ in {
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli
+    agy2Launcher
+    antigravity2Launcher
   ];
 
   programs.antigravity-superpowers =
