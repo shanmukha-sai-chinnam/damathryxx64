@@ -5,7 +5,7 @@
       "args": []
     },
     "github": {
-      "command": "github-mcp-server",
+      "command": "github-mcp-server-wrapped",
       "args": []
     },
     "git": {
@@ -22,6 +22,10 @@
     },
     "sequential-thinking": {
       "command": "mcp-server-sequential-thinking",
+      "args": []
+    },
+    "typesafe": {
+      "command": "mcp-server-typesafe",
       "args": []
     }
   }

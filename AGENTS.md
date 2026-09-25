@@ -70,11 +70,12 @@ These MCP servers are configured in `.agents/mcp_config.json` and available for 
 | Server | Command | Purpose |
 |---|---|---|
 | **nixos** | `mcp-nixos` | Query NixOS/Home Manager options, packages, Nix store, flake inputs, wiki, nix.dev docs. |
-| **github** | `github-mcp-server` | GitHub API operations (issues, PRs, repos, workflows). |
+| **github** | `github-mcp-server-wrapped` | GitHub API operations (issues, PRs, repos, workflows) with auto-token resolution. |
 | **git** | `mcp-server-git` | Git operations (status, diff, commit, branch, log) on this repository. |
 | **filesystem** | `mcp-server-filesystem` | File/directory operations within this repository. |
 | **fetch** | `mcp-server-fetch` | HTTP content fetching and URL reading. |
 | **sequential-thinking** | `mcp-server-sequential-thinking` | Structured multi-step reasoning and problem decomposition. |
+| **typesafe** | `mcp-server-typesafe` | TypeSafe AI (Jev) System One evaluation (choice, score, noul true/false judgments). |
 
 ## Confirmation & Autonomy Discipline
 
