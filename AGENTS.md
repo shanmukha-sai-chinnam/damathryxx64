@@ -17,7 +17,9 @@ Repository-wide guidance and operating constraints for Antigravity agents in thi
   - `modules/fonts/`: System and monospace font packages (Cascadia Code, Fira Code nerd font).
   - `modules/mcp/`: Native Model Context Protocol servers (`mcp-nixos`, `github-mcp-server`, `mcp-server-git`, etc.).
   - `modules/nixos-maintenance/`: Nix store optimization, automatic weekly garbage collection, and diagnostic utilities (`nix-tree`, `nix-du`, `nom`).
-  - `modules/packages/`: System CLI utilities and declarative task runners (`dots-validate`, `dots-fmt`, `dots-lint`, `dots-build`, `dots-switch`, `dots-upgrade`, `dots-clean`).
+  - `modules/packages/`: System CLI utilities and declarative task runners (`dots-validate`, `dots-fmt`, `dots-lint`, `dots-build`, `dots-switch`, `dots-upgrade`, `dots-clean`, `dots-workspace-sync`).
+  - `modules/nixos-maintenance/workspace-sync.nix`: `dots-workspace-pull` script + `dots-workspace-pull.service` systemd user service — git-pulls all repos from origin automatically on every user session start. `dots-workspace-sync` (pull + validate + switch) remains a manual command.
+  - `modules/ai/default.nix`: `agy2` and `antigravity2` — Windows host launchers for Antigravity 2.0, connected to NixOS WSL without requiring the Antigravity IDE.
   - `modules/shells/`: Shell configuration (Zsh, Starship, direnv, bat, fzf) and standalone devShell definitions (`python.nix`, `devops.nix`, `cv.nix`).
 
 ## Available Skills

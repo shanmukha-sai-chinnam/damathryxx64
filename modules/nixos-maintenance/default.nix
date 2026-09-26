@@ -1,4 +1,8 @@
 {pkgs, ...}: {
+  imports = [
+    ./workspace-sync.nix
+  ];
+
   nixpkgs.config.allowUnfree = true;
 
   nix = {

@@ -44,6 +44,12 @@
     echo ""
     echo -e "\033[1;33mWSL Interop & Productivity:\033[0m"
     echo "  cb                             → WSL bidirectional clipboard bridge (pipe to copy, bare to paste)"
+    echo "  agy2 [args]                    → Launch Antigravity 2.0 on Windows, connected to NixOS WSL"
+    echo "  antigravity2 [args]            → Alias for agy2"
+    echo ""
+    echo -e "\033[1;33mWorkspace Sync:\033[0m"
+    echo "  dots-workspace-pull            → Pull all repos from origin (auto-runs on login via systemd)"
+    echo "  dots-workspace-sync            → Pull + validate + nh os switch (full pipeline, run manually)"
     echo ""
   '';
 
