@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791515700,
-        "narHash": "sha256-eurUICCi7OT64iK9dRFhhxHgnNhxc6Vy5ADe7odWkVk=",
+        "lastModified": 1791685424,
+        "narHash": "sha256-vWKKgEZE1Dm1mjI36oSGDS26qB5Iv6BtMcIrxDlG/ts=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "ea2be45aa8cc26b52dfadd360a8fc68a03a58bcd",
+        "rev": "1c5c05a7683041c5fd42c865bb3391aca9aaefb0",
         "type": "github"
       },
       "original": {
@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791346944,
-        "narHash": "sha256-bAk0p3d8OC4dMV7N+2RuB0+EejVrLRB7ZGlhf8+H7Lk=",
+        "lastModified": 1791691437,
+        "narHash": "sha256-9TJPN55UazpmkJjGMaIiSSABMKPRVMRlKe/CxiJDkhY=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "clamav-scanner",
-        "rev": "f48366b8b513b5c8a1e315435e4ed9772ad0e9ae",
+        "rev": "66dc52ec5c947146436a07ecbb5291f128e70b84",
         "type": "github"
       },
       "original": {
@@ -207,11 +207,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1791456040,
-        "narHash": "sha256-H83yz/do+hjOO0uujHyH8RgtIQP2v7Mw+cLwcZK/xKc=",
+        "lastModified": 1791594108,
+        "narHash": "sha256-XK4KceonkwD8LuMAt/vNrz982mXJM5jeHAxMwsUXXAQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e7439b6b14ad3cc35d05608ebca9bce01a25f5f8",
+        "rev": "6510408d147d8c5e6d76043e899e9251756f6a75",
         "type": "github"
       },
       "original": {
