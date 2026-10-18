@@ -24,8 +24,8 @@ function resolveAnatomyDir() {
 const ANATOMY_DIR = resolveAnatomyDir();
 const k = await import(`${ANATOMY_DIR}/kit/iso-kit.mjs`);
 
-const WIDTH = 960;
-const HEIGHT = 540;
+const WIDTH = 980;
+const HEIGHT = 550;
 
 // World Dimensions
 const PLATE = { x: -175, y: -90, w: 350, d: 180, r: 12 };
@@ -63,6 +63,7 @@ const STATIONS = [
     badge: "System Core",
     files: ["flake.nix", "modules/configuration.nix", "modules/ai/skills.nix", "modules/packages/default.nix"],
     cmd: "dots-validate && dots-build",
+    stats: "18 Modules · 4 devShells · Pure NixOS-WSL",
   },
   {
     id: "skills",
@@ -79,6 +80,7 @@ const STATIONS = [
     badge: "Skills Hub",
     files: ["scripts/sync-upstreams.py", "skills/anatomy/anatomy/", "skills/karpathy-guidelines/"],
     cmd: "dots-sync-skills status && refresh-skills",
+    stats: "31 Skills · 5 Tracked Upstreams · Daily Sync",
   },
   {
     id: "nixos-wsl",
@@ -95,6 +97,7 @@ const STATIONS = [
     badge: "Guest Distro",
     files: ["modules/wsl-distro.nix", "flake.nix", "modules/docker-desktop.nix"],
     cmd: "nix build .#nixosConfigurations.default.config.system.build.tarball",
+    stats: "Linux 6.6+ · systemd Native · Host Bridge",
   },
   {
     id: "antigravity-superpowers",
@@ -111,6 +114,7 @@ const STATIONS = [
     badge: "Tooling",
     files: ["bin/antigravity-superpowers", "templates/.agents/AGENTS.md", "flake.nix"],
     cmd: "antigravity-superpowers doctor",
+    stats: "Background Watcher · Auto-Fix · Doctor Diagnostic",
   },
   {
     id: "clamav-scanner",
@@ -127,6 +131,7 @@ const STATIONS = [
     badge: "Sentinel",
     files: ["docker-compose.yml", "scripts/sentinel.sh", "flake.nix"],
     cmd: "docker compose up -d",
+    stats: "inotify Kernel Hook · Real-Time Sentinel · Zero Lag",
   },
 ];
 
@@ -191,6 +196,17 @@ function buildPlate() {
   const engraved = k.faceTextSvg(titleMatrix, "NIXOS-WSL x86_64 PURE SYSTEM FOUNDATION", { size: 3.2, tone: "lo" });
   if (engraved) out.push(engraved);
 
+  // Animated Telemetry Circuit Traces running from Tower to each Station
+  for (const st of STATIONS) {
+    const sx = st.x;
+    const p0 = at([0, -28, 0.4]);
+    const p1 = at([sx * 0.45, -22, 0.4]);
+    const p2 = at([sx, -18, 0.4]);
+    const p3 = at([sx, -15, 0.4]);
+    const traceD = `M${p0[0].toFixed(1)} ${p0[1].toFixed(1)} L${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)} L${p3[0].toFixed(1)} ${p3[1].toFixed(1)}`;
+    out.push(`<path class="telemetry-circuit-line" d="${traceD}" style="stroke:${st.color};" />`);
+  }
+
   return out.join("");
 }
 
@@ -246,10 +262,26 @@ function buildCentralTower() {
   const screenFace = { x: displayBox.x + 4, y: displayBox.y + displayBox.d - 0.5, w: displayBox.w - 8, d: 1, r: 2 };
   out.push(S(k.slabOf(screenFace, CRT_Z + 4, CRT_H - 8, P, 2, 0.4), { tone: "lo", crease: "none" }));
 
+  // CRT Screen Oscilloscope Waveform Trace
+  const screenX1 = -22, screenX2 = 22, screenY = ty + 24, screenZ = CRT_Z + 20;
+  const wavePts = [];
+  for (let wx = screenX1; wx <= screenX2; wx += 2) {
+    const norm = (wx - screenX1) / (screenX2 - screenX1);
+    const waveZ = screenZ + Math.sin(norm * Math.PI * 4) * 4.5;
+    wavePts.push(at([wx, screenY, waveZ]));
+  }
+  const waveD = wavePts.map((p, idx) => `${idx ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join("");
+  out.push(`<path class="crt-wave-line" d="${waveD}" />`);
+
   // Cap with Optical Beacon Ring
   out.push(S(k.cylinder(tx, ty, TOWER_R - 4, 84, 18, P, 32), { tone: "hi" }));
   out.push(S(k.cylinder(tx, ty, 6, 102, 16, P, 24), { tone: "lo" }));
   out.push(S(k.cylinder(tx, ty, 4, 118, 4, P, 20), { tone: "hi" }));
+
+  // Pulsing Optical Beacon Summit
+  const beaconPt = at([tx, ty, 122]);
+  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="3" class="tower-beacon-core" />`);
+  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="6" class="tower-beacon-glow" />`);
 
   return out.join("");
 }
@@ -280,6 +312,11 @@ function buildStations() {
     const txt = k.faceTextSvg(stationMatrix, label, { size: 2.8, tone: "mid" });
     if (txt) out.push(txt);
   });
+
+  // Dynamic Halo Ellipse indicating active probed station
+  out.push(`<g id="active-halo-group">
+    <ellipse id="active-halo-ellipse" cx="0" cy="0" rx="20" ry="10" class="active-station-halo" />
+  </g>`);
 
   return out.join("");
 }
@@ -354,8 +391,9 @@ const subReadout = document.getElementById("sub-readout");
 const stage = document.querySelector(".iso-stage");
 const svg = document.querySelector(".iso-svg");
 const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+const haloEllipse = document.getElementById("active-halo-ellipse");
 
-// Client-side isometric math (no external dependency, zero script bugs)
+// Client-side isometric math (zero external dependencies, zero script parse bugs)
 const P = ${JSON.stringify(P)};
 const RADIANS = Math.PI / 180;
 const a = (P.azimuth || 44) * RADIANS;
@@ -429,12 +467,22 @@ function updateStationTelemetry(st, idx) {
     subReadout.textContent = detail;
   }
 
+  // Update active SVG halo
+  if (haloEllipse) {
+    const center = iso([st.x, 0, 4]);
+    haloEllipse.setAttribute("cx", center[0].toFixed(1));
+    haloEllipse.setAttribute("cy", center[1].toFixed(1));
+    haloEllipse.style.stroke = st.color;
+    haloEllipse.style.filter = "drop-shadow(0 0 10px " + st.color + ")";
+  }
+
   // Update telemetry dashboard card
   const badgeEl = document.getElementById("telemetry-badge");
   const nameEl = document.getElementById("telemetry-name");
   const roleEl = document.getElementById("telemetry-role");
   const branchEl = document.getElementById("telemetry-branch");
   const inputEl = document.getElementById("telemetry-input");
+  const statsEl = document.getElementById("telemetry-stats");
   const descEl = document.getElementById("telemetry-desc");
   const metaEl = document.getElementById("telemetry-meta");
   const repoLinkEl = document.getElementById("telemetry-repo-link");
@@ -446,6 +494,7 @@ function updateStationTelemetry(st, idx) {
   if (roleEl) roleEl.textContent = st.role;
   if (branchEl) branchEl.textContent = st.branch;
   if (inputEl) inputEl.textContent = st.flakeInput;
+  if (statsEl) statsEl.textContent = st.stats;
   if (descEl) descEl.textContent = st.desc;
   if (metaEl) metaEl.textContent = st.meta;
   if (repoLinkEl) repoLinkEl.href = st.repoUrl;
@@ -539,11 +588,22 @@ window.jumpToStation = function(idx) {
   }
 };
 
+let toastTimeout = 0;
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add("visible");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove("visible"), 2400);
+}
+
 window.copyCommand = function(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.innerText;
     btn.innerText = "✓ Copied!";
     btn.classList.add("copied");
+    showToast("✓ Copied: " + text);
     setTimeout(() => {
       btn.innerText = orig;
       btn.classList.remove("copied");
@@ -559,6 +619,16 @@ window.toggleTheme = function() {
   localStorage.setItem("anatomy-theme", next);
   const btn = document.getElementById("theme-btn-text");
   if (btn) btn.textContent = next === "dark" ? "Light Mode" : "Dark Mode";
+  showToast("Theme switched to " + next + " mode");
+};
+
+window.switchTab = function(tabId) {
+  document.querySelectorAll(".arch-tab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+  });
+  document.querySelectorAll(".arch-tab-pane").forEach(pane => {
+    pane.classList.toggle("active", pane.id === "pane-" + tabId);
+  });
 };
 
 // Intersection observer for animation pause/play
@@ -592,6 +662,24 @@ stage.addEventListener("keydown", (e) => {
   }
 });
 
+// Keyboard number shortcuts (1-5 to switch stations, T for theme, Space for pause/tour)
+window.addEventListener("keydown", (e) => {
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= 5) {
+    e.preventDefault();
+    jumpToStation(num - 1);
+    showToast("Probing Station " + num + ": " + STATIONS[num - 1].name);
+  } else if (e.key === "t" || e.key === "T") {
+    toggleTheme();
+  } else if (e.key === " ") {
+    e.preventDefault();
+    touring = !touring;
+    showToast(touring ? "Auto-tour resumed" : "Auto-tour paused");
+    if (touring) run();
+  }
+});
+
 // Initial draw
 draw();
 updateStationTelemetry(STATIONS[0], 0);
@@ -611,13 +699,14 @@ const cardHtml = `
     <div class="rig-badge">Interactive Test Rig · Anatomy Isometric Engine</div>
     <h2>Antigravity 2.0 NixOS Orchestration Rig</h2>
     <p class="rig-sub">
-      A physical isometric test rig modeling our workspace topology. Click stations below or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
+      A physical isometric test rig modeling our workspace topology. Click stations, press <kbd>1</kbd>–<kbd>5</kbd>, or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
     </p>
   </div>
 
   <div class="station-nav">
     ${STATIONS.map((st, i) => `
       <button type="button" class="station-pill ${i === 0 ? "active" : ""}" onclick="jumpToStation(${i})">
+        <span class="pill-key">${i + 1}</span>
         <span class="pill-dot" style="background:${st.color}"></span>
         <span class="pill-name">${st.name}</span>
         <span class="pill-badge">${st.badge}</span>
@@ -626,9 +715,11 @@ const cardHtml = `
   </div>
 
   <div class="iso-card">
+    <div class="iso-card-glow-bar"></div>
     <div class="iso-head">
       <span class="iso-fig">Fig 1</span>
       <h3 class="iso-title">Antigravity 2.0 NixOS Orchestration Engine</h3>
+      <span class="iso-keys-hint">Shortcuts: <kbd>1-5</kbd> Jump · <kbd>Space</kbd> Tour · <kbd>T</kbd> Theme</span>
     </div>
     
     <div class="iso-stage" tabindex="0" role="slider" aria-label="Interactive NixOS Workspace Machine" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1">
@@ -653,6 +744,7 @@ const cardHtml = `
   <!-- Live Station Telemetry Dashboard Card -->
   <div class="telemetry-dashboard">
     <div class="telemetry-card">
+      <div class="telemetry-card-accent"></div>
       <div class="telemetry-header">
         <div class="telemetry-title-group">
           <span id="telemetry-badge" class="telemetry-badge">${STATIONS[0].badge}</span>
@@ -676,6 +768,10 @@ const cardHtml = `
         <div class="spec-item">
           <span class="spec-label">System Meta</span>
           <span id="telemetry-meta" class="spec-val">${STATIONS[0].meta}</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Runtime Specs</span>
+          <span id="telemetry-stats" class="spec-val">${STATIONS[0].stats}</span>
         </div>
       </div>
       <div class="telemetry-footer">
@@ -712,7 +808,7 @@ const extraDocsHtml = `
     ${STATIONS.map((st, idx) => `
       <div class="repo-card ${idx === 0 ? "active-station-card" : ""}" id="card-${st.id}">
         <div class="repo-card-head">
-          <div class="repo-indicator" style="background:${st.color}"></div>
+          <div class="repo-indicator" style="background:${st.color}; box-shadow: 0 0 10px ${st.color}"></div>
           <span class="repo-badge">${st.badge}</span>
           <span class="repo-flake">${st.flakeInput}</span>
         </div>
@@ -727,7 +823,7 @@ const extraDocsHtml = `
           ${st.files.map(f => `<code>${f}</code>`).join(" ")}
         </div>
         <div class="repo-card-foot">
-          <button type="button" class="btn-inspect" onclick="jumpToStation(${idx})">Inspect Rig</button>
+          <button type="button" class="btn-inspect" onclick="jumpToStation(${idx}); window.location.hash = 'rig';">Inspect Rig</button>
           <a href="${st.repoUrl}" target="_blank" rel="noopener noreferrer" class="btn-github">GitHub ↗</a>
         </div>
       </div>
@@ -735,7 +831,7 @@ const extraDocsHtml = `
   </div>
 </section>
 
-<!-- ── System Architecture Deep Dive ──────────────────────────────────── -->
+<!-- ── System Architecture Deep Dive with Interactive Tabs ────────────── -->
 <section id="architecture" class="docs-section">
   <div class="section-title-wrap">
     <div class="section-badge">NixOS-WSL Architecture</div>
@@ -745,91 +841,173 @@ const extraDocsHtml = `
     </p>
   </div>
 
-  <div class="arch-flow-diagram">
-    <div class="flow-col">
-      <div class="flow-card driver-card">
-        <span class="flow-pill">Central Driver</span>
-        <h4>flake.nix</h4>
-        <p>Pins exact nixpkgs revisions, system configurations (<code>nixosConfigurations.nixos</code>), development shells, and formatter.</p>
-        <code>/home/damathryxx64/repositories/damathryxx64/</code>
-      </div>
-    </div>
-    <div class="flow-arrow">➔</div>
-    <div class="flow-col">
-      <div class="flow-card core-card">
-        <span class="flow-pill">System Core</span>
-        <h4>modules/configuration.nix</h4>
-        <p>NixOS-WSL orchestration importing specialized system domain modules.</p>
-      </div>
-      <div class="flow-subgrid">
-        <div class="flow-mini-card">
-          <h5>modules/ai/</h5>
-          <p>Antigravity CLI, declarative skills synchronizer, <code>agy2</code> bridge</p>
-        </div>
-        <div class="flow-mini-card">
-          <h5>modules/mcp/</h5>
-          <p>Native Model Context Protocol servers (mcp-nixos, git, github, typesafe)</p>
-        </div>
-        <div class="flow-mini-card">
-          <h5>modules/packages/</h5>
-          <p>Declarative pipeline runners (dots-validate, dots-build, dots-sync-skills)</p>
-        </div>
-        <div class="flow-mini-card">
-          <h5>modules/development/</h5>
-          <p>Toolchains (Node 22, Python 3.12, GCC, Clang, nixd LSP, nix-ld)</p>
-        </div>
-      </div>
-    </div>
-    <div class="flow-arrow">➔</div>
-    <div class="flow-col">
-      <div class="flow-card engine-card">
-        <span class="flow-pill">Active Execution</span>
-        <h4>Antigravity 2.0 & Agents</h4>
-        <p>Windows host launcher (<code>agy2</code>) connects to guest language server in NixOS-WSL. 31+ active skills synchronized into <code>~/.gemini/config/skills/</code>.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Antigravity 2.0 Host Bridge ────────────────────────────────────── -->
-<section id="bridge" class="docs-section">
-  <div class="section-title-wrap">
-    <div class="section-badge">WSL2 Bridge</div>
-    <h2>Antigravity 2.0 Host-to-Guest Interoperability</h2>
-    <p class="section-sub">
-      Eliminating Electron IDE overhead: Windows host process communicates directly with the NixOS-WSL language server.
-    </p>
-  </div>
-
-  <div class="bridge-grid">
-    <div class="bridge-card">
-      <div class="bridge-header">
-        <span class="bridge-tag">Legacy Approach (IDE Overhead)</span>
-        <h3>Heavy Host IDE</h3>
-      </div>
-      <ul class="bridge-list negative">
-        <li>✕ Heavy Electron memory footprint on Windows host</li>
-        <li>✕ Imperative plugin and extension drift</li>
-        <li>✕ Hardcoded Windows paths leaking into Linux projects</li>
-        <li>✕ Inconsistent CLI environments and terminal latency</li>
-      </ul>
+  <!-- Interactive Architecture Tabs -->
+  <div class="arch-tabs-container">
+    <div class="arch-tab-nav">
+      <button type="button" class="arch-tab-btn active" data-tab="modules" onclick="switchTab('modules')">
+        <span class="tab-icon">⚙️</span>
+        <span>System Modules</span>
+      </button>
+      <button type="button" class="arch-tab-btn" data-tab="devshells" onclick="switchTab('devshells')">
+        <span class="tab-icon">💻</span>
+        <span>Developer Shells</span>
+      </button>
+      <button type="button" class="arch-tab-btn" data-tab="skills" onclick="switchTab('skills')">
+        <span class="tab-icon">🧠</span>
+        <span>AI Agent Skills Hub</span>
+      </button>
+      <button type="button" class="arch-tab-btn" data-tab="bridge" onclick="switchTab('bridge')">
+        <span class="tab-icon">🌉</span>
+        <span>Antigravity 2.0 Bridge</span>
+      </button>
     </div>
 
-    <div class="bridge-card featured">
-      <div class="bridge-header">
-        <span class="bridge-tag">Our Architecture (agy2)</span>
-        <h3>Pure NixOS-WSL Headless Bridge</h3>
+    <!-- Tab 1: System Modules -->
+    <div class="arch-tab-pane active" id="pane-modules">
+      <div class="arch-flow-diagram">
+        <div class="flow-col">
+          <div class="flow-card driver-card">
+            <span class="flow-pill">Central Driver</span>
+            <h4>flake.nix</h4>
+            <p>Pins exact nixpkgs revisions, system configurations (<code>nixosConfigurations.nixos</code>), development shells, and formatter.</p>
+            <code>/home/damathryxx64/repositories/damathryxx64/</code>
+          </div>
+        </div>
+        <div class="flow-arrow">➔</div>
+        <div class="flow-col wide">
+          <div class="flow-card core-card">
+            <span class="flow-pill">System Core</span>
+            <h4>modules/configuration.nix</h4>
+            <p>Modular NixOS orchestrator importing domain modules:</p>
+          </div>
+          <div class="flow-subgrid">
+            <div class="flow-mini-card">
+              <h5>modules/ai/</h5>
+              <p>Antigravity CLI, declarative skills synchronizer (<code>skills.nix</code>), <code>agy2</code> Windows bridge</p>
+            </div>
+            <div class="flow-mini-card">
+              <h5>modules/mcp/</h5>
+              <p>Native Model Context Protocol servers (mcp-nixos, git, github, typesafe, sequential-thinking)</p>
+            </div>
+            <div class="flow-mini-card">
+              <h5>modules/packages/</h5>
+              <p>Declarative pipeline runners (dots-validate, dots-build, dots-sync-skills, dots-workspace-sync)</p>
+            </div>
+            <div class="flow-mini-card">
+              <h5>modules/development/</h5>
+              <p>Toolchains (Node 22, Python 3.12, GCC, Clang, nixd language server, nix-ld)</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <ul class="bridge-list positive">
-        <li>✓ <strong>Windows Launcher</strong>: <code>Antigravity.exe</code> connects to NixOS guest via direct WSL socket</li>
-        <li>✓ <strong>Native Shell Utility</strong>: Run <code>agy2</code> inside NixOS to launch Windows Antigravity 2.0 attached to WSL</li>
-        <li>✓ <strong>Nix-LD Binary Execution</strong>: Pure dynamic link resolver runs standard Linux ELF language servers</li>
-        <li>✓ <strong>Declarative Skills Sync</strong>: Skills auto-sync from Nix store paths on user login via systemd user services</li>
-      </ul>
-      <div class="bridge-code-wrap">
-        <button type="button" class="copy-btn" onclick="copyCommand('agy2', this)">Copy: agy2</button>
-        <pre><code># Inside NixOS Terminal
+    </div>
+
+    <!-- Tab 2: Developer Shells -->
+    <div class="arch-tab-pane" id="pane-devshells">
+      <div class="devshell-grid">
+        <div class="devshell-card">
+          <div class="devshell-badge">Default Toolchain</div>
+          <h4>nix develop .#default</h4>
+          <p>Full authoring toolchain: Alejandra, Statix, Deadnix, nh, nix-tree, manix, nixd, git.</p>
+          <code>nix develop .#default</code>
+        </div>
+        <div class="devshell-card">
+          <div class="devshell-badge">Python 3.12</div>
+          <h4>nix develop .#python</h4>
+          <p>Isolated Python 3.12 runtime with uv, pip, virtualenv, and data analysis packages.</p>
+          <code>nix develop .#python</code>
+        </div>
+        <div class="devshell-card">
+          <div class="devshell-badge">Cloud & DevOps</div>
+          <h4>nix develop .#devops</h4>
+          <p>DevOps toolchain: AWS CLI, Terraform, Docker, Kubernetes, Helm, Grafana agent.</p>
+          <code>nix develop .#devops</code>
+        </div>
+        <div class="devshell-card">
+          <div class="devshell-badge">Typography & CV</div>
+          <h4>nix develop .#resume</h4>
+          <p>Resume authoring environment with Typst, XeLaTeX, fonttools, and PDF compilers.</p>
+          <code>nix develop .#resume</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: AI Agent Skills Hub -->
+    <div class="arch-tab-pane" id="pane-skills">
+      <div class="skills-showcase">
+        <div class="skills-banner">
+          <h4>Unified Multi-Upstream Skills Monorepo</h4>
+          <p>
+            Tracks 5 upstream remotes (Superpowers, Karpathy Guidelines, ADHD, Anatomy, Google) with an automated daily sync and rewrite engine.
+          </p>
+        </div>
+        <div class="skills-tags-grid">
+          <div class="skill-category">
+            <h5>NixOS & Systems</h5>
+            <div class="skill-pill-list">
+              <span class="skill-tag">nixos-wsl</span>
+              <span class="skill-tag">nix-flake-management</span>
+              <span class="skill-tag">nix-code-audit</span>
+              <span class="skill-tag">nixos-system-rebuild</span>
+              <span class="skill-tag">windows-wsl-host-bridge</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h5>Behavior & Execution</h5>
+            <div class="skill-pill-list">
+              <span class="skill-tag">karpathy-guidelines</span>
+              <span class="skill-tag">autonomous-execution</span>
+              <span class="skill-tag">anti-slop-writing</span>
+              <span class="skill-tag">verification-before-completion</span>
+              <span class="skill-tag">outcome-driven-reporting</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h5>Anatomy & Graphics</h5>
+            <div class="skill-pill-list">
+              <span class="skill-tag">anatomy</span>
+              <span class="skill-tag">iso-kit</span>
+              <span class="skill-tag">generative_ui</span>
+              <span class="skill-tag">typesafe-ai</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Antigravity 2.0 Bridge -->
+    <div class="arch-tab-pane" id="pane-bridge">
+      <div class="bridge-grid">
+        <div class="bridge-card">
+          <div class="bridge-header">
+            <span class="bridge-tag">Legacy Approach (IDE Overhead)</span>
+            <h3>Heavy Host IDE</h3>
+          </div>
+          <ul class="bridge-list negative">
+            <li>✕ Heavy Electron memory footprint on Windows host</li>
+            <li>✕ Imperative plugin and extension drift</li>
+            <li>✕ Hardcoded Windows paths leaking into Linux projects</li>
+            <li>✕ Inconsistent CLI environments and terminal latency</li>
+          </ul>
+        </div>
+
+        <div class="bridge-card featured">
+          <div class="bridge-header">
+            <span class="bridge-tag">Our Architecture (agy2)</span>
+            <h3>Pure NixOS-WSL Headless Bridge</h3>
+          </div>
+          <ul class="bridge-list positive">
+            <li>✓ <strong>Windows Launcher</strong>: <code>Antigravity.exe</code> connects to NixOS guest via direct WSL socket</li>
+            <li>✓ <strong>Native Shell Utility</strong>: Run <code>agy2</code> inside NixOS to launch Windows Antigravity 2.0 attached to WSL</li>
+            <li>✓ <strong>Nix-LD Binary Execution</strong>: Pure dynamic link resolver runs standard Linux ELF language servers</li>
+            <li>✓ <strong>Declarative Skills Sync</strong>: Skills auto-sync from Nix store paths on user login via systemd user services</li>
+          </ul>
+          <div class="bridge-code-wrap">
+            <button type="button" class="copy-btn" onclick="copyCommand('agy2', this)">Copy: agy2</button>
+            <pre><code># Inside NixOS Terminal
 agy2   # Launches Antigravity 2.0 on Windows, mapped to NixOS WSL</code></pre>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -839,7 +1017,7 @@ agy2   # Launches Antigravity 2.0 on Windows, mapped to NixOS WSL</code></pre>
 <section id="validation" class="docs-section">
   <div class="section-title-wrap">
     <div class="section-badge">Zero Drift Guarantee</div>
-    <h2>4-Stage Pre-Commit Validation Pipeline</h2>
+    <h2>5-Stage Pre-Commit Validation Pipeline</h2>
     <p class="section-sub">
       Every change to the system undergoes strict automated static checks before any build or commit:
     </p>
@@ -964,11 +1142,11 @@ const extraCss = `
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --bg-page: #080d1a;
-  --bg-card: rgba(15, 23, 42, 0.72);
-  --bg-card-hover: rgba(30, 41, 59, 0.85);
+  --bg-page: #060913;
+  --bg-card: rgba(13, 20, 36, 0.72);
+  --bg-card-hover: rgba(22, 33, 58, 0.88);
   --card-border: rgba(255, 255, 255, 0.08);
-  --card-border-highlight: rgba(96, 165, 250, 0.4);
+  --card-border-highlight: rgba(96, 165, 250, 0.45);
   --text-primary: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
@@ -977,15 +1155,14 @@ const extraCss = `
   --accent-purple: #a78bfa;
   --accent-pink: #f472b6;
   --accent-amber: #fbbf24;
-  --glow-color: rgba(96, 165, 250, 0.12);
 }
 
 [data-theme="light"] {
   --bg-page: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(241, 245, 249, 0.95);
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(241, 245, 249, 0.98);
   --card-border: rgba(0, 0, 0, 0.08);
-  --card-border-highlight: rgba(37, 99, 235, 0.35);
+  --card-border-highlight: rgba(37, 99, 235, 0.4);
   --text-primary: #0f172a;
   --text-muted: #475569;
   --text-dim: #94a3b8;
@@ -994,7 +1171,6 @@ const extraCss = `
   --accent-purple: #7c3aed;
   --accent-pink: #db2777;
   --accent-amber: #d97706;
-  --glow-color: rgba(37, 99, 235, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -1009,6 +1185,32 @@ body {
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── Ambient Background Glow & Fine Mesh ────────────────────────── */
+.ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 500px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(96, 165, 250, 0.16), rgba(167, 139, 250, 0.08) 45%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mesh-grid {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ── Top Navigation Bar ─────────────────────────────────────────── */
@@ -1019,10 +1221,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 12px 28px;
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--card-border);
 }
 
@@ -1055,7 +1257,7 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 22px;
 }
 
 .nav-links a {
@@ -1080,7 +1282,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   font-size: 12.5px;
   font-weight: 500;
@@ -1109,21 +1311,23 @@ body {
 
 /* ── Container & Hero ───────────────────────────────────────────── */
 .main-layout {
-  max-width: 1080px;
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 20px 100px;
+  padding: 40px 24px 100px;
 }
 
 .hero-banner {
   text-align: center;
-  padding: 48px 0 32px;
+  padding: 44px 0 36px;
 }
 
 .hero-badge-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 14px;
+  gap: 8px;
+  padding: 5px 16px;
   border-radius: 9999px;
   background: rgba(96, 165, 250, 0.1);
   border: 1px solid rgba(96, 165, 250, 0.25);
@@ -1131,24 +1335,41 @@ body {
   font-size: 12px;
   font-family: var(--font-mono);
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: live-blink 2s ease-in-out infinite;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
 .hero-banner h1 {
-  font-size: 44px;
+  font-size: 46px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   margin: 0 0 16px;
   line-height: 1.15;
+  background: linear-gradient(135deg, #ffffff 30%, #93c5fd 65%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-lead {
-  font-size: 18px;
+  font-size: 17.5px;
   color: var(--text-muted);
-  max-width: 720px;
-  margin: 0 auto 28px;
+  max-width: 740px;
+  margin: 0 auto 30px;
   line-height: 1.6;
 }
 
@@ -1170,6 +1391,7 @@ body {
   border: 1px solid var(--card-border);
   font-size: 12.5px;
   color: var(--text-muted);
+  backdrop-filter: blur(8px);
 }
 
 .hero-stat-tag strong {
@@ -1178,7 +1400,7 @@ body {
 
 /* ── Anatomy Interactive Rig Card ──────────────────────────────── */
 .rig-section {
-  margin-bottom: 64px;
+  margin-bottom: 72px;
 }
 
 .rig-header {
@@ -1196,7 +1418,7 @@ body {
 }
 
 .rig-header h2 {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   margin: 0 0 8px;
   letter-spacing: -0.02em;
@@ -1206,7 +1428,7 @@ body {
   color: var(--text-muted);
   font-size: 14px;
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 640px;
 }
 
 .station-nav {
@@ -1230,6 +1452,7 @@ body {
   font-size: 12px;
   cursor: pointer;
   transition: all 0.18s ease;
+  backdrop-filter: blur(8px);
 }
 
 .station-pill:hover {
@@ -1243,7 +1466,19 @@ body {
   background: rgba(96, 165, 250, 0.12);
   border-color: var(--accent-blue);
   color: var(--text-primary);
-  box-shadow: 0 0 12px rgba(96, 165, 250, 0.2);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.22);
+}
+
+.pill-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  color: var(--text-dim);
 }
 
 .pill-dot {
@@ -1268,11 +1503,21 @@ body {
 
 .iso-card {
   position: relative;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(14px);
   overflow: hidden;
+}
+
+.iso-card-glow-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue) 40%, var(--accent-purple) 60%, transparent);
 }
 
 .iso-head {
@@ -1301,6 +1546,12 @@ body {
   letter-spacing: 0.08em;
 }
 
+.iso-keys-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
 .iso-stage {
   padding: 24px 16px;
   cursor: grab;
@@ -1309,6 +1560,63 @@ body {
 
 .iso-stage:active {
   cursor: grabbing;
+}
+
+/* ── Mechanical SVG Specific Animations ─────────────────────────── */
+.telemetry-circuit-line {
+  fill: none;
+  stroke-width: 0.8px;
+  stroke-dasharray: 4 6;
+  opacity: 0.7;
+  animation: circuit-flow 1.5s linear infinite;
+}
+
+@keyframes circuit-flow {
+  to { stroke-dashoffset: -30; }
+}
+
+.tower-beacon-core {
+  fill: #60a5fa;
+  filter: drop-shadow(0 0 6px #60a5fa);
+}
+
+.tower-beacon-glow {
+  fill: none;
+  stroke: #93c5fd;
+  stroke-width: 1px;
+  animation: beacon-pulse 2s ease-out infinite;
+}
+
+@keyframes beacon-pulse {
+  0% { r: 3px; opacity: 1; stroke-width: 1.5px; }
+  100% { r: 14px; opacity: 0; stroke-width: 0.2px; }
+}
+
+.crt-wave-line {
+  fill: none;
+  stroke: #34d399;
+  stroke-width: 0.8px;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px #34d399);
+  animation: crt-flicker 4s linear infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.75; }
+  52% { opacity: 1; }
+  54% { opacity: 0.7; }
+}
+
+.active-station-halo {
+  fill: none;
+  stroke-width: 1.5px;
+  animation: halo-radiate 1.8s ease-out infinite;
+}
+
+@keyframes halo-radiate {
+  0% { rx: 14px; ry: 7px; opacity: 1; }
+  100% { rx: 26px; ry: 13px; opacity: 0; }
 }
 
 .iso-foot {
@@ -1381,11 +1689,23 @@ body {
 }
 
 .telemetry-card {
+  position: relative;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.telemetry-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
 }
 
 .telemetry-header {
@@ -1416,7 +1736,7 @@ body {
 
 .telemetry-card h4 {
   margin: 0;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -1429,7 +1749,7 @@ body {
 .repo-direct-btn {
   display: inline-flex;
   align-items: center;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 6px;
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: #fff;
@@ -1446,7 +1766,7 @@ body {
 
 .telemetry-desc {
   margin: 0 0 16px;
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -1458,7 +1778,7 @@ body {
   margin-bottom: 16px;
   padding: 14px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--card-border);
 }
 
@@ -1518,9 +1838,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -1531,7 +1851,7 @@ body {
 
 .cmd-copy-btn:hover {
   border-color: var(--accent-blue);
-  background: rgba(96, 165, 250, 0.08);
+  background: rgba(96, 165, 250, 0.1);
 }
 
 .cmd-copy-btn.copied {
@@ -1542,12 +1862,12 @@ body {
 
 /* ── Section Titles ─────────────────────────────────────────────── */
 .docs-section {
-  margin-top: 72px;
+  margin-top: 80px;
 }
 
 .section-title-wrap {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .section-badge {
@@ -1562,7 +1882,7 @@ body {
 }
 
 .section-title-wrap h2 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0 0 10px;
@@ -1571,37 +1891,38 @@ body {
 .section-sub {
   font-size: 15px;
   color: var(--text-muted);
-  max-width: 640px;
+  max-width: 680px;
   margin: 0 auto;
 }
 
 /* ── Repositories Grid ──────────────────────────────────────────── */
 .repos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 20px;
 }
 
 .repo-card {
-  padding: 22px;
-  border-radius: 12px;
+  padding: 24px;
+  border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
+  backdrop-filter: blur(12px);
 }
 
 .repo-card:hover {
   background: var(--bg-card-hover);
   border-color: var(--card-border-highlight);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.4);
 }
 
 .repo-card.active-station-card {
   border-color: var(--accent-blue);
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.15);
+  box-shadow: 0 0 25px rgba(96, 165, 250, 0.2);
 }
 
 .repo-card-head {
@@ -1635,7 +1956,7 @@ body {
 
 .repo-title {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -1648,7 +1969,7 @@ body {
 }
 
 .repo-desc {
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.5;
   margin: 0 0 14px;
@@ -1656,10 +1977,10 @@ body {
 }
 
 .repo-meta-box {
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.15);
-  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: 14px;
   font-size: 11.5px;
 }
 
@@ -1685,7 +2006,7 @@ body {
 .repo-files code {
   font-size: 10.5px;
   font-family: var(--font-mono);
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
@@ -1700,7 +2021,7 @@ body {
 
 .btn-inspect {
   flex: 1;
-  padding: 7px 12px;
+  padding: 8px 12px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
@@ -1718,7 +2039,7 @@ body {
 }
 
 .btn-github {
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 6px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
@@ -1734,33 +2055,90 @@ body {
   background: var(--bg-card-hover);
 }
 
-/* ── Architecture Flow Diagram ──────────────────────────────────── */
+/* ── Interactive Architecture Tabs ──────────────────────────────── */
+.arch-tabs-container {
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  padding: 24px;
+  backdrop-filter: blur(14px);
+}
+
+.arch-tab-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 24px;
+}
+
+.arch-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.arch-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.arch-tab-btn.active {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.tab-icon {
+  font-size: 14px;
+}
+
+.arch-tab-pane {
+  display: none;
+}
+
+.arch-tab-pane.active {
+  display: block;
+}
+
+/* ── Architecture Flow Diagram (Inside Tab) ─────────────────────── */
 .arch-flow-diagram {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 28px;
-  border-radius: 12px;
-  background: var(--bg-card);
-  border: 1px solid var(--card-border);
   overflow-x: auto;
 }
 
 .flow-col {
   flex: 1;
-  min-width: 240px;
+  min-width: 250px;
+}
+
+.flow-col.wide {
+  flex: 2;
+  min-width: 380px;
 }
 
 .flow-arrow {
   color: var(--accent-blue);
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
 .flow-card {
-  padding: 18px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--card-border);
 }
 
@@ -1782,7 +2160,7 @@ body {
 
 .flow-card p {
   margin: 0 0 8px;
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--text-muted);
   line-height: 1.45;
 }
@@ -1796,14 +2174,14 @@ body {
 .flow-subgrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .flow-mini-card {
-  padding: 10px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--card-border);
 }
 
@@ -1816,9 +2194,109 @@ body {
 
 .flow-mini-card p {
   margin: 0;
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-dim);
-  line-height: 1.35;
+  line-height: 1.4;
+}
+
+/* ── DevShells Grid ─────────────────────────────────────────────── */
+.devshell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.devshell-card {
+  padding: 18px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--card-border);
+}
+
+.devshell-badge {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.devshell-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-family: var(--font-mono);
+}
+
+.devshell-card p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.devshell-card code {
+  display: block;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--accent-emerald);
+}
+
+/* ── Skills Showcase ────────────────────────────────────────────── */
+.skills-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skills-banner h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.skills-banner p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.skills-tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.skill-category {
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--card-border);
+}
+
+.skill-category h5 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--accent-purple);
+  text-transform: uppercase;
+}
+
+.skill-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border: 1px solid var(--card-border);
 }
 
 /* ── Antigravity 2.0 Bridge Section ─────────────────────────────── */
@@ -1831,14 +2309,14 @@ body {
 .bridge-card {
   padding: 24px;
   border-radius: 12px;
-  background: var(--bg-card);
+  background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--card-border);
 }
 
 .bridge-card.featured {
   border-color: var(--accent-blue);
-  background: linear-gradient(180deg, rgba(37, 99, 235, 0.05) 0%, var(--bg-card) 100%);
-  box-shadow: 0 0 25px rgba(37, 99, 235, 0.1);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.12);
 }
 
 .bridge-header {
@@ -1887,7 +2365,7 @@ body {
 .bridge-code-wrap {
   position: relative;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--card-border);
   padding: 12px 16px;
 }
@@ -1927,21 +2405,24 @@ body {
 }
 
 .step-card {
-  padding: 20px;
-  border-radius: 10px;
+  padding: 22px 18px;
+  border-radius: 12px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
   text-align: center;
-  transition: transform 0.15s ease;
+  transition: transform 0.18s ease;
+  backdrop-filter: blur(10px);
 }
 
 .step-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  border-color: var(--card-border-highlight);
 }
 
 .step-card.highlight {
   border-color: var(--accent-emerald);
-  background: rgba(52, 211, 153, 0.06);
+  background: rgba(52, 211, 153, 0.07);
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.12);
 }
 
 .step-num {
@@ -1983,16 +2464,17 @@ body {
   font-family: var(--font-mono);
   padding: 4px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   color: var(--accent-purple);
 }
 
 /* ── Commands Table ─────────────────────────────────────────────── */
 .table-card {
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
   overflow-x: auto;
+  backdrop-filter: blur(14px);
 }
 
 .cmd-table {
@@ -2002,18 +2484,18 @@ body {
 }
 
 .cmd-table th {
-  padding: 14px 18px;
+  padding: 14px 20px;
   text-align: left;
   font-size: 11px;
   font-family: var(--font-mono);
   text-transform: uppercase;
   color: var(--text-dim);
   border-bottom: 1px solid var(--card-border);
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .cmd-table td {
-  padding: 12px 18px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--card-border);
   color: var(--text-muted);
 }
@@ -2050,7 +2532,7 @@ body {
 .badge-type.docs { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
 
 .tbl-copy-btn {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
@@ -2073,11 +2555,37 @@ body {
   color: var(--accent-emerald);
 }
 
+/* ── Toast Notification ─────────────────────────────────────────── */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  padding: 10px 20px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--accent-blue);
+  color: #fff;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(96, 165, 250, 0.4);
+  backdrop-filter: blur(12px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.toast-notification.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
 /* ── Footer ─────────────────────────────────────────────────────── */
 .docs-footer {
   text-align: center;
   margin-top: 80px;
-  padding-top: 32px;
+  padding-top: 36px;
   border-top: 1px solid var(--card-border);
   color: var(--text-dim);
   font-size: 13px;
@@ -2121,6 +2629,9 @@ const htmlPage = `<!DOCTYPE html>
   </style>
 </head>
 <body class="iso" data-theme="dark">
+  <div class="ambient-glow"></div>
+  <div class="mesh-grid"></div>
+
   <!-- Top Glass Navigation Bar -->
   <header class="top-nav">
     <div class="nav-brand">
@@ -2131,7 +2642,6 @@ const htmlPage = `<!DOCTYPE html>
       <a href="#rig">Anatomy Rig</a>
       <a href="#repos">Repositories</a>
       <a href="#architecture">Architecture</a>
-      <a href="#bridge">Antigravity 2.0</a>
       <a href="#validation">Validation</a>
       <a href="#commands">Commands</a>
     </nav>
@@ -2149,7 +2659,10 @@ const htmlPage = `<!DOCTYPE html>
   <main class="main-layout">
     <!-- Hero Banner -->
     <section class="hero-banner">
-      <div class="hero-badge-pill">⚡ Declarative · Pure NixOS-WSL · Zero Drift</div>
+      <div class="hero-badge-pill">
+        <span class="live-dot"></span>
+        <span>Pure NixOS-WSL · Zero Drift · Antigravity 2.0</span>
+      </div>
       <h1>NixOS + Autonomous Agents + Antigravity 2.0</h1>
       <p class="hero-lead">
         A pure, declarative NixOS-WSL development container orchestrated by the <code>damathryxx64</code> flake, powering Google Antigravity 2.0 and a multi-upstream AI skills ecosystem.
@@ -2157,7 +2670,7 @@ const htmlPage = `<!DOCTYPE html>
       <div class="hero-stat-row">
         <div class="hero-stat-tag">📦 <strong>5</strong> Repositories Synced</div>
         <div class="hero-stat-tag">🧠 <strong>31</strong> Active Agent Skills</div>
-        <div class="hero-stat-tag">🛡️ <strong>4-Stage</strong> Zero-Drift Gates</div>
+        <div class="hero-stat-tag">🛡️ <strong>5-Stage</strong> Zero-Drift Gates</div>
         <div class="hero-stat-tag">🚀 <strong>Headless</strong> WSL2 Bridge</div>
       </div>
     </section>
@@ -2174,6 +2687,9 @@ const htmlPage = `<!DOCTYPE html>
     </footer>
   </main>
 
+  <!-- Interactive Floating Toast -->
+  <div id="toast" class="toast-notification"></div>
+
   <script>
     ${clientScript}
   </script>
@@ -2183,4 +2699,4 @@ const htmlPage = `<!DOCTYPE html>
 
 const OUT_FILE = join(DOCS_DIR, "index.html");
 writeFileSync(OUT_FILE, htmlPage, "utf8");
-console.log(`✓ Successfully generated: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
+console.log(`✓ Successfully generated god-level page: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
