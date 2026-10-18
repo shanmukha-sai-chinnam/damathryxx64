@@ -24,27 +24,31 @@ function resolveAnatomyDir() {
 const ANATOMY_DIR = resolveAnatomyDir();
 const k = await import(`${ANATOMY_DIR}/kit/iso-kit.mjs`);
 
-const WIDTH = 980;
-const HEIGHT = 550;
+const WIDTH = 1000;
+const HEIGHT = 560;
 
 // World Dimensions
-const PLATE = { x: -175, y: -90, w: 350, d: 180, r: 12 };
-const PLATE_H = 14;
+const SUB_BED = { x: -182, y: -96, w: 364, d: 192, r: 14 };
+const MAIN_BED = { x: -172, y: -88, w: 344, d: 176, r: 10 };
+const BED_H = 14;
+const SUB_H = 6;
 const FOOT_H = 6;
 
 // Rail & Gantry bounds
-const RAIL_FROM = -135;
-const RAIL_TO = 135;
+const RAIL_FROM = -132;
+const RAIL_TO = 132;
 const RAIL_Y1 = -26;
 const RAIL_Y2 = 26;
+const SHAFT_Z = 16;
+const SHAFT_R = 3.6;
 
 // Central Tower: Antigravity 2.0 Spindle Column
-const TOWER = [0, -52];
+const TOWER = [0, -54];
 const TOWER_R = 24;
-const TOWER_H = 120;
+const TOWER_H = 126;
 const CRT_Z = 64;
-const CRT_H = 42;
-const CRT_W = 60;
+const CRT_H = 44;
+const CRT_W = 64;
 
 // 5 Stations along X (mapping to the 5 managed repositories)
 const STATIONS = [
@@ -52,7 +56,7 @@ const STATIONS = [
     id: "damathryxx64",
     name: "damathryxx64",
     role: "Central Flake Driver",
-    x: -110,
+    x: -108,
     camH: 30,
     color: "#60a5fa",
     repoUrl: "https://github.com/shanmukha-sai-chinnam/damathryxx64",
@@ -69,7 +73,7 @@ const STATIONS = [
     id: "skills",
     name: "skills",
     role: "AI Agent Skills Hub",
-    x: -55,
+    x: -54,
     camH: 22,
     color: "#34d399",
     repoUrl: "https://github.com/shanmukha-sai-chinnam/skills",
@@ -103,7 +107,7 @@ const STATIONS = [
     id: "antigravity-superpowers",
     name: "superpowers",
     role: "Agent Tooling & Watcher",
-    x: 55,
+    x: 54,
     camH: 20,
     color: "#f472b6",
     repoUrl: "https://github.com/shanmukha-sai-chinnam/antigravity-superpowers",
@@ -120,7 +124,7 @@ const STATIONS = [
     id: "clamav-scanner",
     name: "clamav-scanner",
     role: "Security Sentinel",
-    x: 110,
+    x: 108,
     camH: 28,
     color: "#fbbf24",
     repoUrl: "https://github.com/shanmukha-sai-chinnam/clamav-scanner",
@@ -135,23 +139,23 @@ const STATIONS = [
   },
 ];
 
-const CARRIAGE_W = 46;
-const CARRIAGE_D = 66;
-const CARRIAGE_H = 10;
+const CARRIAGE_W = 50;
+const CARRIAGE_D = 70;
+const CARRIAGE_H = 12;
 const REACH = [STATIONS[0].x, STATIONS[STATIONS.length - 1].x];
 
 // Camera setup: 44° Azimuth for optimal isometric depth & long side visibility
 const P = k.fitProjection(
   [
-    ...k.boxCorners(PLATE, -PLATE_H - FOOT_H, 0),
-    [TOWER[0] - TOWER_R, TOWER[1] - TOWER_R, TOWER_H + 10],
-    [TOWER[0] + TOWER_R, TOWER[1] + TOWER_R, TOWER_H + 10],
-    [RAIL_FROM, RAIL_Y1, 40],
-    [RAIL_TO, RAIL_Y2, 40],
+    ...k.boxCorners(SUB_BED, -BED_H - SUB_H - FOOT_H, 0),
+    [TOWER[0] - TOWER_R, TOWER[1] - TOWER_R, TOWER_H + 8],
+    [TOWER[0] + TOWER_R, TOWER[1] + TOWER_R, TOWER_H + 8],
+    [RAIL_FROM - 14, RAIL_Y1, SHAFT_Z + 14],
+    [RAIL_TO + 14, RAIL_Y2, SHAFT_Z + 14],
   ],
   WIDTH,
   HEIGHT,
-  { pad: 32, azimuth: 44, elevation: 32 }
+  { pad: 34, azimuth: 44, elevation: 32 }
 );
 
 const at = (point) => k.iso(point, P);
@@ -163,75 +167,136 @@ const byDepth = (points) =>
     (a, b) => k.depthOf([a[0], a[1], 0], P) - k.depthOf([b[0], b[1], 0], P)
   );
 
-// ── 1. Base Plate & Feet (NixOS Foundation) ─────────────────────────────────
+// ── 1. Heavy Multi-Tier Machine Bed & Leveling Feet ─────────────────────────
 function buildPlate() {
   const out = [];
-  out.push(`<path class="iso-halo" d="${k.haloOf(PLATE, -PLATE_H - FOOT_H, PLATE_H, P)}"/>`);
 
-  // Leveling feet
-  for (const [x, y] of byDepth(k.corners(PLATE, 26))) {
-    out.push(S(k.cylinder(x, y, 9, -PLATE_H - FOOT_H, 2.2, P, 28), { tone: "lo" }));
-    out.push(S(k.cylinder(x, y, 7.2, -PLATE_H - FOOT_H + 2.2, FOOT_H - 2.2, P, 28), { tone: "mid" }));
-    out.push(L(k.knurl(x, y, 7.2, -PLATE_H - FOOT_H + 2.2, -PLATE_H, 24, P), { tone: "lo" }));
+  // Soft ambient ground contact shadow
+  out.push(`<path class="iso-halo" d="${k.haloOf(SUB_BED, -BED_H - SUB_H - FOOT_H, BED_H + SUB_H, P)}"/>`);
+
+  // 6 Precision Leveling Feet with knurled adjustment collars
+  const footPositions = [
+    [-150, -75], [0, -78], [150, -75],
+    [-150, 75], [0, 78], [150, 75]
+  ];
+  for (const [fx, fy] of byDepth(footPositions)) {
+    // Ground vibration isolation foot pad
+    out.push(S(k.cylinder(fx, fy, 10, -BED_H - SUB_H - FOOT_H, 2.5, P, 28), { tone: "lo" }));
+    // Knurled leveling stud collar
+    out.push(S(k.cylinder(fx, fy, 7.5, -BED_H - SUB_H - FOOT_H + 2.5, FOOT_H - 2.5, P, 28), { tone: "mid" }));
+    out.push(L(k.knurl(fx, fy, 7.5, -BED_H - SUB_H - FOOT_H + 2.5, -BED_H - SUB_H, 24, P), { tone: "lo" }));
   }
 
-  // Steel bed slab
-  out.push(S(k.slabOf(PLATE, -PLATE_H, PLATE_H, P, 10, 2), { tone: "mid" }));
-  out.push(L(k.planOutline(k.insetPlan(PLATE, 6), 0, P), { tone: "lo" }));
+  // Cast iron bottom sub-bed
+  out.push(S(k.slabOf(SUB_BED, -BED_H - SUB_H, SUB_H, P, 10, 1.5), { tone: "lo" }));
+  out.push(L(k.planOutline(k.insetPlan(SUB_BED, 5), -BED_H, P), { tone: "faint" }));
 
-  // Corner precision screws
-  const screws = k.corners(PLATE, 12);
-  out.push(L(screws.map(([x, y]) => k.ring(x, y, 3, 0, P, 16)).join(""), { tone: "lo" }));
-  out.push(D(screws.map(([x, y]) => at([x, y, 0])), { size: 0.6 }));
+  // Precision-ground toolroom main steel bed with 1.8mm mirror bevel
+  out.push(S(k.slabOf(MAIN_BED, -BED_H, BED_H, P, 10, 1.8), { tone: "mid" }));
 
-  // Vernier Scale front strip with millimeter tick marks
-  const strip = { x: -145, y: PLATE.y + PLATE.d - 16, w: 290, d: 8, r: 1.5 };
-  out.push(S(k.slabOf(strip, 0, 1.2, P, 1.5, 0.4), { tone: "hi" }));
-  const ticks = k.topTicks(strip.x + 10, strip.x + strip.w - 10, 5, 5, strip.y + strip.d, 1.2, [-2, -4], P);
+  // T-slot clamping grooves machined into bed surface
+  out.push(L(k.planOutline(k.insetPlan(MAIN_BED, 5), 0, P), { tone: "lo" }));
+  out.push(L(k.planOutline(k.insetPlan(MAIN_BED, 8), 0, P), { tone: "faint" }));
+
+  // T-slot longitudinal channels along X
+  for (const gy of [-38, 38]) {
+    const slotD = k.lineOnTop([-150, gy], [150, gy], 0, P);
+    out.push(L(slotD, { tone: "faint" }));
+  }
+
+  // Corner socket-head cap screws with hexagonal recess dots
+  const bedScrews = k.corners(MAIN_BED, 12);
+  out.push(L(bedScrews.map(([x, y]) => k.ring(x, y, 3, 0, P, 16)).join(""), { tone: "lo" }));
+  out.push(D(bedScrews.map(([x, y]) => at([x, y, 0])), { size: 0.6, tone: "mid" }));
+
+  // Machined Brass Inspection Nameplate
+  const nameplate = { x: -68, y: 72, w: 136, d: 11, r: 2 };
+  out.push(S(k.slabOf(nameplate, 0, 1.2, P, 2, 0.4), { tone: "hi" }));
+  out.push(L(k.planOutline(k.insetPlan(nameplate, 1.2), 1.2, P), { tone: "lo" }));
+  // Nameplate mounting micro-rivets
+  out.push(D([[nameplate.x + 3, nameplate.y + 5.5], [nameplate.x + nameplate.w - 3, nameplate.y + 5.5]].map(([x, y]) => at([x, y, 1.2])), { size: 0.45, tone: "lo" }));
+  const npMatrix = k.topMatrix([-60, nameplate.y + 2.5], 1.2, P);
+  const npText = k.faceTextSvg(npMatrix, "NIXOS 26.11 x86_64 PURE RIG · ANTIGRAVITY 2.0 LSP", { size: 2.8, tone: "lo" });
+  if (npText) out.push(npText);
+
+  // Front Vernier Ruler Strip with millimeter graduations
+  const strip = { x: -148, y: 55, w: 296, d: 8, r: 1.5 };
+  out.push(S(k.slabOf(strip, 0, 1.2, P, 2, 0.4), { tone: "lo", crease: "none" }));
+  const ticks = k.topTicks(strip.x + 8, strip.x + strip.w - 8, 4, 5, strip.y + strip.d, 1.2, [-2, -4.2], P);
   out.push(L(ticks.minor, { tone: "lo" }));
-  out.push(L(ticks.major, { tone: "hi" }));
+  out.push(L(ticks.major, { tone: "mid" }));
 
-  // Engraved front plate title
-  const titleMatrix = k.topMatrix([-90, strip.y - 12], 0, P);
-  const engraved = k.faceTextSvg(titleMatrix, "NIXOS-WSL x86_64 PURE SYSTEM FOUNDATION", { size: 3.2, tone: "lo" });
-  if (engraved) out.push(engraved);
-
-  // Animated Telemetry Circuit Traces running from Tower to each Station
+  // Industrial Cable Harness Loom: Conduit trunk & P-clamps on bed surface
   for (const st of STATIONS) {
     const sx = st.x;
-    const p0 = at([0, -28, 0.4]);
-    const p1 = at([sx * 0.45, -22, 0.4]);
-    const p2 = at([sx, -18, 0.4]);
-    const p3 = at([sx, -15, 0.4]);
-    const traceD = `M${p0[0].toFixed(1)} ${p0[1].toFixed(1)} L${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)} L${p3[0].toFixed(1)} ${p3[1].toFixed(1)}`;
-    out.push(`<path class="telemetry-circuit-line" d="${traceD}" style="stroke:${st.color};" />`);
+    const pStart = at([0, -32, 0.6]);
+    const pMid1 = at([sx * 0.42, -24, 0.6]);
+    const pMid2 = at([sx, -20, 0.6]);
+    const pEnd = at([sx, -15, 0.6]);
+    out.push(k.wireSvg(pStart, pEnd, { via: [pMid1, pMid2], tone: "mid", flow: true, ends: "both", size: 1.2 }));
+    // P-clip mounting bracket on bed
+    const pClampPt = at([sx, -21, 0]);
+    out.push(D([pClampPt], { size: 0.45, tone: "lo" }));
   }
 
   return out.join("");
 }
 
-// ── 2. Guide Rails & Bushings ───────────────────────────────────────────────
+// ── 2. Twin Hardened Steel Guide Rails, Pillow Blocks & Springs ─────────────
 function buildRails() {
   const out = [];
-  const railR = 3.6;
-  const railZ = 14;
 
   for (const ry of [RAIL_Y1, RAIL_Y2]) {
-    // Left & Right Mount Pillows
-    out.push(S(k.slabOf({ x: RAIL_FROM - 12, y: ry - 9, w: 16, d: 18, r: 2 }, 0, 20, P, 2, 0.8), { tone: "lo" }));
-    out.push(S(k.slabOf({ x: RAIL_TO - 4, y: ry - 9, w: 16, d: 18, r: 2 }, 0, 20, P, 2, 0.8), { tone: "lo" }));
+    // ── Left Cast Iron Pillow Block Assembly (x = -132) ──
+    const leftPad = { x: -144, y: ry - 10, w: 18, d: 20, r: 3 };
+    out.push(S(k.slabOf(leftPad, 0, 12, P, 3, 0.8), { tone: "lo" }));
+    const leftCap = { x: -142, y: ry - 8, w: 14, d: 16, r: 2 };
+    out.push(S(k.slabOf(leftCap, 12, 10, P, 2, 0.6), { tone: "mid" }));
+    // 4 Pillow block mounting socket screws
+    out.push(D([
+      at([-140, ry - 6, 22]), at([-134, ry - 6, 22]),
+      at([-140, ry + 6, 22]), at([-134, ry + 6, 22])
+    ], { size: 0.5, tone: "mid" }));
+    // Lubrication Grease Zerk fitting on pillow cap
+    out.push(S(k.cylinder(-137, ry, 2.2, 22, 3, P, 16), { tone: "hi" }));
+    out.push(S(k.cylinder(-137, ry, 1.2, 25, 2, P, 12), { tone: "lo" }));
 
-    // Mount bolts
-    out.push(D([at([RAIL_FROM - 4, ry - 5, 20]), at([RAIL_FROM - 4, ry + 5, 20])], { size: 0.6 }));
-    out.push(D([at([RAIL_TO + 4, ry - 5, 20]), at([RAIL_TO + 4, ry + 5, 20])], { size: 0.6 }));
+    // ── Right Cast Iron Pillow Block Assembly (x = 132) ──
+    const rightPad = { x: 126, y: ry - 10, w: 18, d: 20, r: 3 };
+    out.push(S(k.slabOf(rightPad, 0, 12, P, 3, 0.8), { tone: "lo" }));
+    const rightCap = { x: 128, y: ry - 8, w: 14, d: 16, r: 2 };
+    out.push(S(k.slabOf(rightCap, 12, 10, P, 2, 0.6), { tone: "mid" }));
+    out.push(D([
+      at([130, ry - 6, 22]), at([136, ry - 6, 22]),
+      at([130, ry + 6, 22]), at([136, ry + 6, 22])
+    ], { size: 0.5, tone: "mid" }));
+    // Grease Zerk
+    out.push(S(k.cylinder(133, ry, 2.2, 22, 3, P, 16), { tone: "hi" }));
+    out.push(S(k.cylinder(133, ry, 1.2, 25, 2, P, 12), { tone: "lo" }));
 
-    // Rail shaft
-    const segments = 24;
-    for (let i = 0; i < segments; i++) {
-      const rx = RAIL_FROM + (i / segments) * (RAIL_TO - RAIL_FROM);
-      out.push(L(k.lineOnTop([rx, ry - railR], [rx, ry + railR], railZ, P), { tone: "lo" }));
-    }
-    out.push(S(k.slabOf({ x: RAIL_FROM, y: ry - railR, w: RAIL_TO - RAIL_FROM, d: railR * 2, r: railR }, railZ - railR, railR * 2, P, 1, 0.4), { tone: "hi" }));
+    // Rubber Bump Stops at shaft ends
+    out.push(S(k.cylinder(-122, ry, 5.2, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 24), { tone: "lo" }));
+    out.push(S(k.cylinder(122, ry, 5.2, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 24), { tone: "lo" }));
+
+    // Shaft Retaining Snap Rings
+    out.push(L(k.sideRing([-120, ry, SHAFT_Z], 4.4, "x", P, 20), { tone: "faint" }));
+    out.push(L(k.sideRing([120, ry, SHAFT_Z], 4.4, "x", P, 20), { tone: "faint" }));
+
+    // Pre-load Helical Compression Coil Springs (Painter's order: Back half drawn BEFORE shaft!)
+    const leftSpring = k.coil(-118, -60, [ry, SHAFT_Z], 5.2, 6, "x", P);
+    const rightSpring = k.coil(60, 118, [ry, SHAFT_Z], 5.2, 6, "x", P);
+    out.push(L(leftSpring.back, { tone: "lo" }));
+    out.push(L(rightSpring.back, { tone: "lo" }));
+
+    // Ground & Polished Hardened Steel Guide Shaft
+    const shaftPlan = { x: -128, y: ry - SHAFT_R, w: 256, d: SHAFT_R * 2, r: SHAFT_R };
+    out.push(S(k.slabOf(shaftPlan, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 1, 0.4), { tone: "hi" }));
+    // Centerline reflection stroke
+    out.push(L(k.lineOnTop([-122, ry], [122, ry], SHAFT_Z + SHAFT_R, P), { tone: "lit" }));
+
+    // Front half of springs drawn AFTER shaft!
+    out.push(L(leftSpring.front, { tone: "mid" }));
+    out.push(L(rightSpring.front, { tone: "mid" }));
   }
 
   return out.join("");
@@ -242,51 +307,101 @@ function buildCentralTower() {
   const out = [];
   const [tx, ty] = TOWER;
 
-  // Base flange plate
-  out.push(S(k.slabOf({ x: tx - 32, y: ty - 32, w: 64, d: 48, r: 6 }, 0, 6, P, 6, 1), { tone: "lo" }));
-  out.push(D([[tx - 26, ty - 26], [tx + 26, ty - 26], [tx - 26, ty + 12], [tx + 26, ty + 12]].map(([x, y]) => at([x, y, 6])), { size: 0.5 }));
+  // Heavy Octagonal Cast Iron Pedestal Base
+  const towerPad = { x: tx - 36, y: ty - 32, w: 72, d: 52, r: 8 };
+  out.push(S(k.slabOf(towerPad, 0, 8, P, 6, 1.2), { tone: "lo" }));
+  // 6 Anchor bolts with washers
+  const anchorPts = [
+    [tx - 28, ty - 24], [tx, ty - 26], [tx + 28, ty - 24],
+    [tx - 28, ty + 14], [tx, ty + 16], [tx + 28, ty + 14]
+  ];
+  out.push(D(anchorPts.map(([x, y]) => at([x, y, 8])), { size: 0.55, tone: "mid" }));
 
-  // Main cylindrical turned column
-  out.push(S(k.cylinder(tx, ty, TOWER_R, 6, 42, P, 36), { tone: "mid" }));
-  out.push(L(k.knurl(tx, ty, TOWER_R, 20, 32, 48, P), { tone: "lo" }));
+  // Lower Turned Base Fillet & Column
+  out.push(S(k.cylinder(tx, ty, 26, 8, 4, P, 36, 0.8), { tone: "mid" }));
+  out.push(S(k.cylinder(tx, ty, 23, 12, 42, P, 36), { tone: "mid" }));
 
-  // Flanged Collar
-  out.push(S(k.cylinder(tx, ty, TOWER_R + 3, 48, 6, P, 36), { tone: "hi" }));
+  // Twin Diamond Knurled Grip Bands on lower spindle
+  out.push(L(k.knurl(tx, ty, 23, 16, 26, 44, P), { tone: "lo" }));
+  out.push(L(k.sideArc(tx, ty, 23, 16, P, 24), { tone: "faint" }));
+  out.push(L(k.sideArc(tx, ty, 23, 26, P, 24), { tone: "faint" }));
 
-  // Intermediate Column
-  out.push(S(k.cylinder(tx, ty, TOWER_R - 2, 54, 30, P, 36), { tone: "mid" }));
+  out.push(L(k.knurl(tx, ty, 23, 34, 44, 44, P), { tone: "lo" }));
+  out.push(L(k.sideArc(tx, ty, 23, 34, P, 24), { tone: "faint" }));
+  out.push(L(k.sideArc(tx, ty, 23, 44, P, 24), { tone: "faint" }));
 
-  // Telemetry Display Housing (facing viewer)
-  const displayBox = { x: tx - CRT_W / 2, y: ty + 10, w: CRT_W, d: 14, r: 3 };
-  out.push(S(k.slabOf(displayBox, CRT_Z, CRT_H, P, 3, 0.8), { tone: "hi" }));
-  const screenFace = { x: displayBox.x + 4, y: displayBox.y + displayBox.d - 0.5, w: displayBox.w - 8, d: 1, r: 2 };
-  out.push(S(k.slabOf(screenFace, CRT_Z + 4, CRT_H - 8, P, 2, 0.4), { tone: "lo", crease: "none" }));
+  // Heavy Split-Clamp Collar with Pinch Bolt
+  out.push(S(k.cylinder(tx, ty, 27, 54, 7, P, 36, 0.8), { tone: "hi" }));
+  // Split pinch bolt
+  out.push(S(k.cylinder(tx + 22, ty, 2.5, 55, 5, P, 16), { tone: "lo" }));
 
-  // CRT Screen Oscilloscope Waveform Trace
-  const screenX1 = -22, screenX2 = 22, screenY = ty + 24, screenZ = CRT_Z + 20;
+  // Intermediate Column with Perforated Heat Dissipation Grille
+  out.push(S(k.cylinder(tx, ty, 21, 61, 30, P, 36), { tone: "mid" }));
+  out.push(L(k.sideArc(tx, ty, 21, 75, P, 24), { tone: "faint" }));
+  // Perforated vent grid
+  out.push(D(k.dotGrid(tx - 9, ty + 18, 5, 4, 3.6, 68, P), { size: 0.5, tone: "lo" }));
+
+  // Cantilevered Monitor Housing Support Arm
+  const arm = { x: tx - 12, y: ty + 4, w: 24, d: 18, r: 3 };
+  out.push(S(k.slabOf(arm, 66, 14, P, 3, 0.8), { tone: "lo" }));
+
+  // CRT Telemetry Monitor Shroud (Angled 45° facing viewer)
+  const monBox = { x: tx - CRT_W / 2, y: ty + 16, w: CRT_W, d: 16, r: 4 };
+  out.push(S(k.slabOf(monBox, CRT_Z, CRT_H, P, 4, 1.2), { tone: "hi" }));
+
+  // Deep Beveled CRT Bezel Frame
+  const monBezel = { x: monBox.x + 4, y: monBox.y + monBox.d - 1, w: monBox.w - 8, d: 2, r: 2.5 };
+  out.push(S(k.slabOf(monBezel, CRT_Z + 4, CRT_H - 8, P, 2, 0.6), { tone: "mid" }));
+
+  // Anti-Glare CRT Screen Face
+  const monScreen = { x: monBezel.x + 3, y: monBezel.y + monBezel.d - 0.5, w: monBezel.w - 6, d: 0.8, r: 2 };
+  out.push(S(k.slabOf(monScreen, CRT_Z + 7, CRT_H - 14, P, 1, 0.3), { tone: "lo", crease: "none" }));
+
+  // Etched Reticle Crosshairs on Screen
+  out.push(L(k.lineOnTop([monScreen.x + 2, monScreen.y + 0.4], [monScreen.x + monScreen.w - 2, monScreen.y + 0.4], CRT_Z + 7 + (CRT_H - 14) / 2, P), { tone: "faint" }));
+  out.push(L(k.segment([tx, monScreen.y + 0.4, CRT_Z + 9], [tx, monScreen.y + 0.4, CRT_Z + CRT_H - 9], P), { tone: "faint" }));
+
+  // CRT Screen Phosphor Green Oscilloscope Multi-Harmonic Waveform
+  const waveX1 = monScreen.x + 3, waveX2 = monScreen.x + monScreen.w - 3;
+  const waveZ = CRT_Z + 7 + (CRT_H - 14) / 2;
   const wavePts = [];
-  for (let wx = screenX1; wx <= screenX2; wx += 2) {
-    const norm = (wx - screenX1) / (screenX2 - screenX1);
-    const waveZ = screenZ + Math.sin(norm * Math.PI * 4) * 4.5;
-    wavePts.push(at([wx, screenY, waveZ]));
+  for (let wx = waveX1; wx <= waveX2; wx += 1.8) {
+    const norm = (wx - waveX1) / (waveX2 - waveX1);
+    const waveH = Math.sin(norm * Math.PI * 4) * 4.5 + Math.sin(norm * Math.PI * 8) * 1.8;
+    wavePts.push(at([wx, monScreen.y + 0.8, waveZ + waveH]));
   }
   const waveD = wavePts.map((p, idx) => `${idx ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join("");
   out.push(`<path class="crt-wave-line" d="${waveD}" />`);
 
-  // Cap with Optical Beacon Ring
-  out.push(S(k.cylinder(tx, ty, TOWER_R - 4, 84, 18, P, 32), { tone: "hi" }));
-  out.push(S(k.cylinder(tx, ty, 6, 102, 16, P, 24), { tone: "lo" }));
-  out.push(S(k.cylinder(tx, ty, 4, 118, 4, P, 20), { tone: "hi" }));
+  // Trio of Micro Status LEDs on lower bezel: Green (LSP), Amber (WSL), Blue (Sync)
+  out.push(`<circle cx="${at([tx - 16, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx - 16, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#34d399" />`);
+  out.push(`<circle cx="${at([tx, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#fbbf24" />`);
+  out.push(`<circle cx="${at([tx + 16, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx + 16, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#60a5fa" />`);
 
-  // Pulsing Optical Beacon Summit
-  const beaconPt = at([tx, ty, 122]);
-  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="3" class="tower-beacon-core" />`);
-  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="6" class="tower-beacon-glow" />`);
+  // Upper Transition Bell & 360° Graduation Bearing Ring
+  out.push(S(k.cylinder(tx, ty, 18, 91, 16, P, 32, 1), { tone: "mid" }));
+  out.push(S(k.cylinder(tx, ty, 20, 107, 6, P, 36), { tone: "hi" }));
+  const bearingTicks = k.radialTicks(tx, ty, 19, 36, 6, 113, [1.5, 3], P);
+  out.push(L(bearingTicks.minor, { tone: "lo" }));
+  out.push(L(bearingTicks.major, { tone: "hi" }));
+
+  // Optical Telemetry Beacon Summit
+  out.push(S(k.cylinder(tx, ty, 8, 113, 11, P, 24), { tone: "mid" }));
+  out.push(S(k.cylinder(tx, ty, 4.5, 124, 4, P, 20), { tone: "lit" }));
+
+  // Pulsing Optical Laser Beacon Summit
+  const beaconPt = at([tx, ty, 128]);
+  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="3.2" class="tower-beacon-core" />`);
+  out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="7" class="tower-beacon-glow" />`);
+
+  // Brass Conduit Glands entering tower base
+  out.push(S(k.cylinder(tx - 18, ty - 18, 4, 8, 8, P, 20), { tone: "hi" }));
+  out.push(S(k.cylinder(tx + 18, ty - 18, 4, 8, 8, P, 20), { tone: "hi" }));
 
   return out.join("");
 }
 
-// ── 4. The 5 Workspace Stations ──────────────────────────────────────────────
+// ── 4. The 5 Machined Repository Stations (S1..S5) ───────────────────────────
 function buildStations() {
   const out = [];
 
@@ -294,69 +409,134 @@ function buildStations() {
     const sx = st.x;
     const sy = 0;
 
-    // Station base pad
-    const pad = { x: sx - 16, y: -16, w: 32, d: 32, r: 3 };
-    out.push(S(k.slabOf(pad, 0, 4, P, 3, 0.6), { tone: "lo" }));
+    // Station Base Pad with 4 corner mounting screws
+    const pad = { x: sx - 17, y: -17, w: 34, d: 34, r: 4 };
+    out.push(S(k.slabOf(pad, 0, 4, P, 3, 0.8), { tone: "lo" }));
+    out.push(D([
+      at([sx - 11, -11, 4]), at([sx + 11, -11, 4]),
+      at([sx - 11, 11, 4]), at([sx + 11, 11, 4])
+    ], { size: 0.5, tone: "mid" }));
 
-    // Station Cam / Turret / Cylinder with true height
-    out.push(S(k.cylinder(sx, sy, 11, 4, st.camH, P, 28), { tone: "mid" }));
-    out.push(L(k.knurl(sx, sy, 11, 4 + st.camH - 6, 4 + st.camH, 28, P), { tone: "lo" }));
+    // Lower Flanged Pedestal Ring
+    out.push(S(k.cylinder(sx, sy, 14, 4, 3, P, 32, 0.6), { tone: "mid" }));
 
-    // Top ring & central contact bead
-    out.push(L(k.ring(sx, sy, 8, 4 + st.camH, P, 20), { tone: "hi" }));
-    out.push(D([at([sx, sy, 4 + st.camH])], { size: 0.8, tone: "hi" }));
+    // Knurled Micrometer Adjustment Sleeve
+    out.push(S(k.cylinder(sx, sy, 12.5, 7, 5, P, 32), { tone: "hi" }));
+    out.push(L(k.knurl(sx, sy, 12.5, 7, 12, 32, P), { tone: "lo" }));
+    out.push(L(k.sideArc(sx, sy, 12.5, 7, P, 24), { tone: "faint" }));
 
-    // Station engraved badge label
-    const label = `S${idx + 1}`;
-    const stationMatrix = k.topMatrix([sx - 4, -18], 4, P);
-    const txt = k.faceTextSvg(stationMatrix, label, { size: 2.8, tone: "mid" });
-    if (txt) out.push(txt);
+    // Main Graduated Turret Column (True height)
+    out.push(S(k.cylinder(sx, sy, 10.5, 12, st.camH, P, 32, 0.6), { tone: "mid" }));
+    // Vertical graduation ticks on turret face
+    const vTicks = k.sideTicks(12, 12 + st.camH, 4, 2, sx + 10.5, 12 + st.camH, [1.5, 2.8], P);
+    out.push(L(vTicks.minor, { tone: "lo" }));
+    out.push(L(vTicks.major, { tone: "mid" }));
+
+    // Hardened Anvil Face with concentric chamfers
+    const topZ = 12 + st.camH;
+    out.push(L(k.ring(sx, sy, 9.5, topZ, P, 28), { tone: "hi" }));
+    out.push(L(k.ring(sx, sy, 6.5, topZ, P, 24), { tone: "lo" }));
+
+    // Central Spherical Ruby Touch Bead (Probed by stylus)
+    out.push(S(k.cylinder(sx, sy, 2.8, topZ, 2.2, P, 20, 1.2), { tone: "lit" }));
+
+    // Station Engraved Nameplate on bedplate
+    const tagPlate = { x: sx - 16, y: -26, w: 32, d: 7, r: 1.5 };
+    out.push(S(k.slabOf(tagPlate, 0, 1, P, 2, 0.4), { tone: "lo" }));
+    out.push(D([[tagPlate.x + 2.5, tagPlate.y + 3.5], [tagPlate.x + tagPlate.w - 2.5, tagPlate.y + 3.5]].map(([x, y]) => at([x, y, 1])), { size: 0.45 }));
+    const tagMatrix = k.topMatrix([sx - 12, tagPlate.y + 1], 1, P);
+    const tagText = k.faceTextSvg(tagMatrix, `S${idx + 1}: ${st.badge}`, { size: 2.4, tone: "mid" });
+    if (tagText) out.push(tagText);
   });
 
   // Dynamic Halo Ellipse indicating active probed station
   out.push(`<g id="active-halo-group">
-    <ellipse id="active-halo-ellipse" cx="0" cy="0" rx="20" ry="10" class="active-station-halo" />
+    <ellipse id="active-halo-ellipse" cx="0" cy="0" rx="22" ry="11" class="active-station-halo" />
   </g>`);
 
   return out.join("");
 }
 
-// ── 5. Moving Carriage & Sensor Plunger ───────────────────────────────────────
+// ── 5. Heavy Gliding Carriage & Precision Dial Gauge Indicator ───────────────
 function buildMovingCarriage() {
   const out = [];
 
   out.push(`<g id="carriage">`);
-  // Main carriage block
-  const block = { x: -CARRIAGE_W / 2, y: -CARRIAGE_D / 2, w: CARRIAGE_W, d: CARRIAGE_D, r: 4 };
-  out.push(S(k.slabOf(block, 4, CARRIAGE_H, P, 4, 1), { tone: "hi" }));
 
-  // Twin linear ball bushings
+  // Main Machined Billet Aluminum Carriage Plate
+  const carriagePlate = { x: -CARRIAGE_W / 2, y: -CARRIAGE_D / 2, w: CARRIAGE_W, d: CARRIAGE_D, r: 4 };
+  out.push(S(k.slabOf(carriagePlate, 4, CARRIAGE_H, P, 4, 1.2), { tone: "hi" }));
+  out.push(L(k.planOutline(k.insetPlan(carriagePlate, 3.5), 4 + CARRIAGE_H, P), { tone: "lo" }));
+
+  // Four Bronze Linear Bushing Blocks with Hex Retaining Bolts & Oil Wells
   for (const by of [RAIL_Y1, RAIL_Y2]) {
-    out.push(S(k.slabOf({ x: -CARRIAGE_W / 2 - 2, y: by - 6, w: CARRIAGE_W + 4, d: 12, r: 2 }, 8, 12, P, 2, 0.6), { tone: "mid" }));
-    out.push(L(k.knurl(-CARRIAGE_W / 2 + 6, by, 5, 9, 19, 16, P), { tone: "lo" }));
+    for (const bx of [-CARRIAGE_W / 2 + 1, CARRIAGE_W / 2 - 17]) {
+      const bushBlock = { x: bx, y: by - 7, w: 16, d: 14, r: 2.5 };
+      out.push(S(k.slabOf(bushBlock, 8, 16, P, 2, 0.6), { tone: "mid" }));
+      // Lubricating oil well cap
+      out.push(S(k.cylinder(bx + 8, by, 2.2, 24, 3, P, 16), { tone: "hi" }));
+      out.push(D([at([bx + 8, by, 27])], { size: 0.45, tone: "lo" }));
+    }
   }
 
-  // Dial Gauge Housing
-  const gaugeD = 18;
-  const gaugeZ = 4 + CARRIAGE_H + 4;
-  out.push(S(k.cylinder(0, -12, gaugeD, gaugeZ, 8, P, 32), { tone: "mid" }));
-  out.push(L(k.ring(0, -12, gaugeD, gaugeZ + 8, P, 32), { tone: "hi" }));
-  out.push(L(k.ring(0, -12, gaugeD - 2.5, gaugeZ + 8, P, 32), { tone: "lo" }));
+  // Dial Indicator Mounting Clamp & Post
+  const clampBlock = { x: -9, y: -21, w: 18, d: 14, r: 3 };
+  out.push(S(k.slabOf(clampBlock, 16, 14, P, 3, 0.8), { tone: "lo" }));
+  // Knurled thumb screw on clamp side
+  out.push(S(k.cylinder(11, -14, 3.5, 20, 6, P, 20), { tone: "mid" }));
+  out.push(L(k.knurl(11, -14, 3.5, 20, 26, 20, P), { tone: "lo" }));
+  // Upright vertical mounting stem
+  out.push(S(k.cylinder(0, -14, 4.2, 30, 18, P, 24), { tone: "mid" }));
+  out.push(L(k.sideArc(0, -14, 4.2, 38, P, 20), { tone: "faint" }));
 
-  // Dial face radial tick marks
-  const dialTicks = k.radialTicks(0, -12, gaugeD - 3, 24, 6, gaugeZ + 8, [1.5, 3], P);
+  // Precision Dial Indicator Casing (Face up at z = 48)
+  const dialZ = 48;
+  const dialTop = 60;
+  out.push(S(k.cylinder(0, -14, 20, dialZ, 12, P, 48, 1), { tone: "hi" }));
+  // Knurled outer bezel rotation ring
+  out.push(L(k.knurl(0, -14, 20, 56, dialTop, 64, P, 0.4), { tone: "lo" }));
+  out.push(L(k.sideArc(0, -14, 20, 56, P, 32), { tone: "faint" }));
+  // Inner dial face bezel ring
+  out.push(L(k.ring(0, -14, 18, dialTop, P, 48), { tone: "hi" }));
+
+  // 60-division radial tick dial face
+  const dialTicks = k.radialTicks(0, -14, 17, 60, 5, dialTop, [1.5, 3.2], P);
   out.push(L(dialTicks.minor, { tone: "lo" }));
   out.push(L(dialTicks.major, { tone: "hi" }));
 
-  // Moving needle element
-  out.push(`<path id="needle" class="iso-line" data-tone="lit" d="${k.lineOnTop([0, -12], [0, -22], gaugeZ + 8, P)}"/>`);
+  // Secondary Revolution Counter Sub-Dial
+  out.push(L(k.ring(0, -9, 3.6, dialTop, P, 24), { tone: "faint" }));
+  const subTicks = k.radialTicks(0, -9, 3.2, 12, 3, dialTop, [0.8, 1.4], P);
+  out.push(L(subTicks.major, { tone: "lo" }));
 
-  // Sensor Plunger Stem
+  // Engraved dial face text
+  const dfMatrix = k.topMatrix([-6, -17], dialTop, P);
+  const dfText = k.faceTextSvg(dfMatrix, "AGY 2.0", { size: 2.2, tone: "lo", anchor: "middle" });
+  if (dfText) out.push(dfText);
+
+  // Stepped center needle hub
+  out.push(S(k.cylinder(0, -14, 2.4, dialTop, 1.5, P, 20), { tone: "mid" }));
+  out.push(L(k.ring(0, -14, 1.2, dialTop + 1.5, P, 16), { tone: "hi" }));
+
+  // Moving needle element with counterweight tail
+  out.push(`<path id="needle" class="iso-line" data-tone="lit" style="stroke-width:1.2px;" d="${k.lineOnTop([0, -14], [0, -28], dialTop + 0.3, P)}"/>`);
+
+  // Top spring crown mechanism
+  out.push(S(k.cylinder(0, -34, 3.5, 51, 7, P, 20), { tone: "mid" }));
+  out.push(S(k.cylinder(0, -34, 2.2, 58, 3, P, 16), { tone: "hi" }));
+
+  // Sensor Plunger Assembly
   out.push(`<g id="plunger">`);
-  out.push(S(k.cylinder(0, 0, 4.5, 0, 24, P, 20), { tone: "hi" }));
-  out.push(S(k.cylinder(0, 0, 2.2, -6, 6, P, 16), { tone: "lo" }));
-  // Ruby stylus ball tip
-  out.push(S(k.cylinder(0, 0, 3.2, -8, 2.5, P, 16), { tone: "lit" }));
+  // Guide gland nut
+  out.push(S(k.cylinder(0, 0, 5.5, 0, 8, P, 24, 0.8), { tone: "lo" }));
+  // Polished stainless plunger stem
+  out.push(S(k.cylinder(0, 0, 2.4, -6, 26, P, 20), { tone: "hi" }));
+  // Helical coil spring around plunger stem
+  const plungerSpring = k.coil(-2, 12, [0, 0], 3.4, 4, "z", P);
+  out.push(L(plungerSpring.back, { tone: "lo" }));
+  out.push(L(plungerSpring.front, { tone: "mid" }));
+  // Hardened Ruby Spherical Stylus Ball Tip (Rests directly on station cam)
+  out.push(S(k.cylinder(0, 0, 3.4, -8, 2.8, P, 16, 1.4), { tone: "lit" }));
   out.push(`</g>`);
 
   out.push(`</g>`);
@@ -425,13 +605,16 @@ function clamp(v, min, max) {
 }
 
 const needleAt = (turns) => {
-  const [dx, dy] = [0, -12];
-  const dz = BASE_H + 8;
+  const [dx, dy] = [0, -14];
+  const dz = 60.3;
   const angle = turns * Math.PI * 2 - Math.PI / 2;
-  const len = 11;
+  const len = 13.5;
+  const tailLen = 4.5;
   const nx = dx + Math.cos(angle) * len;
   const ny = dy + Math.sin(angle) * len;
-  return lineOnTop([dx, dy], [nx, ny], dz);
+  const tx = dx - Math.cos(angle) * tailLen;
+  const ty = dy - Math.sin(angle) * tailLen;
+  return lineOnTop([tx, ty], [nx, ny], dz);
 };
 
 let currentX = STATIONS[0].x;
@@ -473,7 +656,7 @@ function updateStationTelemetry(st, idx) {
     haloEllipse.setAttribute("cx", center[0].toFixed(1));
     haloEllipse.setAttribute("cy", center[1].toFixed(1));
     haloEllipse.style.stroke = st.color;
-    haloEllipse.style.filter = "drop-shadow(0 0 10px " + st.color + ")";
+    haloEllipse.style.filter = "drop-shadow(0 0 12px " + st.color + ")";
   }
 
   // Update telemetry dashboard card
@@ -512,7 +695,7 @@ function updateStationTelemetry(st, idx) {
 function draw() {
   carriage.setAttribute("transform", translateAlong([currentX, 0, 0]));
   plunger.setAttribute("transform", translateAlong([0, 0, BASE_H + tip.at]));
-  needle.setAttribute("d", needleAt(currentX / 28));
+  needle.setAttribute("d", needleAt(currentX / 27));
 
   // Determine active station
   let closestIdx = 0;
@@ -696,10 +879,10 @@ if (tBtn) tBtn.textContent = savedTheme === "dark" ? "Light Mode" : "Dark Mode";
 const cardHtml = `
 <section id="rig" class="rig-section">
   <div class="rig-header">
-    <div class="rig-badge">Interactive Test Rig · Anatomy Isometric Engine</div>
+    <div class="rig-badge">Hero Instrument Rig · Anatomy Precision Standard</div>
     <h2>Antigravity 2.0 NixOS Orchestration Rig</h2>
     <p class="rig-sub">
-      A physical isometric test rig modeling our workspace topology. Click stations, press <kbd>1</kbd>–<kbd>5</kbd>, or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
+      A physical 110-part isometric test rig modeling our workspace topology. Click stations, press <kbd>1</kbd>–<kbd>5</kbd>, or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
     </p>
   </div>
 
@@ -737,8 +920,8 @@ const cardHtml = `
 
   <div class="iso-keys">
     <div class="iso-key"><span class="iso-swatch" data-swatch="lit"></span><span>Antigravity 2.0 Spindle Column · Real-time JSON-RPC 2.0 language server running in NixOS</span></div>
-    <div class="iso-key"><span class="iso-swatch" data-swatch="raised"></span><span>Precision Guide Rails · Dual hardened steel bushings with moving carriage</span></div>
-    <div class="iso-key"><span class="iso-swatch" data-swatch="shaded"></span><span>Station Cams · damathryxx64, skills, NixOS-WSL, superpowers, clamav-scanner</span></div>
+    <div class="iso-key"><span class="iso-swatch" data-swatch="raised"></span><span>Hardened Steel Shafts & Helical Coil Springs · Dual pillow blocks with moving carriage</span></div>
+    <div class="iso-key"><span class="iso-swatch" data-swatch="shaded"></span><span>Graduated Turrets & Cable Looms · damathryxx64, skills, NixOS-WSL, superpowers, clamav-scanner</span></div>
   </div>
 
   <!-- Live Station Telemetry Dashboard Card -->
@@ -1142,11 +1325,11 @@ const extraCss = `
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --bg-page: #060913;
-  --bg-card: rgba(13, 20, 36, 0.72);
-  --bg-card-hover: rgba(22, 33, 58, 0.88);
+  --bg-page: #050811;
+  --bg-card: rgba(11, 18, 34, 0.75);
+  --bg-card-hover: rgba(19, 30, 54, 0.9);
   --card-border: rgba(255, 255, 255, 0.08);
-  --card-border-highlight: rgba(96, 165, 250, 0.45);
+  --card-border-highlight: rgba(96, 165, 250, 0.5);
   --text-primary: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
@@ -1159,10 +1342,10 @@ const extraCss = `
 
 [data-theme="light"] {
   --bg-page: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card: rgba(255, 255, 255, 0.9);
   --bg-card-hover: rgba(241, 245, 249, 0.98);
   --card-border: rgba(0, 0, 0, 0.08);
-  --card-border-highlight: rgba(37, 99, 235, 0.4);
+  --card-border-highlight: rgba(37, 99, 235, 0.45);
   --text-primary: #0f172a;
   --text-muted: #475569;
   --text-dim: #94a3b8;
@@ -1195,9 +1378,9 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1000px;
-  height: 500px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(96, 165, 250, 0.16), rgba(167, 139, 250, 0.08) 45%, transparent 75%);
+  width: 1100px;
+  height: 550px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(96, 165, 250, 0.18), rgba(167, 139, 250, 0.1) 45%, transparent 75%);
   pointer-events: none;
   z-index: 0;
 }
@@ -1205,7 +1388,7 @@ body {
 .mesh-grid {
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
@@ -1355,7 +1538,7 @@ body {
 }
 
 .hero-banner h1 {
-  font-size: 46px;
+  font-size: 48px;
   font-weight: 800;
   letter-spacing: -0.035em;
   margin: 0 0 16px;
@@ -1368,7 +1551,7 @@ body {
 .hero-lead {
   font-size: 17.5px;
   color: var(--text-muted);
-  max-width: 740px;
+  max-width: 760px;
   margin: 0 auto 30px;
   line-height: 1.6;
 }
@@ -1428,7 +1611,7 @@ body {
   color: var(--text-muted);
   font-size: 14px;
   margin: 0 auto;
-  max-width: 640px;
+  max-width: 660px;
 }
 
 .station-nav {
@@ -1463,10 +1646,10 @@ body {
 }
 
 .station-pill.active {
-  background: rgba(96, 165, 250, 0.12);
+  background: rgba(96, 165, 250, 0.14);
   border-color: var(--accent-blue);
   color: var(--text-primary);
-  box-shadow: 0 0 16px rgba(96, 165, 250, 0.22);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25);
 }
 
 .pill-key {
@@ -1563,18 +1746,6 @@ body {
 }
 
 /* ── Mechanical SVG Specific Animations ─────────────────────────── */
-.telemetry-circuit-line {
-  fill: none;
-  stroke-width: 0.8px;
-  stroke-dasharray: 4 6;
-  opacity: 0.7;
-  animation: circuit-flow 1.5s linear infinite;
-}
-
-@keyframes circuit-flow {
-  to { stroke-dashoffset: -30; }
-}
-
 .tower-beacon-core {
   fill: #60a5fa;
   filter: drop-shadow(0 0 6px #60a5fa);
@@ -1589,7 +1760,7 @@ body {
 
 @keyframes beacon-pulse {
   0% { r: 3px; opacity: 1; stroke-width: 1.5px; }
-  100% { r: 14px; opacity: 0; stroke-width: 0.2px; }
+  100% { r: 16px; opacity: 0; stroke-width: 0.2px; }
 }
 
 .crt-wave-line {
@@ -1616,7 +1787,7 @@ body {
 
 @keyframes halo-radiate {
   0% { rx: 14px; ry: 7px; opacity: 1; }
-  100% { rx: 26px; ry: 13px; opacity: 0; }
+  100% { rx: 28px; ry: 14px; opacity: 0; }
 }
 
 .iso-foot {
@@ -2699,4 +2870,4 @@ const htmlPage = `<!DOCTYPE html>
 
 const OUT_FILE = join(DOCS_DIR, "index.html");
 writeFileSync(OUT_FILE, htmlPage, "utf8");
-console.log(`✓ Successfully generated god-level page: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
+console.log(`✓ Successfully generated heavenly hero figure: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
