@@ -171,72 +171,53 @@ const byDepth = (points) =>
 function buildPlate() {
   const out = [];
 
-  // Soft ambient ground contact shadow
   out.push(`<path class="iso-halo" d="${k.haloOf(SUB_BED, -BED_H - SUB_H - FOOT_H, BED_H + SUB_H, P)}"/>`);
 
-  // 6 Precision Leveling Feet with knurled adjustment collars
   const footPositions = [
     [-150, -75], [0, -78], [150, -75],
     [-150, 75], [0, 78], [150, 75]
   ];
   for (const [fx, fy] of byDepth(footPositions)) {
-    // Ground vibration isolation foot pad
     out.push(S(k.cylinder(fx, fy, 10, -BED_H - SUB_H - FOOT_H, 2.5, P, 28), { tone: "lo" }));
-    // Knurled leveling stud collar
     out.push(S(k.cylinder(fx, fy, 7.5, -BED_H - SUB_H - FOOT_H + 2.5, FOOT_H - 2.5, P, 28), { tone: "mid" }));
     out.push(L(k.knurl(fx, fy, 7.5, -BED_H - SUB_H - FOOT_H + 2.5, -BED_H - SUB_H, 24, P), { tone: "lo" }));
   }
 
-  // Cast iron bottom sub-bed
   out.push(S(k.slabOf(SUB_BED, -BED_H - SUB_H, SUB_H, P, 10, 1.5), { tone: "lo" }));
   out.push(L(k.planOutline(k.insetPlan(SUB_BED, 5), -BED_H, P), { tone: "faint" }));
 
-  // Precision-ground toolroom main steel bed with 1.8mm mirror bevel
   out.push(S(k.slabOf(MAIN_BED, -BED_H, BED_H, P, 10, 1.8), { tone: "mid" }));
-
-  // T-slot clamping grooves machined into bed surface
   out.push(L(k.planOutline(k.insetPlan(MAIN_BED, 5), 0, P), { tone: "lo" }));
   out.push(L(k.planOutline(k.insetPlan(MAIN_BED, 8), 0, P), { tone: "faint" }));
 
-  // T-slot longitudinal channels along X
   for (const gy of [-38, 38]) {
-    const slotD = k.lineOnTop([-150, gy], [150, gy], 0, P);
-    out.push(L(slotD, { tone: "faint" }));
+    out.push(L(k.lineOnTop([-150, gy], [150, gy], 0, P), { tone: "faint" }));
   }
 
-  // Corner socket-head cap screws with hexagonal recess dots
   const bedScrews = k.corners(MAIN_BED, 12);
   out.push(L(bedScrews.map(([x, y]) => k.ring(x, y, 3, 0, P, 16)).join(""), { tone: "lo" }));
   out.push(D(bedScrews.map(([x, y]) => at([x, y, 0])), { size: 0.6, tone: "mid" }));
 
-  // Machined Brass Inspection Nameplate
   const nameplate = { x: -68, y: 72, w: 136, d: 11, r: 2 };
   out.push(S(k.slabOf(nameplate, 0, 1.2, P, 2, 0.4), { tone: "hi" }));
   out.push(L(k.planOutline(k.insetPlan(nameplate, 1.2), 1.2, P), { tone: "lo" }));
-  // Nameplate mounting micro-rivets
   out.push(D([[nameplate.x + 3, nameplate.y + 5.5], [nameplate.x + nameplate.w - 3, nameplate.y + 5.5]].map(([x, y]) => at([x, y, 1.2])), { size: 0.45, tone: "lo" }));
   const npMatrix = k.topMatrix([-60, nameplate.y + 2.5], 1.2, P);
   const npText = k.faceTextSvg(npMatrix, "NIXOS 26.11 x86_64 PURE RIG · ANTIGRAVITY 2.0 LSP", { size: 2.8, tone: "lo" });
   if (npText) out.push(npText);
 
-  // Front Vernier Ruler Strip with millimeter graduations
   const strip = { x: -148, y: 55, w: 296, d: 8, r: 1.5 };
   out.push(S(k.slabOf(strip, 0, 1.2, P, 2, 0.4), { tone: "lo", crease: "none" }));
   const ticks = k.topTicks(strip.x + 8, strip.x + strip.w - 8, 4, 5, strip.y + strip.d, 1.2, [-2, -4.2], P);
   out.push(L(ticks.minor, { tone: "lo" }));
   out.push(L(ticks.major, { tone: "mid" }));
 
-  // Industrial Cable Harness Loom: Conduit trunk & P-clamps on bed surface
   for (const st of STATIONS) {
     const sx = st.x;
     const pStart = at([0, -32, 0.6]);
-    const pMid1 = at([sx * 0.42, -24, 0.6]);
-    const pMid2 = at([sx, -20, 0.6]);
     const pEnd = at([sx, -15, 0.6]);
-    out.push(k.wireSvg(pStart, pEnd, { via: [pMid1, pMid2], tone: "mid", flow: true, ends: "both", size: 1.2 }));
-    // P-clip mounting bracket on bed
-    const pClampPt = at([sx, -21, 0]);
-    out.push(D([pClampPt], { size: 0.45, tone: "lo" }));
+    out.push(k.wireSvg(pStart, pEnd, { via: [at([sx * 0.42, -24, 0.6]), at([sx, -20, 0.6])], tone: "mid", flow: true, ends: "both", size: 1.2 }));
+    out.push(D([at([sx, -21, 0])], { size: 0.45, tone: "lo" }));
   }
 
   return out.join("");
@@ -247,21 +228,17 @@ function buildRails() {
   const out = [];
 
   for (const ry of [RAIL_Y1, RAIL_Y2]) {
-    // ── Left Cast Iron Pillow Block Assembly (x = -132) ──
     const leftPad = { x: -144, y: ry - 10, w: 18, d: 20, r: 3 };
     out.push(S(k.slabOf(leftPad, 0, 12, P, 3, 0.8), { tone: "lo" }));
     const leftCap = { x: -142, y: ry - 8, w: 14, d: 16, r: 2 };
     out.push(S(k.slabOf(leftCap, 12, 10, P, 2, 0.6), { tone: "mid" }));
-    // 4 Pillow block mounting socket screws
     out.push(D([
       at([-140, ry - 6, 22]), at([-134, ry - 6, 22]),
       at([-140, ry + 6, 22]), at([-134, ry + 6, 22])
     ], { size: 0.5, tone: "mid" }));
-    // Lubrication Grease Zerk fitting on pillow cap
     out.push(S(k.cylinder(-137, ry, 2.2, 22, 3, P, 16), { tone: "hi" }));
     out.push(S(k.cylinder(-137, ry, 1.2, 25, 2, P, 12), { tone: "lo" }));
 
-    // ── Right Cast Iron Pillow Block Assembly (x = 132) ──
     const rightPad = { x: 126, y: ry - 10, w: 18, d: 20, r: 3 };
     out.push(S(k.slabOf(rightPad, 0, 12, P, 3, 0.8), { tone: "lo" }));
     const rightCap = { x: 128, y: ry - 8, w: 14, d: 16, r: 2 };
@@ -270,31 +247,24 @@ function buildRails() {
       at([130, ry - 6, 22]), at([136, ry - 6, 22]),
       at([130, ry + 6, 22]), at([136, ry + 6, 22])
     ], { size: 0.5, tone: "mid" }));
-    // Grease Zerk
     out.push(S(k.cylinder(133, ry, 2.2, 22, 3, P, 16), { tone: "hi" }));
     out.push(S(k.cylinder(133, ry, 1.2, 25, 2, P, 12), { tone: "lo" }));
 
-    // Rubber Bump Stops at shaft ends
     out.push(S(k.cylinder(-122, ry, 5.2, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 24), { tone: "lo" }));
     out.push(S(k.cylinder(122, ry, 5.2, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 24), { tone: "lo" }));
 
-    // Shaft Retaining Snap Rings
     out.push(L(k.sideRing([-120, ry, SHAFT_Z], 4.4, "x", P, 20), { tone: "faint" }));
     out.push(L(k.sideRing([120, ry, SHAFT_Z], 4.4, "x", P, 20), { tone: "faint" }));
 
-    // Pre-load Helical Compression Coil Springs (Painter's order: Back half drawn BEFORE shaft!)
     const leftSpring = k.coil(-118, -60, [ry, SHAFT_Z], 5.2, 6, "x", P);
     const rightSpring = k.coil(60, 118, [ry, SHAFT_Z], 5.2, 6, "x", P);
     out.push(L(leftSpring.back, { tone: "lo" }));
     out.push(L(rightSpring.back, { tone: "lo" }));
 
-    // Ground & Polished Hardened Steel Guide Shaft
     const shaftPlan = { x: -128, y: ry - SHAFT_R, w: 256, d: SHAFT_R * 2, r: SHAFT_R };
     out.push(S(k.slabOf(shaftPlan, SHAFT_Z - SHAFT_R, SHAFT_R * 2, P, 1, 0.4), { tone: "hi" }));
-    // Centerline reflection stroke
     out.push(L(k.lineOnTop([-122, ry], [122, ry], SHAFT_Z + SHAFT_R, P), { tone: "lit" }));
 
-    // Front half of springs drawn AFTER shaft!
     out.push(L(leftSpring.front, { tone: "mid" }));
     out.push(L(rightSpring.front, { tone: "mid" }));
   }
@@ -307,21 +277,17 @@ function buildCentralTower() {
   const out = [];
   const [tx, ty] = TOWER;
 
-  // Heavy Octagonal Cast Iron Pedestal Base
   const towerPad = { x: tx - 36, y: ty - 32, w: 72, d: 52, r: 8 };
   out.push(S(k.slabOf(towerPad, 0, 8, P, 6, 1.2), { tone: "lo" }));
-  // 6 Anchor bolts with washers
   const anchorPts = [
     [tx - 28, ty - 24], [tx, ty - 26], [tx + 28, ty - 24],
     [tx - 28, ty + 14], [tx, ty + 16], [tx + 28, ty + 14]
   ];
   out.push(D(anchorPts.map(([x, y]) => at([x, y, 8])), { size: 0.55, tone: "mid" }));
 
-  // Lower Turned Base Fillet & Column
   out.push(S(k.cylinder(tx, ty, 26, 8, 4, P, 36, 0.8), { tone: "mid" }));
   out.push(S(k.cylinder(tx, ty, 23, 12, 42, P, 36), { tone: "mid" }));
 
-  // Twin Diamond Knurled Grip Bands on lower spindle
   out.push(L(k.knurl(tx, ty, 23, 16, 26, 44, P), { tone: "lo" }));
   out.push(L(k.sideArc(tx, ty, 23, 16, P, 24), { tone: "faint" }));
   out.push(L(k.sideArc(tx, ty, 23, 26, P, 24), { tone: "faint" }));
@@ -330,38 +296,28 @@ function buildCentralTower() {
   out.push(L(k.sideArc(tx, ty, 23, 34, P, 24), { tone: "faint" }));
   out.push(L(k.sideArc(tx, ty, 23, 44, P, 24), { tone: "faint" }));
 
-  // Heavy Split-Clamp Collar with Pinch Bolt
   out.push(S(k.cylinder(tx, ty, 27, 54, 7, P, 36, 0.8), { tone: "hi" }));
-  // Split pinch bolt
   out.push(S(k.cylinder(tx + 22, ty, 2.5, 55, 5, P, 16), { tone: "lo" }));
 
-  // Intermediate Column with Perforated Heat Dissipation Grille
   out.push(S(k.cylinder(tx, ty, 21, 61, 30, P, 36), { tone: "mid" }));
   out.push(L(k.sideArc(tx, ty, 21, 75, P, 24), { tone: "faint" }));
-  // Perforated vent grid
   out.push(D(k.dotGrid(tx - 9, ty + 18, 5, 4, 3.6, 68, P), { size: 0.5, tone: "lo" }));
 
-  // Cantilevered Monitor Housing Support Arm
   const arm = { x: tx - 12, y: ty + 4, w: 24, d: 18, r: 3 };
   out.push(S(k.slabOf(arm, 66, 14, P, 3, 0.8), { tone: "lo" }));
 
-  // CRT Telemetry Monitor Shroud (Angled 45° facing viewer)
   const monBox = { x: tx - CRT_W / 2, y: ty + 16, w: CRT_W, d: 16, r: 4 };
   out.push(S(k.slabOf(monBox, CRT_Z, CRT_H, P, 4, 1.2), { tone: "hi" }));
 
-  // Deep Beveled CRT Bezel Frame
   const monBezel = { x: monBox.x + 4, y: monBox.y + monBox.d - 1, w: monBox.w - 8, d: 2, r: 2.5 };
   out.push(S(k.slabOf(monBezel, CRT_Z + 4, CRT_H - 8, P, 2, 0.6), { tone: "mid" }));
 
-  // Anti-Glare CRT Screen Face
   const monScreen = { x: monBezel.x + 3, y: monBezel.y + monBezel.d - 0.5, w: monBezel.w - 6, d: 0.8, r: 2 };
   out.push(S(k.slabOf(monScreen, CRT_Z + 7, CRT_H - 14, P, 1, 0.3), { tone: "lo", crease: "none" }));
 
-  // Etched Reticle Crosshairs on Screen
   out.push(L(k.lineOnTop([monScreen.x + 2, monScreen.y + 0.4], [monScreen.x + monScreen.w - 2, monScreen.y + 0.4], CRT_Z + 7 + (CRT_H - 14) / 2, P), { tone: "faint" }));
   out.push(L(k.segment([tx, monScreen.y + 0.4, CRT_Z + 9], [tx, monScreen.y + 0.4, CRT_Z + CRT_H - 9], P), { tone: "faint" }));
 
-  // CRT Screen Phosphor Green Oscilloscope Multi-Harmonic Waveform
   const waveX1 = monScreen.x + 3, waveX2 = monScreen.x + monScreen.w - 3;
   const waveZ = CRT_Z + 7 + (CRT_H - 14) / 2;
   const wavePts = [];
@@ -373,28 +329,23 @@ function buildCentralTower() {
   const waveD = wavePts.map((p, idx) => `${idx ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join("");
   out.push(`<path class="crt-wave-line" d="${waveD}" />`);
 
-  // Trio of Micro Status LEDs on lower bezel: Green (LSP), Amber (WSL), Blue (Sync)
   out.push(`<circle cx="${at([tx - 16, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx - 16, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#34d399" />`);
   out.push(`<circle cx="${at([tx, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#fbbf24" />`);
   out.push(`<circle cx="${at([tx + 16, monBezel.y + 1.2, CRT_Z + 2])[0]}" cy="${at([tx + 16, monBezel.y + 1.2, CRT_Z + 2])[1]}" r="1.2" fill="#60a5fa" />`);
 
-  // Upper Transition Bell & 360° Graduation Bearing Ring
   out.push(S(k.cylinder(tx, ty, 18, 91, 16, P, 32, 1), { tone: "mid" }));
   out.push(S(k.cylinder(tx, ty, 20, 107, 6, P, 36), { tone: "hi" }));
   const bearingTicks = k.radialTicks(tx, ty, 19, 36, 6, 113, [1.5, 3], P);
   out.push(L(bearingTicks.minor, { tone: "lo" }));
   out.push(L(bearingTicks.major, { tone: "hi" }));
 
-  // Optical Telemetry Beacon Summit
   out.push(S(k.cylinder(tx, ty, 8, 113, 11, P, 24), { tone: "mid" }));
   out.push(S(k.cylinder(tx, ty, 4.5, 124, 4, P, 20), { tone: "lit" }));
 
-  // Pulsing Optical Laser Beacon Summit
   const beaconPt = at([tx, ty, 128]);
   out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="3.2" class="tower-beacon-core" />`);
   out.push(`<circle cx="${beaconPt[0].toFixed(1)}" cy="${beaconPt[1].toFixed(1)}" r="7" class="tower-beacon-glow" />`);
 
-  // Brass Conduit Glands entering tower base
   out.push(S(k.cylinder(tx - 18, ty - 18, 4, 8, 8, P, 20), { tone: "hi" }));
   out.push(S(k.cylinder(tx + 18, ty - 18, 4, 8, 8, P, 20), { tone: "hi" }));
 
@@ -409,7 +360,6 @@ function buildStations() {
     const sx = st.x;
     const sy = 0;
 
-    // Station Base Pad with 4 corner mounting screws
     const pad = { x: sx - 17, y: -17, w: 34, d: 34, r: 4 };
     out.push(S(k.slabOf(pad, 0, 4, P, 3, 0.8), { tone: "lo" }));
     out.push(D([
@@ -417,30 +367,23 @@ function buildStations() {
       at([sx - 11, 11, 4]), at([sx + 11, 11, 4])
     ], { size: 0.5, tone: "mid" }));
 
-    // Lower Flanged Pedestal Ring
     out.push(S(k.cylinder(sx, sy, 14, 4, 3, P, 32, 0.6), { tone: "mid" }));
 
-    // Knurled Micrometer Adjustment Sleeve
     out.push(S(k.cylinder(sx, sy, 12.5, 7, 5, P, 32), { tone: "hi" }));
     out.push(L(k.knurl(sx, sy, 12.5, 7, 12, 32, P), { tone: "lo" }));
     out.push(L(k.sideArc(sx, sy, 12.5, 7, P, 24), { tone: "faint" }));
 
-    // Main Graduated Turret Column (True height)
     out.push(S(k.cylinder(sx, sy, 10.5, 12, st.camH, P, 32, 0.6), { tone: "mid" }));
-    // Vertical graduation ticks on turret face
     const vTicks = k.sideTicks(12, 12 + st.camH, 4, 2, sx + 10.5, 12 + st.camH, [1.5, 2.8], P);
     out.push(L(vTicks.minor, { tone: "lo" }));
     out.push(L(vTicks.major, { tone: "mid" }));
 
-    // Hardened Anvil Face with concentric chamfers
     const topZ = 12 + st.camH;
     out.push(L(k.ring(sx, sy, 9.5, topZ, P, 28), { tone: "hi" }));
     out.push(L(k.ring(sx, sy, 6.5, topZ, P, 24), { tone: "lo" }));
 
-    // Central Spherical Ruby Touch Bead (Probed by stylus)
     out.push(S(k.cylinder(sx, sy, 2.8, topZ, 2.2, P, 20, 1.2), { tone: "lit" }));
 
-    // Station Engraved Nameplate on bedplate
     const tagPlate = { x: sx - 16, y: -26, w: 32, d: 7, r: 1.5 };
     out.push(S(k.slabOf(tagPlate, 0, 1, P, 2, 0.4), { tone: "lo" }));
     out.push(D([[tagPlate.x + 2.5, tagPlate.y + 3.5], [tagPlate.x + tagPlate.w - 2.5, tagPlate.y + 3.5]].map(([x, y]) => at([x, y, 1])), { size: 0.45 }));
@@ -449,7 +392,6 @@ function buildStations() {
     if (tagText) out.push(tagText);
   });
 
-  // Dynamic Halo Ellipse indicating active probed station
   out.push(`<g id="active-halo-group">
     <ellipse id="active-halo-ellipse" cx="0" cy="0" rx="22" ry="11" class="active-station-halo" />
   </g>`);
@@ -463,79 +405,59 @@ function buildMovingCarriage() {
 
   out.push(`<g id="carriage">`);
 
-  // Main Machined Billet Aluminum Carriage Plate
   const carriagePlate = { x: -CARRIAGE_W / 2, y: -CARRIAGE_D / 2, w: CARRIAGE_W, d: CARRIAGE_D, r: 4 };
   out.push(S(k.slabOf(carriagePlate, 4, CARRIAGE_H, P, 4, 1.2), { tone: "hi" }));
   out.push(L(k.planOutline(k.insetPlan(carriagePlate, 3.5), 4 + CARRIAGE_H, P), { tone: "lo" }));
 
-  // Four Bronze Linear Bushing Blocks with Hex Retaining Bolts & Oil Wells
   for (const by of [RAIL_Y1, RAIL_Y2]) {
     for (const bx of [-CARRIAGE_W / 2 + 1, CARRIAGE_W / 2 - 17]) {
       const bushBlock = { x: bx, y: by - 7, w: 16, d: 14, r: 2.5 };
       out.push(S(k.slabOf(bushBlock, 8, 16, P, 2, 0.6), { tone: "mid" }));
-      // Lubricating oil well cap
       out.push(S(k.cylinder(bx + 8, by, 2.2, 24, 3, P, 16), { tone: "hi" }));
       out.push(D([at([bx + 8, by, 27])], { size: 0.45, tone: "lo" }));
     }
   }
 
-  // Dial Indicator Mounting Clamp & Post
   const clampBlock = { x: -9, y: -21, w: 18, d: 14, r: 3 };
   out.push(S(k.slabOf(clampBlock, 16, 14, P, 3, 0.8), { tone: "lo" }));
-  // Knurled thumb screw on clamp side
   out.push(S(k.cylinder(11, -14, 3.5, 20, 6, P, 20), { tone: "mid" }));
   out.push(L(k.knurl(11, -14, 3.5, 20, 26, 20, P), { tone: "lo" }));
-  // Upright vertical mounting stem
   out.push(S(k.cylinder(0, -14, 4.2, 30, 18, P, 24), { tone: "mid" }));
   out.push(L(k.sideArc(0, -14, 4.2, 38, P, 20), { tone: "faint" }));
 
-  // Precision Dial Indicator Casing (Face up at z = 48)
   const dialZ = 48;
   const dialTop = 60;
   out.push(S(k.cylinder(0, -14, 20, dialZ, 12, P, 48, 1), { tone: "hi" }));
-  // Knurled outer bezel rotation ring
   out.push(L(k.knurl(0, -14, 20, 56, dialTop, 64, P, 0.4), { tone: "lo" }));
   out.push(L(k.sideArc(0, -14, 20, 56, P, 32), { tone: "faint" }));
-  // Inner dial face bezel ring
   out.push(L(k.ring(0, -14, 18, dialTop, P, 48), { tone: "hi" }));
 
-  // 60-division radial tick dial face
   const dialTicks = k.radialTicks(0, -14, 17, 60, 5, dialTop, [1.5, 3.2], P);
   out.push(L(dialTicks.minor, { tone: "lo" }));
   out.push(L(dialTicks.major, { tone: "hi" }));
 
-  // Secondary Revolution Counter Sub-Dial
   out.push(L(k.ring(0, -9, 3.6, dialTop, P, 24), { tone: "faint" }));
   const subTicks = k.radialTicks(0, -9, 3.2, 12, 3, dialTop, [0.8, 1.4], P);
   out.push(L(subTicks.major, { tone: "lo" }));
 
-  // Engraved dial face text
   const dfMatrix = k.topMatrix([-6, -17], dialTop, P);
   const dfText = k.faceTextSvg(dfMatrix, "AGY 2.0", { size: 2.2, tone: "lo", anchor: "middle" });
   if (dfText) out.push(dfText);
 
-  // Stepped center needle hub
   out.push(S(k.cylinder(0, -14, 2.4, dialTop, 1.5, P, 20), { tone: "mid" }));
   out.push(L(k.ring(0, -14, 1.2, dialTop + 1.5, P, 16), { tone: "hi" }));
 
-  // Moving needle element with counterweight tail
   out.push(`<path id="needle" class="iso-line" data-tone="lit" style="stroke-width:1.2px;" d="${k.lineOnTop([0, -14], [0, -28], dialTop + 0.3, P)}"/>`);
 
-  // Top spring crown mechanism
   out.push(S(k.cylinder(0, -34, 3.5, 51, 7, P, 20), { tone: "mid" }));
   out.push(S(k.cylinder(0, -34, 2.2, 58, 3, P, 16), { tone: "hi" }));
 
-  // Sensor Plunger Assembly
   out.push(`<g id="plunger">`);
-  // Guide gland nut
   out.push(S(k.cylinder(0, 0, 5.5, 0, 8, P, 24, 0.8), { tone: "lo" }));
-  // Polished stainless plunger stem
   out.push(S(k.cylinder(0, 0, 2.4, -6, 26, P, 20), { tone: "hi" }));
-  // Helical coil spring around plunger stem
   const plungerSpring = k.coil(-2, 12, [0, 0], 3.4, 4, "z", P);
   out.push(L(plungerSpring.back, { tone: "lo" }));
   out.push(L(plungerSpring.front, { tone: "mid" }));
-  // Hardened Ruby Spherical Stylus Ball Tip (Rests directly on station cam)
   out.push(S(k.cylinder(0, 0, 3.4, -8, 2.8, P, 16, 1.4), { tone: "lit" }));
   out.push(`</g>`);
 
@@ -637,12 +559,10 @@ function heightAt(x) {
 }
 
 function updateStationTelemetry(st, idx) {
-  // Update nav pills
   document.querySelectorAll(".station-pill").forEach((btn, i) => {
     btn.classList.toggle("active", i === idx);
   });
 
-  // Update readouts
   const title = "[" + st.name + "] " + st.role;
   const detail = st.desc + " · " + st.meta;
   if (readout.textContent !== title) {
@@ -650,7 +570,6 @@ function updateStationTelemetry(st, idx) {
     subReadout.textContent = detail;
   }
 
-  // Update active SVG halo
   if (haloEllipse) {
     const center = iso([st.x, 0, 4]);
     haloEllipse.setAttribute("cx", center[0].toFixed(1));
@@ -659,7 +578,6 @@ function updateStationTelemetry(st, idx) {
     haloEllipse.style.filter = "drop-shadow(0 0 12px " + st.color + ")";
   }
 
-  // Update telemetry dashboard card
   const badgeEl = document.getElementById("telemetry-badge");
   const nameEl = document.getElementById("telemetry-name");
   const roleEl = document.getElementById("telemetry-role");
@@ -686,7 +604,6 @@ function updateStationTelemetry(st, idx) {
     filesEl.innerHTML = st.files.map(f => '<code>' + f + '</code>').join(' ');
   }
 
-  // Highlight repo card in grid
   document.querySelectorAll(".repo-card").forEach((card, i) => {
     card.classList.toggle("active-station-card", i === idx);
   });
@@ -697,7 +614,6 @@ function draw() {
   plunger.setAttribute("transform", translateAlong([0, 0, BASE_H + tip.at]));
   needle.setAttribute("d", needleAt(currentX / 27));
 
-  // Determine active station
   let closestIdx = 0;
   let minD = 9999;
   STATIONS.forEach((st, idx) => {
@@ -814,7 +730,76 @@ window.switchTab = function(tabId) {
   });
 };
 
-// Intersection observer for animation pause/play
+// Terminal TUI Simulator state and scripts
+const TUI_SCRIPTS = {
+  validate: [
+    "$ dots-validate",
+    "==> [1/4] Checking Nix code formatting (Alejandra)...",
+    "  ↳ 18 files scanned ... OK",
+    "==> [2/4] Checking Nix anti-patterns (Statix)...",
+    "  ↳ No anti-patterns detected ... OK",
+    "==> [3/4] Checking dead code (Deadnix)...",
+    "  ↳ 0 unused bindings ... OK",
+    "==> [4/4] Verifying Nix flake evaluations & checks...",
+    "  ↳ nixosConfigurations.nixos ... OK",
+    "  ↳ devShells.x86_64-linux (default, python, devops, resume) ... OK",
+    "✓ All 4 Nix dots quality gates passed! (Zero drift guaranteed)"
+  ],
+  status: [
+    "$ dots-sync-skills status",
+    "Repository: skills (/home/damathryxx64/repositories/skills)",
+    "  Branch: main [Clean]  Origin: +0 / -0 vs origin/main",
+    "  Flake Input: gemini-skills → Synced (2b3a30e)",
+    "Repository: antigravity-superpowers",
+    "  Branch: main [Clean]  Origin: +0 / -0 vs origin/main",
+    "  Flake Input: antigravity-superpowers → Synced (0909250)",
+    "Repository: NixOS-WSL",
+    "  Branch: main [Clean]  Origin: +0 / -0 vs origin/main",
+    "  Flake Input: nixos-wsl → Synced (805c735)",
+    "Repository: clamav-scanner",
+    "  Branch: trunk [Clean]  Origin: +0 / -0 vs origin/trunk",
+    "  Flake Input: clamav-scanner → Synced (e4b4f06)",
+    "✓ All 4 repositories clean & 100% flake locked"
+  ],
+  agy2: [
+    "$ agy2",
+    "[agy2] Launching Antigravity 2.0 on Windows host...",
+    "[agy2] Target WSL Distro: NixOS",
+    "[agy2] Dynamic Link Resolver: Nix-LD ELF (glibc 2.39)",
+    "[agy2] Listening on language server socket: /home/damathryxx64/.antigravity-server",
+    "[agy2] 31 Agent Skills active in ~/.gemini/config/skills/",
+    "✓ Antigravity 2.0 connected to NixOS-WSL successfully!"
+  ]
+};
+
+window.runTuiCommand = function(cmdKey) {
+  document.querySelectorAll(".tui-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.getAttribute("data-cmd") === cmdKey);
+  });
+  const lines = TUI_SCRIPTS[cmdKey] || [];
+  const screen = document.getElementById("tui-screen");
+  if (!screen) return;
+  screen.innerHTML = "";
+  let i = 0;
+  function printNext() {
+    if (i < lines.length) {
+      const lineDiv = document.createElement("div");
+      lineDiv.className = "tui-line";
+      const l = lines[i];
+      if (l.startsWith("$")) lineDiv.innerHTML = '<span class="tui-prompt">$</span> ' + l.slice(2);
+      else if (l.startsWith("✓")) lineDiv.innerHTML = '<span class="tui-success">' + l + '</span>';
+      else if (l.includes("OK")) lineDiv.innerHTML = l.replace("OK", '<span class="tui-ok">OK</span>');
+      else if (l.includes("Synced")) lineDiv.innerHTML = l.replace("Synced", '<span class="tui-synced">Synced</span>');
+      else lineDiv.textContent = l;
+      screen.appendChild(lineDiv);
+      screen.scrollTop = screen.scrollHeight;
+      i++;
+      setTimeout(printNext, 60);
+    }
+  }
+  printNext();
+};
+
 new IntersectionObserver((entries) => {
   visible = entries[entries.length - 1].isIntersecting;
   if (visible) run();
@@ -845,7 +830,6 @@ stage.addEventListener("keydown", (e) => {
   }
 });
 
-// Keyboard number shortcuts (1-5 to switch stations, T for theme, Space for pause/tour)
 window.addEventListener("keydown", (e) => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
   const num = parseInt(e.key, 10);
@@ -863,11 +847,11 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// Initial draw
+// Initial draw & TUI start
 draw();
 updateStationTelemetry(STATIONS[0], 0);
+runTuiCommand("validate");
 
-// Restore theme from localStorage
 const savedTheme = localStorage.getItem("anatomy-theme") || "dark";
 document.documentElement.setAttribute("data-theme", savedTheme);
 document.body.setAttribute("data-theme", savedTheme);
@@ -879,10 +863,10 @@ if (tBtn) tBtn.textContent = savedTheme === "dark" ? "Light Mode" : "Dark Mode";
 const cardHtml = `
 <section id="rig" class="rig-section">
   <div class="rig-header">
-    <div class="rig-badge">Hero Instrument Rig · Anatomy Precision Standard</div>
+    <div class="rig-badge">Visual Form 1 · Hero Isometric Machine (110+ Precision Parts)</div>
     <h2>Antigravity 2.0 NixOS Orchestration Rig</h2>
     <p class="rig-sub">
-      A physical 110-part isometric test rig modeling our workspace topology. Click stations, press <kbd>1</kbd>–<kbd>5</kbd>, or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
+      A physical isometric test rig modeling our workspace topology. Click stations, press <kbd>1</kbd>–<kbd>5</kbd>, or use <kbd>←</kbd> <kbd>→</kbd> keys to probe repositories in real-time.
     </p>
   </div>
 
@@ -977,6 +961,220 @@ const cardHtml = `
 `;
 
 const extraDocsHtml = `
+<!-- ── Visual Form 2: 2.5D Exploded Architecture Stack ────────────────── -->
+<section id="stack" class="docs-section">
+  <div class="section-title-wrap">
+    <div class="section-badge">Visual Form 2 · 2.5D Exploded Architecture Stack</div>
+    <h2>Multi-Tier Operating Foundation</h2>
+    <p class="section-sub">
+      Exploded perspective view of the NixOS-WSL guest container, Windows host bridge, and autonomous agent skill layers:
+    </p>
+  </div>
+
+  <div class="stack-3d-wrap">
+    <div class="stack-plane tier-ai">
+      <div class="plane-tag">Tier 4 · AI Orchestration</div>
+      <div class="plane-content">
+        <h4>Google Antigravity 2.0 & Autonomous Coding Agents</h4>
+        <p>Windows host launcher (<code>agy2</code>) attached to guest JSON-RPC 2.0 language server via Nix-LD dynamic ELF resolution.</p>
+      </div>
+      <span class="plane-badge">Headless Bridge</span>
+    </div>
+
+    <div class="stack-connector">▼ Declarative Skills Synchronization (agent-skills-sync.service)</div>
+
+    <div class="stack-plane tier-skills">
+      <div class="plane-tag">Tier 3 · Skills Monorepo</div>
+      <div class="plane-content">
+        <h4>AI Agent Skills Hub (~/.gemini/config/skills)</h4>
+        <p>31 active skills tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy) with daily automated rewriting.</p>
+      </div>
+      <span class="plane-badge">31 Skills Active</span>
+    </div>
+
+    <div class="stack-connector">▼ Flake Pinning & System Derivation (flake.lock)</div>
+
+    <div class="stack-plane tier-dots">
+      <div class="plane-tag">Tier 2 · System Core</div>
+      <div class="plane-content">
+        <h4>damathryxx64 Primary Flake Driver</h4>
+        <p>18 modular system expressions, 4 devShells, and pre-commit validation suite (Alejandra, Statix, Deadnix, dots-build).</p>
+      </div>
+      <span class="plane-badge">Zero Drift</span>
+    </div>
+
+    <div class="stack-connector">▼ WSL2 Linux Virtualization (systemd-module loading)</div>
+
+    <div class="stack-plane tier-os">
+      <div class="plane-tag">Tier 1 · Guest Distro</div>
+      <div class="plane-content">
+        <h4>NixOS-WSL (Linux 6.6 Kernel & systemd Native)</h4>
+        <p>Mirrored networking, Docker desktop daemon, ClamAV inotify sentinel, and complete Linux toolchains.</p>
+      </div>
+      <span class="plane-badge">NixOS 26.11</span>
+    </div>
+
+    <div class="stack-connector">▼ Hyper-V & Windows Subsystem for Linux Bridge</div>
+
+    <div class="stack-plane tier-host">
+      <div class="plane-tag">Tier 0 · Host Hardware</div>
+      <div class="plane-content">
+        <h4>Windows 11 Host Hardware & WSL2 Hypervisor</h4>
+        <p>No host pollution: all builds, compiler toolchains, package management, and agents execute strictly inside NixOS.</p>
+      </div>
+      <span class="plane-badge">Windows Host</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Visual Form 3: Network Topology DAG ────────────────────────────── -->
+<section id="topology" class="docs-section">
+  <div class="section-title-wrap">
+    <div class="section-badge">Visual Form 3 · Network Topology DAG</div>
+    <h2>Repository Dependency & Dataflow Mesh</h2>
+    <p class="section-sub">
+      Declarative dependency graph connecting the central flake driver to satellite repositories, remotes, and sentinels:
+    </p>
+  </div>
+
+  <div class="dag-container">
+    <svg class="dag-svg" viewBox="0 0 860 380" preserveAspectRatio="xMidYMid meet">
+      <!-- Animated bezier connection lines with running light pulses -->
+      <path class="dag-edge" d="M430 190 Q 240 100 160 80" />
+      <path class="dag-edge" d="M430 190 Q 240 280 160 300" />
+      <path class="dag-edge" d="M430 190 Q 620 100 700 80" />
+      <path class="dag-edge" d="M430 190 Q 620 280 700 300" />
+      <path class="dag-edge" d="M430 190 L 430 60" />
+
+      <!-- Nodes -->
+      <!-- Center: damathryxx64 -->
+      <g class="dag-node" transform="translate(430, 190)">
+        <circle r="46" class="node-halo-pulse" />
+        <circle r="38" fill="var(--bg-card)" stroke="var(--accent-blue)" stroke-width="2.5" />
+        <text text-anchor="middle" y="-4" class="dag-node-title">damathryxx64</text>
+        <text text-anchor="middle" y="14" class="dag-node-sub">Primary Flake</text>
+      </g>
+
+      <!-- Top: Antigravity 2.0 -->
+      <g class="dag-node" transform="translate(430, 60)">
+        <circle r="30" fill="var(--bg-card)" stroke="var(--accent-purple)" stroke-width="2" />
+        <text text-anchor="middle" y="-2" class="dag-node-title">Antigravity 2.0</text>
+        <text text-anchor="middle" y="12" class="dag-node-sub">Host Bridge</text>
+      </g>
+
+      <!-- Top-Left: skills -->
+      <g class="dag-node" transform="translate(160, 80)">
+        <circle r="32" fill="var(--bg-card)" stroke="var(--accent-emerald)" stroke-width="2" />
+        <text text-anchor="middle" y="-2" class="dag-node-title">skills</text>
+        <text text-anchor="middle" y="12" class="dag-node-sub">31 Agent Skills</text>
+      </g>
+
+      <!-- Bottom-Left: NixOS-WSL -->
+      <g class="dag-node" transform="translate(160, 300)">
+        <circle r="32" fill="var(--bg-card)" stroke="var(--accent-blue)" stroke-width="2" />
+        <text text-anchor="middle" y="-2" class="dag-node-title">NixOS-WSL</text>
+        <text text-anchor="middle" y="12" class="dag-node-sub">Distro Builder</text>
+      </g>
+
+      <!-- Top-Right: superpowers -->
+      <g class="dag-node" transform="translate(700, 80)">
+        <circle r="32" fill="var(--bg-card)" stroke="var(--accent-pink)" stroke-width="2" />
+        <text text-anchor="middle" y="-2" class="dag-node-title">superpowers</text>
+        <text text-anchor="middle" y="12" class="dag-node-sub">Watcher / Doctor</text>
+      </g>
+
+      <!-- Bottom-Right: clamav-scanner -->
+      <g class="dag-node" transform="translate(700, 300)">
+        <circle r="32" fill="var(--bg-card)" stroke="var(--accent-amber)" stroke-width="2" />
+        <text text-anchor="middle" y="-2" class="dag-node-title">clamav-scanner</text>
+        <text text-anchor="middle" y="12" class="dag-node-sub">inotify Sentinel</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ── Visual Form 4: Interactive TUI Terminal Simulator ──────────────── -->
+<section id="terminal" class="docs-section">
+  <div class="section-title-wrap">
+    <div class="section-badge">Visual Form 4 · Interactive TUI Console</div>
+    <h2>Simulated NixOS Command Terminal</h2>
+    <p class="section-sub">
+      Click a command tab below to run real-time simulated diagnostics, formatting gates, and upstream skills verification:
+    </p>
+  </div>
+
+  <div class="tui-window">
+    <div class="tui-chrome">
+      <div class="tui-dots">
+        <span class="tui-dot-red"></span>
+        <span class="tui-dot-yellow"></span>
+        <span class="tui-dot-green"></span>
+      </div>
+      <div class="tui-tabs">
+        <button type="button" class="tui-tab active" data-cmd="validate" onclick="runTuiCommand('validate')">dots-validate</button>
+        <button type="button" class="tui-tab" data-cmd="status" onclick="runTuiCommand('status')">dots-sync-skills status</button>
+        <button type="button" class="tui-tab" data-cmd="agy2" onclick="runTuiCommand('agy2')">agy2</button>
+      </div>
+    </div>
+    <div id="tui-screen" class="tui-screen">
+      <!-- Dynamic lines streamed here -->
+    </div>
+  </div>
+</section>
+
+<!-- ── Visual Form 5: Modern Bento Grid Showcase ──────────────────────── -->
+<section id="bento" class="docs-section">
+  <div class="section-title-wrap">
+    <div class="section-badge">Visual Form 5 · Modern Bento Grid</div>
+    <h2>System Capabilities & Telemetry Bento</h2>
+    <p class="section-sub">
+      Modular breakdown of key workspace primitives and real-time operational guarantees:
+    </p>
+  </div>
+
+  <div class="bento-grid">
+    <div class="bento-card bento-wide">
+      <div class="bento-icon">🛡️</div>
+      <h4>Zero-Drift Inotify Sentinel</h4>
+      <p>Continuous real-time kernel file creation sentinel powered by Docker ClamAV daemon, safeguarding <code>/home/damathryxx64/repositories</code> against malicious payloads.</p>
+      <div class="bento-tags">
+        <span>inotifywait</span>
+        <span>Docker Compose</span>
+        <span>Daemon Sentinel</span>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-icon">📦</div>
+      <h4>1,264 Store Paths</h4>
+      <p>Pure Nix derivation closure evaluated with zero impurity, guaranteed bit-for-bit across sessions.</p>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-icon">⚡</div>
+      <h4>Nix-LD Dynamic Linker</h4>
+      <p>Seamless execution of unpatched Linux x86_64 ELF binaries, enabling standard language servers inside NixOS.</p>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-icon">🔄</div>
+      <h4>5 Tracked Upstreams</h4>
+      <p>Automated daily sync merging Superpowers, Karpathy Guidelines, ADHD, Anatomy, and Google.</p>
+    </div>
+
+    <div class="bento-card bento-wide">
+      <div class="bento-icon">🚀</div>
+      <h4>Headless Antigravity 2.0 Host Bridge</h4>
+      <p>Windows host process communicates over a low-latency socket with the NixOS language server daemon, completely bypassing heavy Electron IDE host bloat.</p>
+      <div class="bento-tags">
+        <span>agy2</span>
+        <span>JSON-RPC 2.0</span>
+        <span>Mirrored Sockets</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ── Repositories Grid ─────────────────────────────────────────────── -->
 <section id="repos" class="docs-section">
   <div class="section-title-wrap">
@@ -1011,237 +1209,6 @@ const extraDocsHtml = `
         </div>
       </div>
     `).join("")}
-  </div>
-</section>
-
-<!-- ── System Architecture Deep Dive with Interactive Tabs ────────────── -->
-<section id="architecture" class="docs-section">
-  <div class="section-title-wrap">
-    <div class="section-badge">NixOS-WSL Architecture</div>
-    <h2>Modular System Architecture</h2>
-    <p class="section-sub">
-      How declarative NixOS modules, autonomous agent runtimes, and system services integrate without host pollution:
-    </p>
-  </div>
-
-  <!-- Interactive Architecture Tabs -->
-  <div class="arch-tabs-container">
-    <div class="arch-tab-nav">
-      <button type="button" class="arch-tab-btn active" data-tab="modules" onclick="switchTab('modules')">
-        <span class="tab-icon">⚙️</span>
-        <span>System Modules</span>
-      </button>
-      <button type="button" class="arch-tab-btn" data-tab="devshells" onclick="switchTab('devshells')">
-        <span class="tab-icon">💻</span>
-        <span>Developer Shells</span>
-      </button>
-      <button type="button" class="arch-tab-btn" data-tab="skills" onclick="switchTab('skills')">
-        <span class="tab-icon">🧠</span>
-        <span>AI Agent Skills Hub</span>
-      </button>
-      <button type="button" class="arch-tab-btn" data-tab="bridge" onclick="switchTab('bridge')">
-        <span class="tab-icon">🌉</span>
-        <span>Antigravity 2.0 Bridge</span>
-      </button>
-    </div>
-
-    <!-- Tab 1: System Modules -->
-    <div class="arch-tab-pane active" id="pane-modules">
-      <div class="arch-flow-diagram">
-        <div class="flow-col">
-          <div class="flow-card driver-card">
-            <span class="flow-pill">Central Driver</span>
-            <h4>flake.nix</h4>
-            <p>Pins exact nixpkgs revisions, system configurations (<code>nixosConfigurations.nixos</code>), development shells, and formatter.</p>
-            <code>/home/damathryxx64/repositories/damathryxx64/</code>
-          </div>
-        </div>
-        <div class="flow-arrow">➔</div>
-        <div class="flow-col wide">
-          <div class="flow-card core-card">
-            <span class="flow-pill">System Core</span>
-            <h4>modules/configuration.nix</h4>
-            <p>Modular NixOS orchestrator importing domain modules:</p>
-          </div>
-          <div class="flow-subgrid">
-            <div class="flow-mini-card">
-              <h5>modules/ai/</h5>
-              <p>Antigravity CLI, declarative skills synchronizer (<code>skills.nix</code>), <code>agy2</code> Windows bridge</p>
-            </div>
-            <div class="flow-mini-card">
-              <h5>modules/mcp/</h5>
-              <p>Native Model Context Protocol servers (mcp-nixos, git, github, typesafe, sequential-thinking)</p>
-            </div>
-            <div class="flow-mini-card">
-              <h5>modules/packages/</h5>
-              <p>Declarative pipeline runners (dots-validate, dots-build, dots-sync-skills, dots-workspace-sync)</p>
-            </div>
-            <div class="flow-mini-card">
-              <h5>modules/development/</h5>
-              <p>Toolchains (Node 22, Python 3.12, GCC, Clang, nixd language server, nix-ld)</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 2: Developer Shells -->
-    <div class="arch-tab-pane" id="pane-devshells">
-      <div class="devshell-grid">
-        <div class="devshell-card">
-          <div class="devshell-badge">Default Toolchain</div>
-          <h4>nix develop .#default</h4>
-          <p>Full authoring toolchain: Alejandra, Statix, Deadnix, nh, nix-tree, manix, nixd, git.</p>
-          <code>nix develop .#default</code>
-        </div>
-        <div class="devshell-card">
-          <div class="devshell-badge">Python 3.12</div>
-          <h4>nix develop .#python</h4>
-          <p>Isolated Python 3.12 runtime with uv, pip, virtualenv, and data analysis packages.</p>
-          <code>nix develop .#python</code>
-        </div>
-        <div class="devshell-card">
-          <div class="devshell-badge">Cloud & DevOps</div>
-          <h4>nix develop .#devops</h4>
-          <p>DevOps toolchain: AWS CLI, Terraform, Docker, Kubernetes, Helm, Grafana agent.</p>
-          <code>nix develop .#devops</code>
-        </div>
-        <div class="devshell-card">
-          <div class="devshell-badge">Typography & CV</div>
-          <h4>nix develop .#resume</h4>
-          <p>Resume authoring environment with Typst, XeLaTeX, fonttools, and PDF compilers.</p>
-          <code>nix develop .#resume</code>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 3: AI Agent Skills Hub -->
-    <div class="arch-tab-pane" id="pane-skills">
-      <div class="skills-showcase">
-        <div class="skills-banner">
-          <h4>Unified Multi-Upstream Skills Monorepo</h4>
-          <p>
-            Tracks 5 upstream remotes (Superpowers, Karpathy Guidelines, ADHD, Anatomy, Google) with an automated daily sync and rewrite engine.
-          </p>
-        </div>
-        <div class="skills-tags-grid">
-          <div class="skill-category">
-            <h5>NixOS & Systems</h5>
-            <div class="skill-pill-list">
-              <span class="skill-tag">nixos-wsl</span>
-              <span class="skill-tag">nix-flake-management</span>
-              <span class="skill-tag">nix-code-audit</span>
-              <span class="skill-tag">nixos-system-rebuild</span>
-              <span class="skill-tag">windows-wsl-host-bridge</span>
-            </div>
-          </div>
-          <div class="skill-category">
-            <h5>Behavior & Execution</h5>
-            <div class="skill-pill-list">
-              <span class="skill-tag">karpathy-guidelines</span>
-              <span class="skill-tag">autonomous-execution</span>
-              <span class="skill-tag">anti-slop-writing</span>
-              <span class="skill-tag">verification-before-completion</span>
-              <span class="skill-tag">outcome-driven-reporting</span>
-            </div>
-          </div>
-          <div class="skill-category">
-            <h5>Anatomy & Graphics</h5>
-            <div class="skill-pill-list">
-              <span class="skill-tag">anatomy</span>
-              <span class="skill-tag">iso-kit</span>
-              <span class="skill-tag">generative_ui</span>
-              <span class="skill-tag">typesafe-ai</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 4: Antigravity 2.0 Bridge -->
-    <div class="arch-tab-pane" id="pane-bridge">
-      <div class="bridge-grid">
-        <div class="bridge-card">
-          <div class="bridge-header">
-            <span class="bridge-tag">Legacy Approach (IDE Overhead)</span>
-            <h3>Heavy Host IDE</h3>
-          </div>
-          <ul class="bridge-list negative">
-            <li>✕ Heavy Electron memory footprint on Windows host</li>
-            <li>✕ Imperative plugin and extension drift</li>
-            <li>✕ Hardcoded Windows paths leaking into Linux projects</li>
-            <li>✕ Inconsistent CLI environments and terminal latency</li>
-          </ul>
-        </div>
-
-        <div class="bridge-card featured">
-          <div class="bridge-header">
-            <span class="bridge-tag">Our Architecture (agy2)</span>
-            <h3>Pure NixOS-WSL Headless Bridge</h3>
-          </div>
-          <ul class="bridge-list positive">
-            <li>✓ <strong>Windows Launcher</strong>: <code>Antigravity.exe</code> connects to NixOS guest via direct WSL socket</li>
-            <li>✓ <strong>Native Shell Utility</strong>: Run <code>agy2</code> inside NixOS to launch Windows Antigravity 2.0 attached to WSL</li>
-            <li>✓ <strong>Nix-LD Binary Execution</strong>: Pure dynamic link resolver runs standard Linux ELF language servers</li>
-            <li>✓ <strong>Declarative Skills Sync</strong>: Skills auto-sync from Nix store paths on user login via systemd user services</li>
-          </ul>
-          <div class="bridge-code-wrap">
-            <button type="button" class="copy-btn" onclick="copyCommand('agy2', this)">Copy: agy2</button>
-            <pre><code># Inside NixOS Terminal
-agy2   # Launches Antigravity 2.0 on Windows, mapped to NixOS WSL</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Pre-Commit Validation Pipeline ─────────────────────────────────── -->
-<section id="validation" class="docs-section">
-  <div class="section-title-wrap">
-    <div class="section-badge">Zero Drift Guarantee</div>
-    <h2>5-Stage Pre-Commit Validation Pipeline</h2>
-    <p class="section-sub">
-      Every change to the system undergoes strict automated static checks before any build or commit:
-    </p>
-  </div>
-
-  <div class="stepper-grid">
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <h4>Alejandra</h4>
-      <p class="step-role">Nix Formatting</p>
-      <p class="step-desc">Strict, opinionated code formatting across all 18+ system nix expressions.</p>
-      <code>nix fmt -- .</code>
-    </div>
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <h4>Statix</h4>
-      <p class="step-role">Anti-patterns</p>
-      <p class="step-desc">Detects code smell, unmanaged mutable paths, and anti-patterns.</p>
-      <code>statix check .</code>
-    </div>
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <h4>Deadnix</h4>
-      <p class="step-role">Dead Code</p>
-      <p class="step-desc">Prunes unused declarations and bindings across flake modules.</p>
-      <code>deadnix .</code>
-    </div>
-    <div class="step-card">
-      <div class="step-num">04</div>
-      <h4>Flake Check</h4>
-      <p class="step-role">Closure Evaluation</p>
-      <p class="step-desc">Evaluates all NixOS configurations, devShells, and derivations.</p>
-      <code>nix flake check --impure</code>
-    </div>
-    <div class="step-card highlight">
-      <div class="step-num">05</div>
-      <h4>dots-build</h4>
-      <p class="step-role">Dry-Run Diff</p>
-      <p class="step-desc">Dry-builds top-level derivation with visual closure diff without switching.</p>
-      <code>dots-build</code>
-    </div>
   </div>
 </section>
 
@@ -1328,6 +1295,8 @@ const extraCss = `
   --bg-page: #050811;
   --bg-card: rgba(11, 18, 34, 0.75);
   --bg-card-hover: rgba(19, 30, 54, 0.9);
+  --bg-subtle: rgba(0, 0, 0, 0.25);
+  --bg-code: rgba(0, 0, 0, 0.4);
   --card-border: rgba(255, 255, 255, 0.08);
   --card-border-highlight: rgba(96, 165, 250, 0.5);
   --text-primary: #f8fafc;
@@ -1338,22 +1307,31 @@ const extraCss = `
   --accent-purple: #a78bfa;
   --accent-pink: #f472b6;
   --accent-amber: #fbbf24;
+  --hero-title-grad: linear-gradient(135deg, #ffffff 30%, #93c5fd 65%, #c084fc 100%);
+  --glow-ambient: radial-gradient(ellipse at 50% 0%, rgba(96, 165, 250, 0.18), rgba(167, 139, 250, 0.1) 45%, transparent 75%);
+  --mesh-dot: rgba(255, 255, 255, 0.08);
 }
 
-[data-theme="light"] {
+[data-theme="light"],
+body[data-theme="light"] {
   --bg-page: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card: rgba(255, 255, 255, 0.94);
   --bg-card-hover: rgba(241, 245, 249, 0.98);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --bg-subtle: rgba(0, 0, 0, 0.04);
+  --bg-code: rgba(15, 23, 42, 0.06);
+  --card-border: rgba(0, 0, 0, 0.09);
   --card-border-highlight: rgba(37, 99, 235, 0.45);
   --text-primary: #0f172a;
-  --text-muted: #475569;
-  --text-dim: #94a3b8;
+  --text-muted: #334155;
+  --text-dim: #64748b;
   --accent-blue: #2563eb;
   --accent-emerald: #059669;
   --accent-purple: #7c3aed;
   --accent-pink: #db2777;
   --accent-amber: #d97706;
+  --hero-title-grad: linear-gradient(135deg, #0f172a 30%, #2563eb 65%, #7c3aed 100%);
+  --glow-ambient: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.07) 45%, transparent 75%);
+  --mesh-dot: rgba(0, 0, 0, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -1370,6 +1348,7 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ── Ambient Background Glow & Fine Mesh ────────────────────────── */
@@ -1380,7 +1359,7 @@ body {
   transform: translateX(-50%);
   width: 1100px;
   height: 550px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(96, 165, 250, 0.18), rgba(167, 139, 250, 0.1) 45%, transparent 75%);
+  background: var(--glow-ambient);
   pointer-events: none;
   z-index: 0;
 }
@@ -1388,7 +1367,7 @@ body {
 .mesh-grid {
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(var(--mesh-dot) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, transparent 85%);
@@ -1440,7 +1419,7 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 20px;
 }
 
 .nav-links a {
@@ -1512,8 +1491,8 @@ body {
   gap: 8px;
   padding: 5px 16px;
   border-radius: 9999px;
-  background: rgba(96, 165, 250, 0.1);
-  border: 1px solid rgba(96, 165, 250, 0.25);
+  background: rgba(96, 165, 250, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.28);
   color: var(--accent-blue);
   font-size: 12px;
   font-family: var(--font-mono);
@@ -1543,7 +1522,7 @@ body {
   letter-spacing: -0.035em;
   margin: 0 0 16px;
   line-height: 1.15;
-  background: linear-gradient(135deg, #ffffff 30%, #93c5fd 65%, #c084fc 100%);
+  background: var(--hero-title-grad);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1659,7 +1638,7 @@ body {
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-subtle);
   font-size: 10px;
   color: var(--text-dim);
 }
@@ -1675,7 +1654,7 @@ body {
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-subtle);
   color: var(--text-dim);
 }
 
@@ -1689,7 +1668,7 @@ body {
   border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(14px);
   overflow: hidden;
 }
@@ -1798,7 +1777,7 @@ body {
   gap: 12px;
   padding: 14px 20px;
   border-top: 1px solid var(--card-border);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-subtle);
 }
 
 .iso-hint {
@@ -1865,7 +1844,7 @@ body {
   border-radius: 14px;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(14px);
   overflow: hidden;
 }
@@ -1949,7 +1928,7 @@ body {
   margin-bottom: 16px;
   padding: 14px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--bg-subtle);
   border: 1px solid var(--card-border);
 }
 
@@ -2001,7 +1980,7 @@ body {
   font-size: 11px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-subtle);
   color: var(--accent-emerald);
 }
 
@@ -2011,7 +1990,7 @@ body {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--bg-subtle);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -2066,6 +2045,287 @@ body {
   margin: 0 auto;
 }
 
+/* ── Visual Form 2: 2.5D Exploded Architecture Stack ─────────────── */
+.stack-3d-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  perspective: 900px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.stack-plane {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  backdrop-filter: blur(12px);
+}
+
+.stack-plane:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.3);
+  border-color: var(--card-border-highlight);
+}
+
+.plane-tag {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  min-width: 140px;
+}
+
+.plane-content {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.plane-content h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.plane-content p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.plane-badge {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  color: var(--accent-purple);
+}
+
+.stack-connector {
+  text-align: center;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  padding: 2px 0;
+}
+
+/* ── Visual Form 3: Network Topology DAG ────────────────────────── */
+.dag-container {
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  padding: 24px;
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.dag-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dag-edge {
+  fill: none;
+  stroke: var(--card-border-highlight);
+  stroke-width: 1.6px;
+  stroke-dasharray: 6 6;
+  opacity: 0.75;
+  animation: dag-flow 2s linear infinite;
+}
+
+@keyframes dag-flow {
+  to { stroke-dashoffset: -36; }
+}
+
+.dag-node {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.dag-node:hover {
+  transform: scale(1.05);
+}
+
+.dag-node-title {
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dag-node-sub {
+  fill: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+}
+
+.node-halo-pulse {
+  fill: none;
+  stroke: var(--accent-blue);
+  stroke-width: 1px;
+  animation: node-pulse 2.2s ease-out infinite;
+}
+
+@keyframes node-pulse {
+  0% { r: 38px; opacity: 1; }
+  100% { r: 56px; opacity: 0; }
+}
+
+/* ── Visual Form 4: Interactive TUI Terminal Simulator ──────────── */
+.tui-window {
+  border-radius: 12px;
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.tui-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #111827;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tui-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.tui-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.tui-dot-red { background: #ef4444; }
+.tui-dot-yellow { background: #f59e0b; }
+.tui-dot-green { background: #10b981; }
+
+.tui-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tui-tab {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tui-tab:hover {
+  color: #fff;
+}
+
+.tui-tab.active {
+  background: rgba(96, 165, 250, 0.2);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+.tui-screen {
+  padding: 20px;
+  min-height: 240px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.tui-line {
+  margin-bottom: 3px;
+}
+
+.tui-prompt { color: #60a5fa; font-weight: 700; }
+.tui-success { color: #34d399; font-weight: 700; }
+.tui-ok { color: #34d399; font-weight: 600; }
+.tui-synced { color: #a78bfa; font-weight: 600; }
+
+/* ── Visual Form 5: Modern Bento Grid Showcase ──────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.bento-card {
+  padding: 22px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  backdrop-filter: blur(12px);
+}
+
+.bento-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-border-highlight);
+}
+
+.bento-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .bento-wide { grid-column: span 1; }
+}
+
+.bento-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.bento-card h4 {
+  margin: 0 0 6px;
+  font-size: 16.5px;
+  font-weight: 700;
+}
+
+.bento-card p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.bento-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bento-tags span {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--bg-subtle);
+  color: var(--accent-blue);
+}
+
 /* ── Repositories Grid ──────────────────────────────────────────── */
 .repos-grid {
   display: grid;
@@ -2088,7 +2348,7 @@ body {
   background: var(--bg-card-hover);
   border-color: var(--card-border-highlight);
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.25);
 }
 
 .repo-card.active-station-card {
@@ -2113,7 +2373,7 @@ body {
   font-size: 10.5px;
   padding: 2px 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-subtle);
   font-family: var(--font-mono);
   color: var(--text-dim);
 }
@@ -2150,7 +2410,7 @@ body {
 .repo-meta-box {
   padding: 10px 12px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-subtle);
   margin-bottom: 14px;
   font-size: 11.5px;
 }
@@ -2179,7 +2439,7 @@ body {
   font-family: var(--font-mono);
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-subtle);
   color: var(--text-muted);
 }
 
@@ -2194,7 +2454,7 @@ body {
   flex: 1;
   padding: 8px 12px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-subtle);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
   font-size: 12px;
@@ -2226,419 +2486,6 @@ body {
   background: var(--bg-card-hover);
 }
 
-/* ── Interactive Architecture Tabs ──────────────────────────────── */
-.arch-tabs-container {
-  border-radius: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--card-border);
-  padding: 24px;
-  backdrop-filter: blur(14px);
-}
-
-.arch-tab-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--card-border);
-  margin-bottom: 24px;
-}
-
-.arch-tab-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.arch-tab-btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.arch-tab-btn.active {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: var(--accent-blue);
-  color: var(--text-primary);
-}
-
-.tab-icon {
-  font-size: 14px;
-}
-
-.arch-tab-pane {
-  display: none;
-}
-
-.arch-tab-pane.active {
-  display: block;
-}
-
-/* ── Architecture Flow Diagram (Inside Tab) ─────────────────────── */
-.arch-flow-diagram {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  overflow-x: auto;
-}
-
-.flow-col {
-  flex: 1;
-  min-width: 250px;
-}
-
-.flow-col.wide {
-  flex: 2;
-  min-width: 380px;
-}
-
-.flow-arrow {
-  color: var(--accent-blue);
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.flow-card {
-  padding: 20px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--card-border);
-}
-
-.flow-pill {
-  display: inline-block;
-  font-size: 10px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--accent-blue);
-  margin-bottom: 6px;
-}
-
-.flow-card h4 {
-  margin: 0 0 6px;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.flow-card p {
-  margin: 0 0 8px;
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-
-.flow-card code {
-  font-size: 10.5px;
-  color: var(--accent-emerald);
-  font-family: var(--font-mono);
-}
-
-.flow-subgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.flow-mini-card {
-  padding: 12px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--card-border);
-}
-
-.flow-mini-card h5 {
-  margin: 0 0 4px;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  color: var(--accent-purple);
-}
-
-.flow-mini-card p {
-  margin: 0;
-  font-size: 11.5px;
-  color: var(--text-dim);
-  line-height: 1.4;
-}
-
-/* ── DevShells Grid ─────────────────────────────────────────────── */
-.devshell-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.devshell-card {
-  padding: 18px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--card-border);
-}
-
-.devshell-badge {
-  font-size: 10.5px;
-  font-family: var(--font-mono);
-  color: var(--accent-blue);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.devshell-card h4 {
-  margin: 0 0 8px;
-  font-size: 14px;
-  font-family: var(--font-mono);
-}
-
-.devshell-card p {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  margin: 0 0 12px;
-}
-
-.devshell-card code {
-  display: block;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.3);
-  color: var(--accent-emerald);
-}
-
-/* ── Skills Showcase ────────────────────────────────────────────── */
-.skills-showcase {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.skills-banner h4 {
-  margin: 0 0 6px;
-  font-size: 17px;
-  color: var(--text-primary);
-}
-
-.skills-banner p {
-  margin: 0;
-  font-size: 13.5px;
-  color: var(--text-muted);
-}
-
-.skills-tags-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.skill-category {
-  padding: 16px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--card-border);
-}
-
-.skill-category h5 {
-  margin: 0 0 10px;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  color: var(--accent-purple);
-  text-transform: uppercase;
-}
-
-.skill-pill-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.skill-tag {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
-  border: 1px solid var(--card-border);
-}
-
-/* ── Antigravity 2.0 Bridge Section ─────────────────────────────── */
-.bridge-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-}
-
-.bridge-card {
-  padding: 24px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--card-border);
-}
-
-.bridge-card.featured {
-  border-color: var(--accent-blue);
-  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);
-  box-shadow: 0 0 25px rgba(37, 99, 235, 0.12);
-}
-
-.bridge-header {
-  margin-bottom: 16px;
-}
-
-.bridge-tag {
-  font-size: 10.5px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-.bridge-card.featured .bridge-tag {
-  color: var(--accent-emerald);
-}
-
-.bridge-header h3 {
-  margin: 4px 0 0;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.bridge-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 20px;
-}
-
-.bridge-list li {
-  padding: 8px 0;
-  font-size: 13.5px;
-  line-height: 1.5;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.bridge-list.negative li {
-  color: var(--text-dim);
-}
-
-.bridge-list.positive li {
-  color: var(--text-primary);
-}
-
-.bridge-code-wrap {
-  position: relative;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--card-border);
-  padding: 12px 16px;
-}
-
-.copy-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--card-border);
-  color: var(--text-muted);
-  font-size: 11px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  transition: all 0.15s ease;
-}
-
-.copy-btn:hover {
-  background: rgba(96, 165, 250, 0.2);
-  color: var(--accent-blue);
-}
-
-.bridge-code-wrap pre {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--accent-emerald);
-}
-
-/* ── Pre-Commit Stepper ─────────────────────────────────────────── */
-.stepper-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.step-card {
-  padding: 22px 18px;
-  border-radius: 12px;
-  background: var(--bg-card);
-  border: 1px solid var(--card-border);
-  text-align: center;
-  transition: transform 0.18s ease;
-  backdrop-filter: blur(10px);
-}
-
-.step-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--card-border-highlight);
-}
-
-.step-card.highlight {
-  border-color: var(--accent-emerald);
-  background: rgba(52, 211, 153, 0.07);
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.12);
-}
-
-.step-num {
-  font-size: 22px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  color: var(--accent-blue);
-  margin-bottom: 6px;
-}
-
-.step-card.highlight .step-num {
-  color: var(--accent-emerald);
-}
-
-.step-card h4 {
-  margin: 0 0 2px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.step-role {
-  margin: 0 0 8px;
-  font-size: 11px;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-}
-
-.step-desc {
-  margin: 0 0 12px;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-
-.step-card code {
-  display: block;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  padding: 4px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.25);
-  color: var(--accent-purple);
-}
-
 /* ── Commands Table ─────────────────────────────────────────────── */
 .table-card {
   border-radius: 14px;
@@ -2662,7 +2509,7 @@ body {
   text-transform: uppercase;
   color: var(--text-dim);
   border-bottom: 1px solid var(--card-border);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-subtle);
 }
 
 .cmd-table td {
@@ -2676,7 +2523,7 @@ body {
 }
 
 .cmd-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-subtle);
   color: var(--text-primary);
 }
 
@@ -2700,12 +2547,12 @@ body {
 .badge-type.system { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); }
 .badge-type.skills { background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald); }
 .badge-type.launcher { background: rgba(167, 139, 250, 0.15); color: var(--accent-purple); }
-.badge-type.docs { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
+.badge-type.docs { background: var(--bg-subtle); color: var(--text-muted); }
 
 .tbl-copy-btn {
   padding: 4px 12px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-subtle);
   border: 1px solid var(--card-border);
   color: var(--text-dim);
   font-size: 11px;
@@ -2739,7 +2586,7 @@ body {
   color: #fff;
   font-size: 13px;
   font-family: var(--font-mono);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(96, 165, 250, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(96, 165, 250, 0.4);
   backdrop-filter: blur(12px);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   opacity: 0;
@@ -2780,10 +2627,10 @@ body {
   .hero-banner h1 { font-size: 32px; }
   .hero-lead { font-size: 15px; }
   .nav-links { display: none; }
-  .arch-flow-diagram { flex-direction: column; align-items: stretch; }
-  .flow-arrow { transform: rotate(90deg); text-align: center; }
   .iso-foot { flex-direction: column; align-items: flex-start; }
   .readout-box { align-items: flex-start; }
+  .stack-plane { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .plane-content { padding: 0; }
 }
 `;
 
@@ -2811,10 +2658,11 @@ const htmlPage = `<!DOCTYPE html>
     </div>
     <nav class="nav-links">
       <a href="#rig">Anatomy Rig</a>
+      <a href="#stack">2.5D Stack</a>
+      <a href="#topology">Topology DAG</a>
+      <a href="#terminal">Terminal Console</a>
+      <a href="#bento">Bento</a>
       <a href="#repos">Repositories</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#validation">Validation</a>
-      <a href="#commands">Commands</a>
     </nav>
     <div class="nav-actions">
       <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener noreferrer" class="nav-btn primary">
@@ -2846,10 +2694,10 @@ const htmlPage = `<!DOCTYPE html>
       </div>
     </section>
 
-    <!-- Interactive Anatomy Rig -->
+    <!-- Visual Form 1: Interactive Anatomy Rig -->
     ${cardHtml}
 
-    <!-- Architecture & Repository Breakdown -->
+    <!-- Visual Forms 2, 3, 4, 5 & Architecture Breakdown -->
     ${extraDocsHtml}
 
     <footer class="docs-footer">
@@ -2870,4 +2718,4 @@ const htmlPage = `<!DOCTYPE html>
 
 const OUT_FILE = join(DOCS_DIR, "index.html");
 writeFileSync(OUT_FILE, htmlPage, "utf8");
-console.log(`✓ Successfully generated heavenly hero figure: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
+console.log(`✓ Successfully generated multi-shape page: ${OUT_FILE} (${Math.round(htmlPage.length / 1024)} KB)`);
