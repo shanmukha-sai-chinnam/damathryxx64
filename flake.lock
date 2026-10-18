@@ -112,11 +112,11 @@
     "gemini-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1791949983,
-        "narHash": "sha256-YJ+CIauXP9qSXI4Gop9ceLOqmsSXLGAquYS7DFU4WhQ=",
+        "lastModified": 1792343803,
+        "narHash": "sha256-gu8lFr09a9Sdb0RU2YmBKIytzJE2lAaEZOXvvNXA7Nk=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "ef4685d01fd69697564e56abbbc9a5bf3fd07541",
+        "rev": "0fe86d3d7f99c377728605f3d1b6ccf74c80d9e7",
         "type": "github"
       },
       "original": {
