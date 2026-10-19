@@ -9,28 +9,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-/* ── Reset & Color System ──────────────────────────────────────── */
+/* ── Reset & Color Tokens ──────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#030508;
   --bg-card:rgba(6,10,16,0.92);
-  --bg-card-hover:rgba(10,16,26,0.96);
   --green:#00ff41;
-  --green-glow:rgba(0,255,65,0.35);
+  --green-glow:rgba(0,255,65,0.4);
   --cyan:#00e5ff;
-  --cyan-glow:rgba(0,229,255,0.35);
+  --cyan-glow:rgba(0,229,255,0.4);
   --purple:#b055ff;
-  --purple-glow:rgba(176,85,255,0.35);
+  --purple-glow:rgba(176,85,255,0.4);
   --pink:#ff55b0;
-  --pink-glow:rgba(255,85,176,0.35);
+  --pink-glow:rgba(255,85,176,0.4);
   --amber:#ffb800;
-  --amber-glow:rgba(255,184,0,0.35);
-  --red:#ff4d4d;
+  --amber-glow:rgba(255,184,0,0.4);
   --text-main:#a2b1c6;
   --text-bright:#f0f4f9;
   --text-dim:#4a5970;
-  --border-subtle:rgba(0,255,65,0.14);
-  --border-bright:rgba(0,255,65,0.4);
+  --border-subtle:rgba(0,255,65,0.16);
+  --border-bright:rgba(0,255,65,0.45);
   --mono:'JetBrains Mono','Fira Code',ui-monospace,monospace;
   --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
@@ -43,7 +41,7 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* ── Cyber Background & CRT Grid ───────────────────────────────── */
+/* ── Cyber Matrix Background Grid ──────────────────────────────── */
 .bg-grid{
   position:fixed;
   inset:0;
@@ -80,7 +78,7 @@ nav{
   align-items:center;
   justify-content:space-between;
   padding:12px 28px;
-  background:rgba(3,5,8,0.85);
+  background:rgba(3,5,8,0.9);
   backdrop-filter:blur(18px);
   -webkit-backdrop-filter:blur(18px);
   border-bottom:1px solid var(--border-subtle);
@@ -108,7 +106,6 @@ nav{
   color:var(--green);
   text-shadow:0 0 8px var(--green-glow);
 }
-.nav-actions{display:flex;align-items:center;gap:12px}
 .gh-btn{
   display:inline-flex;
   align-items:center;
@@ -128,7 +125,7 @@ nav{
   box-shadow:0 0 14px var(--green-glow);
 }
 
-/* ── Layout & Container ────────────────────────────────────────── */
+/* ── Container Layout ──────────────────────────────────────────── */
 .container{
   position:relative;
   z-index:2;
@@ -137,10 +134,10 @@ nav{
   padding:80px 24px 60px;
 }
 
-/* ── Hero Header ───────────────────────────────────────────────── */
+/* ── Hero Section ──────────────────────────────────────────────── */
 .hero{
   text-align:center;
-  padding:40px 0 32px;
+  padding:40px 0 30px;
 }
 .hero-pill{
   display:inline-flex;
@@ -148,7 +145,7 @@ nav{
   gap:8px;
   padding:6px 18px;
   background:rgba(0,255,65,0.06);
-  border:1px solid rgba(0,255,65,0.22);
+  border:1px solid rgba(0,255,65,0.25);
   border-radius:999px;
   font-size:11px;
   font-weight:600;
@@ -198,7 +195,6 @@ nav{
   flex-wrap:wrap;
   gap:12px;
   justify-content:center;
-  margin-bottom:12px;
 }
 .hero-stat{
   display:flex;
@@ -212,16 +208,16 @@ nav{
 }
 .hero-stat strong{color:var(--green);font-weight:700}
 
-/* ── 3D Architectural Stage (Interactive Centerpiece) ──────────── */
+/* ── 3D Interactive Stage ──────────────────────────────────────── */
 .stage-section{
-  margin:20px 0 60px;
+  margin:24px 0 64px;
 }
 .stage-container{
   background:var(--bg-card);
   border:1px solid var(--border-bright);
   border-radius:14px;
   overflow:hidden;
-  box-shadow:0 0 40px rgba(0,255,65,0.08), 0 20px 50px rgba(0,0,0,0.6);
+  box-shadow:0 0 45px rgba(0,255,65,0.1), 0 20px 50px rgba(0,0,0,0.7);
   position:relative;
 }
 .stage-header{
@@ -239,7 +235,7 @@ nav{
   align-items:center;
   gap:10px;
 }
-.stage-live-indicator{
+.stage-live-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
@@ -270,24 +266,25 @@ nav{
   color:var(--text-main);
   font-family:var(--mono);
   font-size:11px;
-  padding:5px 12px;
+  padding:6px 12px;
   cursor:pointer;
   transition:all .15s ease;
+  user-select:none;
 }
 .stage-btn:hover,
 .stage-btn.active{
-  background:rgba(0,255,65,0.15);
+  background:rgba(0,255,65,0.18);
   border-color:var(--green);
   color:var(--green);
-  box-shadow:0 0 10px var(--green-glow);
+  box-shadow:0 0 12px var(--green-glow);
 }
 
-/* ── WebGL Canvas Stage Area ───────────────────────────────────── */
+/* ── 3D Canvas Viewport ────────────────────────────────────────── */
 .viewport-3d-wrap{
   position:relative;
   width:100%;
-  height:540px;
-  background:radial-gradient(ellipse at center, rgba(0,255,65,0.04) 0%, rgba(3,5,8,0.95) 75%);
+  height:560px;
+  background:radial-gradient(ellipse at center, rgba(0,255,65,0.05) 0%, rgba(3,5,8,0.98) 75%);
   overflow:hidden;
 }
 #threeCanvas{
@@ -300,34 +297,34 @@ nav{
   cursor:grabbing;
 }
 
-/* ── HUD Telemetry Card inside Stage ───────────────────────────── */
+/* ── Stage HUD Telemetry Overlay ───────────────────────────────── */
 .stage-hud{
   position:absolute;
   bottom:16px;
   left:16px;
-  background:rgba(5,9,14,0.85);
-  border:1px solid var(--border-subtle);
+  background:rgba(5,9,14,0.9);
+  border:1px solid var(--green);
   border-radius:8px;
-  padding:12px 16px;
+  padding:14px 18px;
   font-size:11px;
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
   pointer-events:none;
-  max-width:320px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.5);
-  transition:border-color .2s;
+  max-width:340px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.6);
+  transition:border-color .2s, box-shadow .2s;
 }
 .hud-title{
   color:var(--green);
   font-weight:700;
-  font-size:12px;
+  font-size:13px;
   margin-bottom:4px;
 }
 .hud-desc{
   font-family:var(--sans);
-  color:var(--text-main);
+  color:var(--text-bright);
   font-size:11px;
-  line-height:1.5;
+  line-height:1.55;
   margin-bottom:6px;
 }
 .hud-meta{
@@ -339,8 +336,8 @@ nav{
   position:absolute;
   top:16px;
   right:16px;
-  background:rgba(5,9,14,0.7);
-  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(5,9,14,0.75);
+  border:1px solid rgba(255,255,255,0.08);
   border-radius:6px;
   padding:6px 12px;
   font-size:10px;
@@ -349,13 +346,9 @@ nav{
   backdrop-filter:blur(8px);
 }
 
-/* ── Section Structure ─────────────────────────────────────────── */
-.sect{
-  margin-bottom:64px;
-}
-.sect-header{
-  margin-bottom:28px;
-}
+/* ── Section Shell ─────────────────────────────────────────────── */
+.sect{margin-bottom:64px}
+.sect-header{margin-bottom:28px}
 .sect-tag{
   font-size:10px;
   color:var(--green);
@@ -381,7 +374,7 @@ nav{
   font-weight:300;
 }
 
-/* ── 2D Architecture Schematic Diagram (Visual Clarity) ────────── */
+/* ── 2D Schematic Diagram ──────────────────────────────────────── */
 .schematic-box{
   background:var(--bg-card);
   border:1px solid var(--border-subtle);
@@ -396,48 +389,6 @@ nav{
   min-width:760px;
   height:auto;
   display:block;
-}
-
-/* ── Cards Grid ────────────────────────────────────────────────── */
-.cards-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:16px;
-}
-.glass-box{
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:10px;
-  padding:22px;
-  backdrop-filter:blur(16px);
-  transition:all .25s ease;
-}
-.glass-box:hover{
-  border-color:var(--border-bright);
-  box-shadow:0 0 30px rgba(0,255,65,0.06);
-  transform:translateY(-2px);
-}
-.box-icon{font-size:22px;margin-bottom:12px}
-.box-title{
-  font-size:14px;
-  font-weight:700;
-  color:var(--text-bright);
-  margin-bottom:8px;
-  font-family:var(--sans);
-}
-.box-desc{
-  font-size:12px;
-  color:var(--text-main);
-  line-height:1.65;
-  font-family:var(--sans);
-}
-.box-meta{
-  margin-top:14px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,0.05);
-  font-size:10px;
-  color:var(--text-dim);
-  font-family:var(--mono);
 }
 
 /* ── Repositories Grid ─────────────────────────────────────────── */
@@ -525,7 +476,7 @@ nav{
   flex-grow:1;
 }
 .repo-files{
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.35);
   border:1px solid rgba(255,255,255,0.04);
   border-radius:6px;
   padding:10px 12px;
@@ -657,6 +608,7 @@ nav{
   font-size:12px;
   cursor:pointer;
   transition:all .2s;
+  user-select:none;
 }
 .cmd-btn:hover{
   background:rgba(0,255,65,0.14);
@@ -703,7 +655,7 @@ nav{
   font-family:var(--mono);
 }
 
-/* ── Footer ────────────────────────────────────────────────────── */
+/* ── Clean Footer ──────────────────────────────────────────────── */
 footer{
   text-align:center;
   padding:48px 24px 24px;
@@ -734,7 +686,7 @@ footer{
 @media(max-width:768px){
   .nav-links{display:none}
   .viewport-3d-wrap{height:420px}
-  .cards-grid,.repo-grid{grid-template-columns:1fr}
+  .repo-grid{grid-template-columns:1fr}
 }
   </style>
 </head>
@@ -792,16 +744,16 @@ footer{
     <div class="stage-container">
       <div class="stage-header">
         <div class="stage-title-wrap">
-          <span class="stage-live-indicator"><span class="pulse-dot"></span> 3D LIVE ENGINE</span>
+          <span class="stage-live-badge"><span class="pulse-dot"></span> 3D LIVE ENGINE</span>
           <span class="stage-title">System Topology &amp; Conduit Harmony</span>
         </div>
         <div class="stage-controls">
-          <button class="stage-btn active" id="btn-core" onclick="focusNode('core')">Flake Core</button>
-          <button class="stage-btn" id="btn-skills" onclick="focusNode('skills')">skills</button>
-          <button class="stage-btn" id="btn-nixos-wsl" onclick="focusNode('nixos-wsl')">NixOS-WSL</button>
-          <button class="stage-btn" id="btn-superpowers" onclick="focusNode('superpowers')">superpowers</button>
-          <button class="stage-btn" id="btn-clamav" onclick="focusNode('clamav')">clamav-scanner</button>
-          <button class="stage-btn" onclick="resetCameraView()">Reset View</button>
+          <button type="button" class="stage-btn active" id="btn-core" onclick="focusNode('core')">Flake Core</button>
+          <button type="button" class="stage-btn" id="btn-skills" onclick="focusNode('skills')">skills</button>
+          <button type="button" class="stage-btn" id="btn-nixos-wsl" onclick="focusNode('nixos-wsl')">NixOS-WSL</button>
+          <button type="button" class="stage-btn" id="btn-superpowers" onclick="focusNode('superpowers')">superpowers</button>
+          <button type="button" class="stage-btn" id="btn-clamav" onclick="focusNode('clamav')">clamav-scanner</button>
+          <button type="button" class="stage-btn" id="btn-reset" onclick="resetCameraView()">Reset View</button>
         </div>
       </div>
 
@@ -819,7 +771,7 @@ footer{
     </div>
   </section>
 
-  <!-- ── 2D Architecture Schematic (Guaranteed Visual Reference) ──── -->
+  <!-- ── 2D Architecture Schematic (Visual Reference) ────────────── -->
   <section id="schematic" class="sect">
     <div class="sect-header">
       <div class="sect-tag">// ARCHITECTURAL TOPOLOGY SCHEMATIC</div>
@@ -860,7 +812,7 @@ footer{
         <text x="47" y="213" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">agy2 launcher interop</text>
 
         <!-- Bridge Arrow -->
-        <path d="M 240 120 L 310 120" stroke="url(#gradLineG)" stroke-width="2" marker-end="url(#arrow)" filter="url(#glowGreen)"/>
+        <path d="M 240 120 L 310 120" stroke="url(#gradLineG)" stroke-width="2" filter="url(#glowGreen)"/>
         <text x="248" y="112" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="9">WSL Bridge</text>
 
         <!-- NixOS-WSL Container Boundary -->
@@ -1140,12 +1092,12 @@ footer{
       </div>
     </div>
     <div class="cmd-tray">
-      <button class="cmd-btn" onclick="execCmd('validate')">dots-validate</button>
-      <button class="cmd-btn" onclick="execCmd('sync')">dots-sync-skills status</button>
-      <button class="cmd-btn" onclick="execCmd('doctor')">antigravity-superpowers doctor</button>
-      <button class="cmd-btn" onclick="execCmd('agy2')">agy2</button>
-      <button class="cmd-btn" onclick="execCmd('build')">dots-build</button>
-      <button class="cmd-btn" onclick="execCmd('clear')">clear</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('validate')">dots-validate</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('sync')">dots-sync-skills status</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('doctor')">antigravity-superpowers doctor</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('agy2')">agy2</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('build')">dots-build</button>
+      <button type="button" class="cmd-btn" onclick="execCmd('clear')">clear</button>
     </div>
   </section>
 
@@ -1241,566 +1193,696 @@ footer{
 
 </div>
 
-<!-- ── Three.js WebGL Script ───────────────────────────────────── -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
+<!-- ── SCRIPT 1: Terminal Simulator (Independent, Zero-Dependencies) ── -->
 <script>
 (function(){
-"use strict";
+  "use strict";
 
-const canvas = document.getElementById("threeCanvas");
-if (!canvas) return;
-
-/* ── Repository Data Specifications ────────────────────────────── */
-const NODES_DATA = {
-  core: {
-    id: "core",
-    name: "damathryxx64 (Primary Flake)",
-    desc: "Single source of truth for NixOS-WSL modules, devShells, and skills synchronizer.",
-    meta: "Branch: trunk · 18 Modules · Zero Mutable State",
-    color: 0x00ff41,
-    hex: "#00ff41",
-    camPos: [0, 6, 16],
-    targetPos: [0, 0, 0]
-  },
-  skills: {
-    id: "skills",
-    name: "skills (gemini-skills)",
-    desc: "Unified agent skills hub tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy).",
-    meta: "Branch: main · 31+ Skills · Daily Upstream Sync",
-    color: 0x34d399,
-    hex: "#34d399",
-    camPos: [8, 4, 6],
-    targetPos: [7.5, 0.8, 0]
-  },
-  "nixos-wsl": {
-    id: "nixos-wsl",
-    name: "NixOS-WSL (nixos-wsl)",
-    desc: "Distro builder providing guest systemd activation, kernel modules & Windows host bridge.",
-    meta: "Branch: main · Linux Kernel 6.6+ · Mirrored Net",
-    color: 0xb055ff,
-    hex: "#b055ff",
-    camPos: [4, 3, 11],
-    targetPos: [0, -0.5, 7.5]
-  },
-  superpowers: {
-    id: "superpowers",
-    name: "superpowers (antigravity-superpowers)",
-    desc: "Superpowers CLI for Antigravity with doctor diagnostics & background auto-fix file watcher.",
-    meta: "Branch: main · Doctor Ready · Continuous Watcher",
-    color: 0xff55b0,
-    hex: "#ff55b0",
-    camPos: [-8, 4, 6],
-    targetPos: [-7.5, 0.6, 0]
-  },
-  clamav: {
-    id: "clamav",
-    name: "clamav-scanner (clamav-scanner)",
-    desc: "Real-time inotify file creation sentinel and Docker ClamAV daemon guarding workspace files.",
-    meta: "Branch: trunk · inotify Kernel Sentinel · Real-Time",
-    color: 0xffb800,
-    hex: "#ffb800",
-    camPos: [-4, 3, -11],
-    targetPos: [0, -0.6, -7.5]
-  }
-};
-
-/* ── Scene Setup ───────────────────────────────────────────────── */
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x030508, 0.018);
-
-const width = canvas.parentElement.clientWidth || 800;
-const height = canvas.parentElement.clientHeight || 540;
-
-const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 500);
-camera.position.set(0, 6, 17);
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(width, height);
-renderer.setClearColor(0x030508, 0);
-
-/* ── Lights ────────────────────────────────────────────────────── */
-scene.add(new THREE.AmbientLight(0x0d1520));
-const corePointLight = new THREE.PointLight(0x00ff41, 4, 35);
-corePointLight.position.set(0, 0, 0);
-scene.add(corePointLight);
-
-/* ── Grid Platform ─────────────────────────────────────────────── */
-const gridHelper = new THREE.GridHelper(40, 24, 0x00ff41, 0x082012);
-gridHelper.position.y = -4.5;
-gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0.28;
-scene.add(gridHelper);
-
-/* ── Center Node: damathryxx64 Flake Core ───────────────────────── */
-const centerGroup = new THREE.Group();
-scene.add(centerGroup);
-
-// Outer wireframe cage
-const coreCage = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(2.2, 1),
-  new THREE.MeshBasicMaterial({ color: 0x00ff41, wireframe: true, transparent: true, opacity: 0.85 })
-);
-centerGroup.add(coreCage);
-
-// Inner solid glow core
-const coreInner = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(1.4, 2),
-  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.25 })
-);
-centerGroup.add(coreInner);
-
-// Pulsing nucleus
-const coreNucleus = new THREE.Mesh(
-  new THREE.SphereGeometry(0.7, 16, 16),
-  new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.8 })
-);
-centerGroup.add(coreNucleus);
-
-// Rotating gyroscope rings around center
-const ring1 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.0, 0.03, 8, 80),
-  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.4 })
-);
-ring1.rotation.x = Math.PI / 2;
-centerGroup.add(ring1);
-
-const ring2 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.3, 0.025, 8, 80),
-  new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.35 })
-);
-ring2.rotation.x = Math.PI / 3;
-ring2.rotation.z = Math.PI / 4;
-centerGroup.add(ring2);
-
-/* ── Pinned Orbit Ring ─────────────────────────────────────────── */
-const ORBIT_R = 7.5;
-const orbitRing = new THREE.Mesh(
-  new THREE.TorusGeometry(ORBIT_R, 0.02, 8, 120),
-  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.2 })
-);
-orbitRing.rotation.x = Math.PI / 2;
-scene.add(orbitRing);
-
-/* ── Satellites ────────────────────────────────────────────────── */
-const SATELLITE_CONFIGS = [
-  { id: "skills",       angle: 0,             y:  0.8, color: 0x34d399, geo: "dodeca" },
-  { id: "nixos-wsl",    angle: Math.PI * 0.5, y: -0.5, color: 0xb055ff, geo: "torus"  },
-  { id: "superpowers",  angle: Math.PI,       y:  0.6, color: 0xff55b0, geo: "octa"   },
-  { id: "clamav",       angle: Math.PI * 1.5, y: -0.6, color: 0xffb800, geo: "icosa"  }
-];
-
-const satellitesMap = {};
-const conduitLines = [];
-
-SATELLITE_CONFIGS.forEach((cfg) => {
-  const satGroup = new THREE.Group();
-
-  let meshGeo;
-  switch (cfg.geo) {
-    case "dodeca": meshGeo = new THREE.DodecahedronGeometry(1.15, 0); break;
-    case "torus":  meshGeo = new THREE.TorusGeometry(0.85, 0.3, 8, 20); break;
-    case "octa":   meshGeo = new THREE.OctahedronGeometry(1.2, 0); break;
-    case "icosa":  meshGeo = new THREE.IcosahedronGeometry(1.1, 0); break;
-  }
-
-  const wireMesh = new THREE.Mesh(
-    meshGeo,
-    new THREE.MeshBasicMaterial({ color: cfg.color, wireframe: true, transparent: true, opacity: 0.9 })
-  );
-  satGroup.add(wireMesh);
-
-  const solidCore = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 12, 12),
-    new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35 })
-  );
-  satGroup.add(solidCore);
-
-  const haloRing = new THREE.Mesh(
-    new THREE.TorusGeometry(1.5, 0.015, 6, 40),
-    new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.3 })
-  );
-  haloRing.rotation.x = Math.PI / 2;
-  satGroup.add(haloRing);
-
-  const x = Math.cos(cfg.angle) * ORBIT_R;
-  const z = Math.sin(cfg.angle) * ORBIT_R;
-  satGroup.position.set(x, cfg.y, z);
-  scene.add(satGroup);
-
-  // Line conduit connecting to center
-  const lineGeo = new THREE.BufferGeometry();
-  lineGeo.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, x, cfg.y, z], 3));
-  const lineMat = new THREE.LineBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35 });
-  const conduitLine = new THREE.Line(lineGeo, lineMat);
-  scene.add(conduitLine);
-
-  satellitesMap[cfg.id] = {
-    group: satGroup,
-    wire: wireMesh,
-    baseAngle: cfg.angle,
-    baseY: cfg.y,
-    color: cfg.color,
-    id: cfg.id
+  var CLI_SCRIPTS = {
+    validate: {
+      cmd: "dots-validate",
+      steps: [
+        { t: "==> [1/4] Checking Nix code formatting (Alejandra)...", c: "ti", d: 240 },
+        { t: "    Checking style in 18 files using 4 threads.", c: "td", d: 140 },
+        { t: "    ✓ Congratulations! Your code complies with the Alejandra style.", c: "ts", d: 140 },
+        { t: "==> [2/4] Checking Nix anti-patterns (Statix)...", c: "ti", d: 220 },
+        { t: "    ✓ Statix check clean (0 anti-patterns)", c: "ts", d: 130 },
+        { t: "==> [3/4] Checking dead code (Deadnix)...", c: "ti", d: 220 },
+        { t: "    ✓ Deadnix clean (0 unused declarations)", c: "ts", d: 130 },
+        { t: "==> [4/4] Verifying Nix flake evaluations & checks...", c: "ti", d: 320 },
+        { t: "    evaluating flake outputs (nixosConfigurations, devShells)...", c: "td", d: 180 },
+        { t: "    all checks passed!", c: "ts", d: 140 },
+        { t: "✓ All Nix dots quality gates passed cleanly!", c: "ts", d: 0 }
+      ]
+    },
+    sync: {
+      cmd: "dots-sync-skills status",
+      steps: [
+        { t: "==> Workspace Repositories Divergence:", c: "ti", d: 200 },
+        { t: "  skills             origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+        { t: "  antigravity-super  origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+        { t: "  NixOS-WSL          origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+        { t: "  clamav-scanner     origin/trunk  ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+        { t: "", c: "", d: 50 },
+        { t: "==> Flake Lock Synchronization:", c: "ti", d: 160 },
+        { t: "  gemini-skills            ✓ pinned at latest commit", c: "ts", d: 90 },
+        { t: "  antigravity-superpowers  ✓ pinned at latest commit", c: "ts", d: 90 },
+        { t: "  nixos-wsl                ✓ pinned at latest commit", c: "ts", d: 90 },
+        { t: "  clamav-scanner           ✓ pinned at latest commit", c: "ts", d: 90 },
+        { t: "✓ Zero drift detected across all managed repositories.", c: "ts", d: 0 }
+      ]
+    },
+    doctor: {
+      cmd: "antigravity-superpowers doctor",
+      steps: [
+        { t: "==> Antigravity Superpowers Diagnostics:", c: "ti", d: 200 },
+        { t: "  [✓] Operating System: NixOS-WSL (x86_64-linux)", c: "ts", d: 110 },
+        { t: "  [✓] Antigravity 2.0 Host Bridge: Ready", c: "ts", d: 110 },
+        { t: "  [✓] Alejandra Formatter: Installed (/nix/store/...)", c: "ts", d: 110 },
+        { t: "  [✓] Statix Anti-pattern Linter: Ready", c: "ts", d: 110 },
+        { t: "  [✓] Deadnix Unused Variable Scanner: Ready", c: "ts", d: 110 },
+        { t: "  [✓] ShellCheck Linter: Ready", c: "ts", d: 110 },
+        { t: "  [✓] Active Agent Skills: 31 loaded in ~/.gemini/config/skills", c: "ts", d: 130 },
+        { t: "  [✓] Background Sentinel: clamav daemon active", c: "ts", d: 110 },
+        { t: "✓ All agent runtime subsystems fully operational.", c: "ts", d: 0 }
+      ]
+    },
+    agy2: {
+      cmd: "agy2",
+      steps: [
+        { t: "→ Detecting host environment: Windows 11 WSL2", c: "ti", d: 200 },
+        { t: "→ Target distribution: NixOS (/home/damathryxx64)", c: "ti", d: 160 },
+        { t: "→ Resolving language server binary: ~/.antigravity-server/bin/language_server", c: "ti", d: 220 },
+        { t: "→ Invoking: wsl.exe -d NixOS -u damathryxx64 -e bash -l -c language_server", c: "ti", d: 250 },
+        { t: "→ Handshake: JSON-RPC 2.0 protocol initialized", c: "ts", d: 280 },
+        { t: "→ Workspace root: /home/damathryxx64/repositories", c: "ti", d: 140 },
+        { t: "→ Registered MCP Servers: 9 native servers active", c: "ti", d: 140 },
+        { t: "✓ Antigravity 2.0 bridge active — headless execution ready.", c: "ts", d: 0 }
+      ]
+    },
+    build: {
+      cmd: "dots-build",
+      steps: [
+        { t: "→ Dry-building system derivation (nh os build)...", c: "ti", d: 300 },
+        { t: "  evaluating nixosConfigurations.nixos in /home/damathryxx64/repositories/damathryxx64...", c: "td", d: 220 },
+        { t: "  derivation: /nix/store/znpxgl...-nixos-system-nixos-25.05pre.drv", c: "td", d: 180 },
+        { t: "", c: "", d: 50 },
+        { t: "  Closure size: 1,264 store paths", c: "ti", d: 130 },
+        { t: "  Closure disk: 4.2 GiB", c: "ti", d: 130 },
+        { t: "  Closure diff: 0 paths added, 0 paths removed", c: "ts", d: 130 },
+        { t: "✓ System dry-build complete — no live switch performed.", c: "ts", d: 0 }
+      ]
+    }
   };
-  conduitLines.push({ geo: lineGeo, id: cfg.id });
-});
 
-/* ── Conduit Energy Packets (Flow Particles) ───────────────────── */
-const PACKETS_PER_CONDUIT = 24;
-const totalPackets = SATELLITE_CONFIGS.length * PACKETS_PER_CONDUIT;
-const packetPositions = new Float32Array(totalPackets * 3);
-const packetColors = new Float32Array(totalPackets * 3);
-const packetProgress = new Float32Array(totalPackets);
-const packetSpeed = new Float32Array(totalPackets);
-const packetTarget = new Uint8Array(totalPackets);
+  var isBusy = false;
+  window.execCmd = function(key){
+    var out = document.getElementById("termOutput");
+    if(!out) return;
+    if(key === "clear"){
+      out.innerHTML = '<div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>';
+      return;
+    }
+    if(isBusy) return;
+    var script = CLI_SCRIPTS[key];
+    if(!script) return;
+    isBusy = true;
 
-for (let i = 0; i < SATELLITE_CONFIGS.length; i++) {
-  const c = new THREE.Color(SATELLITE_CONFIGS[i].color);
-  for (let j = 0; j < PACKETS_PER_CONDUIT; j++) {
-    const idx = i * PACKETS_PER_CONDUIT + j;
-    packetProgress[idx] = Math.random();
-    packetSpeed[idx] = 0.003 + Math.random() * 0.004;
-    packetTarget[idx] = i;
-    packetColors[idx * 3]     = c.r;
-    packetColors[idx * 3 + 1] = c.g;
-    packetColors[idx * 3 + 2] = c.b;
-  }
-}
-const packetGeo = new THREE.BufferGeometry();
-packetGeo.setAttribute("position", new THREE.Float32BufferAttribute(packetPositions, 3));
-packetGeo.setAttribute("color", new THREE.Float32BufferAttribute(packetColors, 3));
-const packetPoints = new THREE.Points(
-  packetGeo,
-  new THREE.PointsMaterial({
-    size: 0.16,
-    transparent: true,
-    opacity: 0.95,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    vertexColors: true
-  })
-);
-scene.add(packetPoints);
+    var cur = out.querySelectorAll(".term-cursor");
+    for(var c=0; c<cur.length; c++) cur[c].remove();
 
-/* ── Ambient Particle Atmosphere ───────────────────────────────── */
-const AMBIENT_P_COUNT = 300;
-const ambPos = new Float32Array(AMBIENT_P_COUNT * 3);
-for (let i = 0; i < AMBIENT_P_COUNT; i++) {
-  ambPos[i * 3]     = (Math.random() - 0.5) * 50;
-  ambPos[i * 3 + 1] = (Math.random() - 0.5) * 30;
-  ambPos[i * 3 + 2] = (Math.random() - 0.5) * 50;
-}
-const ambGeo = new THREE.BufferGeometry();
-ambGeo.setAttribute("position", new THREE.Float32BufferAttribute(ambPos, 3));
-const ambPoints = new THREE.Points(
-  ambGeo,
-  new THREE.PointsMaterial({
-    color: 0x00ff41,
-    size: 0.06,
-    transparent: true,
-    opacity: 0.35,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  })
-);
-scene.add(ambPoints);
+    var cl = document.createElement("div");
+    cl.className = "tline";
+    cl.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="tc">' + script.cmd + '</span>';
+    out.appendChild(cl);
 
-/* ── Orbit Drag & Smooth Camera Controller ─────────────────────── */
-let isDragging = false;
-let prevMouseX = 0, prevMouseY = 0;
-let spherical = { radius: 17, theta: 0, phi: Math.PI / 2.7 };
-let targetLookAt = new THREE.Vector3(0, 0, 0);
-let currentLookAt = new THREE.Vector3(0, 0, 0);
-let autoRotate = true;
+    var delay = 120;
+    script.steps.forEach(function(st, idx){
+      delay += st.d;
+      setTimeout(function(){
+        var line = document.createElement("div");
+        line.className = "tline";
+        line.innerHTML = '<span class="' + st.c + '">' + st.t + '</span>';
+        out.appendChild(line);
+        out.scrollTop = out.scrollHeight;
 
-canvas.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  autoRotate = false;
-  prevMouseX = e.clientX;
-  prevMouseY = e.clientY;
-});
-window.addEventListener("mouseup", () => { isDragging = false; });
-canvas.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  const deltaX = e.clientX - prevMouseX;
-  const deltaY = e.clientY - prevMouseY;
-  prevMouseX = e.clientX;
-  prevMouseY = e.clientY;
-
-  spherical.theta -= deltaX * 0.007;
-  spherical.phi = Math.max(0.2, Math.min(Math.PI - 0.2, spherical.phi - deltaY * 0.007));
-});
-
-canvas.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  spherical.radius = Math.max(6, Math.min(32, spherical.radius + e.deltaY * 0.02));
-}, { passive: false });
-
-/* Touch support */
-canvas.addEventListener("touchstart", (e) => {
-  if (e.touches.length === 1) {
-    isDragging = true;
-    autoRotate = false;
-    prevMouseX = e.touches[0].clientX;
-    prevMouseY = e.touches[0].clientY;
-  }
-}, { passive: true });
-window.addEventListener("touchend", () => { isDragging = false; });
-canvas.addEventListener("touchmove", (e) => {
-  if (!isDragging || e.touches.length !== 1) return;
-  const deltaX = e.touches[0].clientX - prevMouseX;
-  const deltaY = e.touches[0].clientY - prevMouseY;
-  prevMouseX = e.touches[0].clientX;
-  prevMouseY = e.touches[0].clientY;
-  spherical.theta -= deltaX * 0.008;
-  spherical.phi = Math.max(0.2, Math.min(Math.PI - 0.2, spherical.phi - deltaY * 0.008));
-}, { passive: true });
-
-/* ── Interactive Focus / Inspector ─────────────────────────────── */
-window.focusNode = function(nodeKey) {
-  const data = NODES_DATA[nodeKey];
-  if (!data) return;
-
-  autoRotate = false;
-  document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("active"));
-  const btn = document.getElementById("btn-" + nodeKey);
-  if (btn) btn.classList.add("active");
-
-  const hudTitle = document.getElementById("hudTitle");
-  const hudDesc = document.getElementById("hudDesc");
-  const hudMeta = document.getElementById("hudMeta");
-  const hudCard = document.getElementById("stageHud");
-
-  if (hudTitle) hudTitle.textContent = data.name;
-  if (hudDesc) hudDesc.textContent = data.desc;
-  if (hudMeta) hudMeta.textContent = data.meta;
-  if (hudCard) hudCard.style.borderColor = data.hex;
-
-  targetLookAt.set(data.targetPos[0], data.targetPos[1], data.targetPos[2]);
-
-  if (nodeKey === "core") {
-    spherical.radius = 16;
-    spherical.phi = Math.PI / 2.7;
-  } else {
-    spherical.radius = 11;
-  }
-};
-
-window.resetCameraView = function() {
-  autoRotate = true;
-  document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("active"));
-  const btnCore = document.getElementById("btn-core");
-  if (btnCore) btnCore.classList.add("active");
-  focusNode("core");
-};
-
-/* ── Animation Render Loop ─────────────────────────────────────── */
-function animate() {
-  requestAnimationFrame(animate);
-  const time = performance.now() * 0.001;
-
-  if (autoRotate) {
-    spherical.theta += 0.004;
-  }
-
-  // Smooth camera position interpolation
-  currentLookAt.lerp(targetLookAt, 0.05);
-
-  const cx = currentLookAt.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
-  const cy = currentLookAt.y + spherical.radius * Math.cos(spherical.phi);
-  const cz = currentLookAt.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
-  camera.position.set(cx, cy, cz);
-  camera.lookAt(currentLookAt);
-
-  // Central Core Dynamics
-  coreCage.rotation.y = time * 0.3;
-  coreCage.rotation.x = time * 0.15;
-  coreInner.rotation.y = -time * 0.25;
-  const pulseScale = 1 + Math.sin(time * 2.5) * 0.06;
-  coreCage.scale.setScalar(pulseScale);
-  coreNucleus.scale.setScalar(1 + Math.sin(time * 5) * 0.12);
-  corePointLight.intensity = 3.5 + Math.sin(time * 4) * 0.8;
-
-  // Center Gyroscope Rings
-  ring1.rotation.z = time * 0.4;
-  ring2.rotation.y = time * 0.3;
-  ring2.rotation.z = Math.PI / 4 + time * 0.15;
-
-  // Orbit ring slight precession
-  orbitRing.rotation.z = time * 0.02;
-
-  // Satellites orbiting & spinning
-  SATELLITE_CONFIGS.forEach((cfg, idx) => {
-    const sat = satellitesMap[cfg.id];
-    if (!sat) return;
-
-    const angle = sat.baseAngle + time * 0.08;
-    const sx = Math.cos(angle) * ORBIT_R;
-    const sz = Math.sin(angle) * ORBIT_R;
-    const sy = sat.baseY + Math.sin(time * 1.5 + idx * 1.6) * 0.35;
-
-    sat.group.position.set(sx, sy, sz);
-    sat.wire.rotation.x = time * (0.4 + idx * 0.05);
-    sat.wire.rotation.y = time * (0.25 + idx * 0.04);
-
-    // Update conduit line geometry endpoint
-    const linePosAttr = conduitLines[idx].geo.attributes.position;
-    linePosAttr.setXYZ(1, sx, sy, sz);
-    linePosAttr.needsUpdate = true;
-  });
-
-  // Conduit energy packets moving along pipelines
-  const posAttr = packetGeo.attributes.position;
-  for (let i = 0; i < totalPackets; i++) {
-    packetProgress[i] += packetSpeed[i];
-    if (packetProgress[i] > 1) packetProgress[i] = 0;
-
-    const targetSat = satellitesMap[SATELLITE_CONFIGS[packetTarget[i]].id];
-    const u = packetProgress[i];
-    const tx = targetSat.group.position.x * u;
-    const ty = targetSat.group.position.y * u + Math.sin(u * Math.PI) * 1.2;
-    const tz = targetSat.group.position.z * u;
-    posAttr.setXYZ(i, tx, ty, tz);
-  }
-  posAttr.needsUpdate = true;
-
-  renderer.render(scene, camera);
-}
-animate();
-
-/* ── Stage Resize Handler ──────────────────────────────────────── */
-window.addEventListener("resize", () => {
-  const newWidth = canvas.parentElement.clientWidth;
-  const newHeight = canvas.parentElement.clientHeight;
-  camera.aspect = newWidth / newHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(newWidth, newHeight);
-});
-
-/* ── Terminal Simulator Engine ─────────────────────────────────── */
-const CLI_SCRIPTS = {
-  validate: {
-    cmd: "dots-validate",
-    steps: [
-      { t: "==> [1/4] Checking Nix code formatting (Alejandra)...", c: "ti", d: 250 },
-      { t: "    Checking style in 18 files using 4 threads.", c: "td", d: 150 },
-      { t: "    ✓ Congratulations! Your code complies with the Alejandra style.", c: "ts", d: 150 },
-      { t: "==> [2/4] Checking Nix anti-patterns (Statix)...", c: "ti", d: 240 },
-      { t: "    ✓ Statix check clean (0 anti-patterns)", c: "ts", d: 140 },
-      { t: "==> [3/4] Checking dead code (Deadnix)...", c: "ti", d: 240 },
-      { t: "    ✓ Deadnix clean (0 unused declarations)", c: "ts", d: 140 },
-      { t: "==> [4/4] Verifying Nix flake evaluations & checks...", c: "ti", d: 350 },
-      { t: "    evaluating flake outputs (nixosConfigurations, devShells)...", c: "td", d: 200 },
-      { t: "    all checks passed!", c: "ts", d: 150 },
-      { t: "✓ All Nix dots quality gates passed cleanly!", c: "ts", d: 0 }
-    ]
-  },
-  sync: {
-    cmd: "dots-sync-skills status",
-    steps: [
-      { t: "==> Workspace Repositories Divergence:", c: "ti", d: 200 },
-      { t: "  skills             origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-      { t: "  antigravity-super  origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-      { t: "  NixOS-WSL          origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-      { t: "  clamav-scanner     origin/trunk  ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-      { t: "", c: "", d: 60 },
-      { t: "==> Flake Lock Synchronization:", c: "ti", d: 180 },
-      { t: "  gemini-skills            ✓ pinned at latest commit", c: "ts", d: 100 },
-      { t: "  antigravity-superpowers  ✓ pinned at latest commit", c: "ts", d: 100 },
-      { t: "  nixos-wsl                ✓ pinned at latest commit", c: "ts", d: 100 },
-      { t: "  clamav-scanner           ✓ pinned at latest commit", c: "ts", d: 100 },
-      { t: "✓ Zero drift detected across all managed repositories.", c: "ts", d: 0 }
-    ]
-  },
-  doctor: {
-    cmd: "antigravity-superpowers doctor",
-    steps: [
-      { t: "==> Antigravity Superpowers Diagnostics:", c: "ti", d: 220 },
-      { t: "  [✓] Operating System: NixOS-WSL (x86_64-linux)", c: "ts", d: 120 },
-      { t: "  [✓] Antigravity 2.0 Host Bridge: Ready", c: "ts", d: 120 },
-      { t: "  [✓] Alejandra Formatter: Installed (/nix/store/...)", c: "ts", d: 120 },
-      { t: "  [✓] Statix Anti-pattern Linter: Ready", c: "ts", d: 120 },
-      { t: "  [✓] Deadnix Unused Variable Scanner: Ready", c: "ts", d: 120 },
-      { t: "  [✓] ShellCheck Linter: Ready", c: "ts", d: 120 },
-      { t: "  [✓] Active Agent Skills: 31 loaded in ~/.gemini/config/skills", c: "ts", d: 140 },
-      { t: "  [✓] Background Sentinel: clamav daemon active", c: "ts", d: 120 },
-      { t: "✓ All agent runtime subsystems fully operational.", c: "ts", d: 0 }
-    ]
-  },
-  agy2: {
-    cmd: "agy2",
-    steps: [
-      { t: "→ Detecting host environment: Windows 11 WSL2", c: "ti", d: 220 },
-      { t: "→ Target distribution: NixOS (/home/damathryxx64)", c: "ti", d: 180 },
-      { t: "→ Resolving language server binary: ~/.antigravity-server/bin/language_server", c: "ti", d: 240 },
-      { t: "→ Invoking: wsl.exe -d NixOS -u damathryxx64 -e bash -l -c language_server", c: "ti", d: 280 },
-      { t: "→ Handshake: JSON-RPC 2.0 protocol initialized", c: "ts", d: 300 },
-      { t: "→ Workspace root: /home/damathryxx64/repositories", c: "ti", d: 150 },
-      { t: "→ Registered MCP Servers: 9 native servers active", c: "ti", d: 150 },
-      { t: "✓ Antigravity 2.0 bridge active — headless execution ready.", c: "ts", d: 0 }
-    ]
-  },
-  build: {
-    cmd: "dots-build",
-    steps: [
-      { t: "→ Dry-building system derivation (nh os build)...", c: "ti", d: 350 },
-      { t: "  evaluating nixosConfigurations.nixos in /home/damathryxx64/repositories/damathryxx64...", c: "td", d: 250 },
-      { t: "  derivation: /nix/store/znpxgl...-nixos-system-nixos-25.05pre.drv", c: "td", d: 200 },
-      { t: "", c: "", d: 60 },
-      { t: "  Closure size: 1,264 store paths", c: "ti", d: 140 },
-      { t: "  Closure disk: 4.2 GiB", c: "ti", d: 140 },
-      { t: "  Closure diff: 0 paths added, 0 paths removed", c: "ts", d: 140 },
-      { t: "✓ System dry-build complete — no live switch performed.", c: "ts", d: 0 }
-    ]
-  }
-};
-
-let isExecuting = false;
-window.execCmd = function(commandKey){
-  if(isExecuting) return;
-  const terminalOut = document.getElementById("termOutput");
-  if(commandKey === "clear"){
-    terminalOut.innerHTML = '<div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>';
-    return;
-  }
-  const script = CLI_SCRIPTS[commandKey];
-  if(!script) return;
-  isExecuting = true;
-
-  terminalOut.querySelectorAll(".term-cursor").forEach(cursor => cursor.remove());
-
-  const cmdLine = document.createElement("div");
-  cmdLine.className = "tline";
-  cmdLine.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="tc">' + script.cmd + "</span>";
-  terminalOut.appendChild(cmdLine);
-
-  let accumulatedDelay = 150;
-  script.steps.forEach((step, idx) => {
-    accumulatedDelay += step.d;
-    setTimeout(() => {
-      const line = document.createElement("div");
-      line.className = "tline";
-      line.innerHTML = '<span class="' + step.c + '">' + step.t + "</span>";
-      terminalOut.appendChild(line);
-      terminalOut.scrollTop = terminalOut.scrollHeight;
-
-      if(idx === script.steps.length - 1){
-        setTimeout(() => {
-          const promptLine = document.createElement("div");
-          promptLine.className = "tline";
-          promptLine.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span>';
-          terminalOut.appendChild(promptLine);
-          terminalOut.scrollTop = terminalOut.scrollHeight;
-          isExecuting = false;
-        }, 200);
-      }
-    }, accumulatedDelay);
-  });
-};
-
+        if(idx === script.steps.length - 1){
+          setTimeout(function(){
+            var pl = document.createElement("div");
+            pl.className = "tline";
+            pl.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span>';
+            out.appendChild(pl);
+            out.scrollTop = out.scrollHeight;
+            isBusy = false;
+          }, 180);
+        }
+      }, delay);
+    });
+  };
 })();
 </script>
+
+<!-- ── SCRIPT 2: 3D Architectural Engine (100% Self-Contained, Zero CDN) ── -->
+<script>
+(function(){
+  "use strict";
+
+  var canvas = document.getElementById("threeCanvas");
+  if (!canvas) return;
+  var ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  var NODES_DATA = {
+    core: {
+      name: "damathryxx64 (Primary Flake)",
+      desc: "Central NixOS-WSL flake driver orchestrating modules, devShells, and skills synchronizer.",
+      meta: "Branch: trunk · 18 Modules · Alejandra/Statix/Deadnix Quality Gates",
+      color: "#00ff41",
+      targetAngle: 0,
+      zoom: 1.05
+    },
+    skills: {
+      name: "skills (gemini-skills)",
+      desc: "Unified AI agent skills hub tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy).",
+      meta: "Branch: main · 31+ Skills · Daily Automated Upstream Sync & Audit",
+      color: "#34d399",
+      targetAngle: 0,
+      zoom: 1.25
+    },
+    "nixos-wsl": {
+      name: "NixOS-WSL (nixos-wsl)",
+      desc: "Distro builder providing guest systemd activation, kernel modules & Windows host bridge.",
+      meta: "Branch: main · Linux Kernel 6.6+ · Mirrored Networking · WSL2",
+      color: "#b055ff",
+      targetAngle: Math.PI * 0.5,
+      zoom: 1.25
+    },
+    superpowers: {
+      name: "superpowers (antigravity-superpowers)",
+      desc: "Superpowers CLI for Antigravity with doctor diagnostics & background auto-fix file watcher.",
+      meta: "Branch: main · Doctor Diagnostics · Continuous File Watcher",
+      color: "#ff55b0",
+      targetAngle: Math.PI,
+      zoom: 1.25
+    },
+    clamav: {
+      name: "clamav-scanner (clamav-scanner)",
+      desc: "Real-time inotify file creation sentinel and Docker ClamAV daemon guarding workspace files.",
+      meta: "Branch: trunk · inotify Kernel Sentinel · Real-Time Daemon Socket",
+      color: "#ffb800",
+      targetAngle: Math.PI * 1.5,
+      zoom: 1.25
+    }
+  };
+
+  /* ── 3D Polyhedron Geometries ────────────────────────────────── */
+  var phi = (1 + Math.sqrt(5)) / 2;
+
+  // Icosahedron (12 vertices, 30 edges)
+  var icoRaw = [
+    [-1,  phi, 0], [ 1,  phi, 0], [-1, -phi, 0], [ 1, -phi, 0],
+    [ 0, -1,  phi], [ 0,  1,  phi], [ 0, -1, -phi], [ 0,  1, -phi],
+    [ phi, 0, -1], [ phi, 0,  1], [-phi, 0, -1], [-phi, 0,  1]
+  ];
+  var icoVerts = icoRaw.map(function(v){
+    var len = Math.hypot(v[0], v[1], v[2]);
+    return [v[0]/len, v[1]/len, v[2]/len];
+  });
+  var icoEdges = [];
+  for (var i = 0; i < icoVerts.length; i++) {
+    for (var j = i + 1; j < icoVerts.length; j++) {
+      var d = Math.hypot(
+        icoVerts[i][0] - icoVerts[j][0],
+        icoVerts[i][1] - icoVerts[j][1],
+        icoVerts[i][2] - icoVerts[j][2]
+      );
+      if (Math.abs(d - 1.05146) < 0.08) {
+        icoEdges.push([i, j]);
+      }
+    }
+  }
+
+  // Octahedron (6 vertices, 12 edges)
+  var octVerts = [
+    [ 1, 0, 0], [-1, 0, 0],
+    [ 0, 1, 0], [ 0,-1, 0],
+    [ 0, 0, 1], [ 0, 0,-1]
+  ];
+  var octEdges = [
+    [0,2], [0,3], [0,4], [0,5],
+    [1,2], [1,3], [1,4], [1,5],
+    [2,4], [4,3], [3,5], [5,2]
+  ];
+
+  /* ── 4 Orbiting Satellites ───────────────────────────────────── */
+  var SATELLITES = [
+    { id: "skills",      name: "skills",         baseAngle: 0,             y:  0.7, color: "#34d399", geo: "ico" },
+    { id: "nixos-wsl",   name: "NixOS-WSL",      baseAngle: Math.PI * 0.5, y: -0.4, color: "#b055ff", geo: "oct" },
+    { id: "superpowers", name: "superpowers",    baseAngle: Math.PI,       y:  0.5, color: "#ff55b0", geo: "oct" },
+    { id: "clamav",      name: "clamav-scanner", baseAngle: Math.PI * 1.5, y: -0.5, color: "#ffb800", geo: "ico" }
+  ];
+
+  /* ── Orbit Conduit Flow Packets ──────────────────────────────── */
+  var PACKETS_PER_CONDUIT = 12;
+  var packets = [];
+  for (var s = 0; s < SATELLITES.length; s++) {
+    for (var p = 0; p < PACKETS_PER_CONDUIT; p++) {
+      packets.push({
+        satIndex: s,
+        prog: (p / PACKETS_PER_CONDUIT) + Math.random() * 0.05,
+        speed: 0.0035 + Math.random() * 0.002
+      });
+    }
+  }
+
+  /* ── Ambient Floating Particles ──────────────────────────────── */
+  var AMBIENT = [];
+  for (var a = 0; a < 80; a++) {
+    AMBIENT.push({
+      x: (Math.random() - 0.5) * 36,
+      y: (Math.random() - 0.5) * 22,
+      z: (Math.random() - 0.5) * 36,
+      size: 1 + Math.random() * 2
+    });
+  }
+
+  /* ── Camera & Orbit Control State ────────────────────────────── */
+  var cameraRotX = 0.45;
+  var cameraRotY = 0.2;
+  var targetRotX = 0.45;
+  var targetRotY = 0.2;
+  var currentZoom = 1.0;
+  var targetZoom = 1.0;
+  var autoRotate = true;
+  var isDragging = false;
+  var lastMouseX = 0, lastMouseY = 0;
+
+  var ORBIT_DIST = 9.5;
+
+  /* ── Canvas Sizing ───────────────────────────────────────────── */
+  var width = 800, height = 540;
+  function resizeCanvas() {
+    var rect = canvas.parentElement.getBoundingClientRect();
+    width = rect.width || 800;
+    height = rect.height || 540;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  /* ── 3D Projection Function ──────────────────────────────────── */
+  function project3D(x, y, z) {
+    // Rotate Y (azimuth)
+    var cosY = Math.cos(cameraRotY), sinY = Math.sin(cameraRotY);
+    var x1 = x * cosY + z * sinY;
+    var z1 = -x * sinY + z * cosY;
+
+    // Rotate X (elevation)
+    var cosX = Math.cos(cameraRotX), sinX = Math.sin(cameraRotX);
+    var y2 = y * cosX - z1 * sinX;
+    var z2 = y * sinX + z1 * cosX;
+
+    // Perspective transformation
+    var fov = 380;
+    var dist = 18 + z2;
+    var scale = (fov * currentZoom) / (dist > 0.5 ? dist : 0.5);
+
+    return {
+      x: width / 2 + x1 * scale,
+      y: height / 2 - y2 * scale,
+      z: z2,
+      scale: scale,
+      visible: dist > 0.5
+    };
+  }
+
+  /* ── Mouse & Touch Event Handlers ────────────────────────────── */
+  canvas.addEventListener("mousedown", function(e){
+    isDragging = true;
+    autoRotate = false;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+  });
+  window.addEventListener("mouseup", function(){ isDragging = false; });
+  canvas.addEventListener("mousemove", function(e){
+    if (!isDragging) return;
+    var dx = e.clientX - lastMouseX;
+    var dy = e.clientY - lastMouseY;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+
+    targetRotY += dx * 0.007;
+    targetRotX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.007));
+  });
+
+  canvas.addEventListener("wheel", function(e){
+    e.preventDefault();
+    targetZoom = Math.max(0.65, Math.min(2.0, targetZoom - e.deltaY * 0.0015));
+  }, { passive: false });
+
+  // Touch Support
+  canvas.addEventListener("touchstart", function(e){
+    if (e.touches.length === 1) {
+      isDragging = true;
+      autoRotate = false;
+      lastMouseX = e.touches[0].clientX;
+      lastMouseY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+  window.addEventListener("touchend", function(){ isDragging = false; });
+  canvas.addEventListener("touchmove", function(e){
+    if (!isDragging || e.touches.length !== 1) return;
+    var dx = e.touches[0].clientX - lastMouseX;
+    var dy = e.touches[0].clientY - lastMouseY;
+    lastMouseX = e.touches[0].clientX;
+    lastMouseY = e.touches[0].clientY;
+
+    targetRotY += dx * 0.008;
+    targetRotX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.008));
+  }, { passive: true });
+
+  /* ── Global Controls: Focus & Reset ──────────────────────────── */
+  window.focusNode = function(key){
+    var data = NODES_DATA[key];
+    if (!data) return;
+
+    autoRotate = false;
+    var btns = document.querySelectorAll(".stage-btn");
+    for (var b = 0; b < btns.length; b++) btns[b].classList.remove("active");
+
+    var activeBtn = document.getElementById("btn-" + key);
+    if (activeBtn) activeBtn.classList.add("active");
+
+    var titleEl = document.getElementById("hudTitle");
+    var descEl = document.getElementById("hudDesc");
+    var metaEl = document.getElementById("hudMeta");
+    var hudCard = document.getElementById("stageHud");
+
+    if (titleEl) { titleEl.textContent = data.name; titleEl.style.color = data.color; }
+    if (descEl) descEl.textContent = data.desc;
+    if (metaEl) metaEl.textContent = data.meta;
+    if (hudCard) {
+      hudCard.style.borderColor = data.color;
+      hudCard.style.boxShadow = "0 8px 30px " + data.color + "33";
+    }
+
+    if (key === "core") {
+      targetRotX = 0.45;
+      targetZoom = 1.05;
+    } else {
+      targetRotY = -data.targetAngle - Math.PI / 2;
+      targetRotX = 0.35;
+      targetZoom = data.zoom;
+    }
+  };
+
+  window.resetCameraView = function(){
+    autoRotate = true;
+    var btns = document.querySelectorAll(".stage-btn");
+    for (var b = 0; b < btns.length; b++) btns[b].classList.remove("active");
+    var coreBtn = document.getElementById("btn-core");
+    if (coreBtn) coreBtn.classList.add("active");
+    focusNode("core");
+  };
+
+  /* ── Helper: Draw 3D Ring ────────────────────────────────────── */
+  function drawRing3D(cx, cy, cz, radius, segs, color, rotAxis, rotAngle) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    var first = true;
+    for (var s = 0; s <= segs; s++) {
+      var a = (s / segs) * Math.PI * 2;
+      var rx = Math.cos(a) * radius;
+      var rz = Math.sin(a) * radius;
+      var ry = 0;
+
+      // Apply local rotation
+      if (rotAxis === "x") {
+        var ty = ry * Math.cos(rotAngle) - rz * Math.sin(rotAngle);
+        var tz = ry * Math.sin(rotAngle) + rz * Math.cos(rotAngle);
+        ry = ty; rz = tz;
+      } else if (rotAxis === "z") {
+        var tx = rx * Math.cos(rotAngle) - ry * Math.sin(rotAngle);
+        var ty2 = rx * Math.sin(rotAngle) + ry * Math.cos(rotAngle);
+        rx = tx; ry = ty2;
+      }
+
+      var pt = project3D(cx + rx, cy + ry, cz + rz);
+      if (first) { ctx.moveTo(pt.x, pt.y); first = false; }
+      else { ctx.lineTo(pt.x, pt.y); }
+    }
+    ctx.stroke();
+  }
+
+  /* ── Main Animation Render Loop ──────────────────────────────── */
+  function render(timeMs) {
+    requestAnimationFrame(render);
+    var t = timeMs * 0.001;
+
+    // Smooth camera interpolation
+    if (autoRotate) {
+      targetRotY += 0.003;
+    }
+    cameraRotX += (targetRotX - cameraRotX) * 0.08;
+    cameraRotY += (targetRotY - cameraRotY) * 0.08;
+    currentZoom += (targetZoom - currentZoom) * 0.08;
+
+    // Clear frame
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw Perspective Grid Floor
+    ctx.strokeStyle = "rgba(0, 255, 65, 0.09)";
+    ctx.lineWidth = 1;
+    var gridExtent = 18;
+    var gridStep = 3;
+    var floorY = -4.5;
+    for (var gx = -gridExtent; gx <= gridExtent; gx += gridStep) {
+      var pA = project3D(gx, floorY, -gridExtent);
+      var pB = project3D(gx, floorY, gridExtent);
+      ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
+    }
+    for (var gz = -gridExtent; gz <= gridExtent; gz += gridStep) {
+      var p1 = project3D(-gridExtent, floorY, gz);
+      var p2 = project3D(gridExtent, floorY, gz);
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+
+    // Ambient floating particles
+    ctx.fillStyle = "rgba(0, 255, 65, 0.4)";
+    for (var a = 0; a < AMBIENT.length; a++) {
+      var ap = AMBIENT[a];
+      var ppt = project3D(ap.x, ap.y + Math.sin(t + a) * 0.4, ap.z);
+      if (ppt.visible) {
+        ctx.beginPath();
+        ctx.arc(ppt.x, ppt.y, Math.max(0.5, ap.size * (ppt.scale / 22)), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Pinned Orbit Ring around Core
+    drawRing3D(0, 0, 0, ORBIT_DIST, 72, "rgba(0, 255, 65, 0.18)", null, 0);
+
+    // Calculate dynamic satellite positions
+    var satWorldPositions = [];
+    for (var s = 0; s < SATELLITES.length; s++) {
+      var sat = SATELLITES[s];
+      var ang = sat.baseAngle + t * 0.08;
+      var sx = Math.cos(ang) * ORBIT_DIST;
+      var sz = Math.sin(ang) * ORBIT_DIST;
+      var sy = sat.y + Math.sin(t * 1.5 + s * 1.6) * 0.4;
+      satWorldPositions.push({ x: sx, y: sy, z: sz });
+    }
+
+    // Conduits from Core to Satellites
+    for (var c = 0; c < SATELLITES.length; c++) {
+      var satColor = SATELLITES[c].color;
+      var sw = satWorldPositions[c];
+      var corePt = project3D(0, 0, 0);
+      var satPt = project3D(sw.x, sw.y, sw.z);
+
+      ctx.save();
+      ctx.strokeStyle = satColor;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(corePt.x, corePt.y);
+      ctx.lineTo(satPt.x, satPt.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Flowing Energy Packets on Conduits
+    for (var pk = 0; pk < packets.length; pk++) {
+      var pObj = packets[pk];
+      pObj.prog += pObj.speed;
+      if (pObj.prog > 1) pObj.prog = 0;
+
+      var targetSw = satWorldPositions[pObj.satIndex];
+      var u = pObj.prog;
+      var px = targetSw.x * u;
+      var py = targetSw.y * u + Math.sin(u * Math.PI) * 1.2;
+      var pz = targetSw.z * u;
+
+      var packetScreen = project3D(px, py, pz);
+      if (packetScreen.visible) {
+        ctx.save();
+        ctx.fillStyle = SATELLITES[pObj.satIndex].color;
+        ctx.shadowColor = SATELLITES[pObj.satIndex].color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(packetScreen.x, packetScreen.y, Math.max(1, 2.8 * (packetScreen.scale / 22)), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Central Core: damathryxx64 Flake Core (Icosahedron + Glowing Nucleus)
+    var coreScale = 2.0 * (1 + Math.sin(t * 3) * 0.05);
+    var coreRotY = t * 0.35;
+    var coreRotX = t * 0.18;
+
+    // Draw Core Gyroscope Rings
+    drawRing3D(0, 0, 0, 3.2, 48, "rgba(0, 255, 65, 0.45)", "x", t * 0.4);
+    drawRing3D(0, 0, 0, 3.6, 48, "rgba(0, 229, 255, 0.4)", "z", t * 0.3);
+
+    // Project Icosahedron Vertices
+    var coreTransformed = icoVerts.map(function(v){
+      var x0 = v[0] * coreScale, y0 = v[1] * coreScale, z0 = v[2] * coreScale;
+      // Local rotation Y
+      var x1 = x0 * Math.cos(coreRotY) + z0 * Math.sin(coreRotY);
+      var z1 = -x0 * Math.sin(coreRotY) + z0 * Math.cos(coreRotY);
+      // Local rotation X
+      var y2 = y0 * Math.cos(coreRotX) - z1 * Math.sin(coreRotX);
+      var z2 = y0 * Math.sin(coreRotX) + z1 * Math.cos(coreRotX);
+      return project3D(x1, y2, z2);
+    });
+
+    // Draw Icosahedron Wireframe
+    ctx.save();
+    ctx.strokeStyle = "#00ff41";
+    ctx.shadowColor = "#00ff41";
+    ctx.shadowBlur = 12;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (var ie = 0; ie < icoEdges.length; ie++) {
+      var eA = coreTransformed[icoEdges[ie][0]];
+      var eB = coreTransformed[icoEdges[ie][1]];
+      if (eA.visible && eB.visible) {
+        ctx.moveTo(eA.x, eA.y);
+        ctx.lineTo(eB.x, eB.y);
+      }
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // Central Glowing Nucleus
+    var centerPt = project3D(0, 0, 0);
+    if (centerPt.visible) {
+      ctx.save();
+      var grad = ctx.createRadialGradient(
+        centerPt.x, centerPt.y, 2,
+        centerPt.x, centerPt.y, Math.max(10, 32 * (centerPt.scale / 22))
+      );
+      grad.addColorStop(0, "rgba(0, 229, 255, 0.95)");
+      grad.addColorStop(0.4, "rgba(0, 255, 65, 0.5)");
+      grad.addColorStop(1, "rgba(0, 255, 65, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(centerPt.x, centerPt.y, Math.max(10, 32 * (centerPt.scale / 22)), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Draw 4 Satellites
+    for (var st = 0; st < SATELLITES.length; st++) {
+      var satData = SATELLITES[st];
+      var satPos = satWorldPositions[st];
+      var satProj = project3D(satPos.x, satPos.y, satPos.z);
+      if (!satProj.visible) continue;
+
+      var satGeomScale = 1.1;
+      var sRotY = t * (0.4 + st * 0.05);
+      var sRotX = t * (0.25 + st * 0.04);
+
+      var activeVerts = (satData.geo === "ico") ? icoVerts : octVerts;
+      var activeEdges = (satData.geo === "ico") ? icoEdges : octEdges;
+
+      var sTransformed = activeVerts.map(function(v){
+        var x0 = v[0] * satGeomScale, y0 = v[1] * satGeomScale, z0 = v[2] * satGeomScale;
+        var x1 = x0 * Math.cos(sRotY) + z0 * Math.sin(sRotY);
+        var z1 = -x0 * Math.sin(sRotY) + z0 * Math.cos(sRotY);
+        var y2 = y0 * Math.cos(sRotX) - z1 * Math.sin(sRotX);
+        var z2 = y0 * Math.sin(sRotX) + z1 * Math.cos(sRotX);
+        return project3D(satPos.x + x1, satPos.y + y2, satPos.z + z2);
+      });
+
+      // Satellite wireframe
+      ctx.save();
+      ctx.strokeStyle = satData.color;
+      ctx.shadowColor = satData.color;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (var se = 0; se < activeEdges.length; se++) {
+        var saA = sTransformed[activeEdges[se][0]];
+        var saB = sTransformed[activeEdges[se][1]];
+        if (saA.visible && saB.visible) {
+          ctx.moveTo(saA.x, saA.y);
+          ctx.lineTo(saB.x, saB.y);
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      // Satellite glowing core
+      ctx.save();
+      var sGrad = ctx.createRadialGradient(
+        satProj.x, satProj.y, 2,
+        satProj.x, satProj.y, Math.max(8, 20 * (satProj.scale / 22))
+      );
+      sGrad.addColorStop(0, satData.color);
+      sGrad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = sGrad;
+      ctx.beginPath();
+      ctx.arc(satProj.x, satProj.y, Math.max(8, 20 * (satProj.scale / 22)), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Satellite 3D HUD Badge
+      ctx.save();
+      ctx.font = "bold 11px 'JetBrains Mono', monospace";
+      var badgeText = satData.name;
+      var textWidth = ctx.measureText(badgeText).width;
+      var badgeX = satProj.x - textWidth / 2 - 8;
+      var badgeY = satProj.y - 28;
+
+      ctx.fillStyle = "rgba(4, 7, 12, 0.88)";
+      ctx.strokeStyle = satData.color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(badgeX, badgeY, textWidth + 16, 20, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = satData.color;
+      ctx.fillText(badgeText, badgeX + 8, badgeY + 14);
+      ctx.restore();
+    }
+
+    // Core 3D HUD Badge
+    if (centerPt.visible) {
+      ctx.save();
+      ctx.font = "bold 12px 'JetBrains Mono', monospace";
+      var coreBadgeText = "damathryxx64 (trunk)";
+      var coreTextWidth = ctx.measureText(coreBadgeText).width;
+      var cBadgeX = centerPt.x - coreTextWidth / 2 - 10;
+      var cBadgeY = centerPt.y - 48;
+
+      ctx.fillStyle = "rgba(4, 7, 12, 0.92)";
+      ctx.strokeStyle = "#00ff41";
+      ctx.lineWidth = 1.2;
+      ctx.shadowColor = "#00ff41";
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.roundRect(cBadgeX, cBadgeY, coreTextWidth + 20, 24, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#00ff41";
+      ctx.fillText(coreBadgeText, cBadgeX + 10, cBadgeY + 16);
+      ctx.restore();
+    }
+  }
+
+  // Start animation loop immediately
+  requestAnimationFrame(render);
+})();
+</script>
+
 </body>
 </html>
