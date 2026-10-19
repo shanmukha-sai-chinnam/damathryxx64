@@ -1,15 +1,15 @@
 {pkgs, ...}: {
-  environment.systemPackages = with pkgs; [
-    python3
-    nodejs
-    ruby
-    uv
-    gcc
-    clang
-    cmake
-    gnumake
-    pkg-config
-    nixd
-    zx
+  environment.systemPackages = [
+    pkgs.python3
+    pkgs.nodejs
+    pkgs.ruby
+    pkgs.uv
+    pkgs.gcc
+    pkgs.clang
+    pkgs.cmake
+    pkgs.gnumake
+    pkgs.pkg-config
+    pkgs.nixd
+    pkgs.zx
   ];
 }

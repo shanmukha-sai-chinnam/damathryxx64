@@ -54,8 +54,10 @@ def get_api_key():
             except Exception:
                 pass
 
-    # 3. Plaintext key file fallbacks
+    # 3. Plaintext and decrypted RAM secret key file fallbacks
     plain_candidates = [
+        Path("/run/secrets/typesafe-api-key"),
+        Path("/run/secrets/typesafe_api_key"),
         Path.home() / ".config" / "typesafe" / "api_key",
         Path.home() / ".gemini" / "typesafe_api_key",
         Path.home() / ".typesafe_api_key",
@@ -257,12 +259,15 @@ def handle_tool_call(name, args):
 
     elif name == "typesafe_choice":
         options = args.get("options", [])
+        if not options:
+            raise ValueError("Parameter 'options' must be a non-empty list or dict.")
+
         if isinstance(options, list):
-            criteria = {str(opt): None for opt in options}
+            criteria = {str(opt): str(opt) for opt in options}
         elif isinstance(options, dict):
-            criteria = options
+            criteria = {str(k): (str(v) if v is not None else str(k)) for k, v in options.items()}
         else:
-            criteria = {}
+            raise ValueError("Parameter 'options' must be a list or dict.")
 
         question = {
             "type": "choice",
@@ -289,6 +294,8 @@ def handle_tool_call(name, args):
 
     elif name == "typesafe_score":
         levels = args.get("levels", [])
+        if not levels:
+            raise ValueError("Parameter 'levels' must be a non-empty list.")
         question = {
             "type": "score",
             "instructions": args.get("instructions"),

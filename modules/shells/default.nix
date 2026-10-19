@@ -1,8 +1,13 @@
 {pkgs, ...}: let
-  customZshCompletions = pkgs.runCommand "custom-zsh-completions" {} ''
-    mkdir -p $out/share/zsh/site-functions
-    cp ${./completions}/* $out/share/zsh/site-functions/
-  '';
+  customZshCompletions =
+    pkgs.runCommand "custom-zsh-completions" {
+      nativeBuildInputs = [pkgs.gh pkgs.uv];
+    } ''
+      mkdir -p $out/share/zsh/site-functions
+      cp ${./completions}/* $out/share/zsh/site-functions/
+      gh completion -s zsh > $out/share/zsh/site-functions/_gh
+      uv generate-shell-completion zsh > $out/share/zsh/site-functions/_uv
+    '';
 in {
   programs = {
     zsh = {
@@ -134,15 +139,15 @@ in {
         source ${pkgs.zsh-autopair}/share/zsh/zsh-autopair/autopair.zsh
 
         # ── Autoload & Wire Custom Completions ─────────────────────────────────
-        autoload -Uz _agy _nh _antigravity_superpowers
+        autoload -Uz _agy _nh _antigravity_superpowers _gh _uv
         compdef _agy agy antigravity-cli agy2 antigravity2
         compdef _nh nh
         compdef _antigravity_superpowers antigravity-superpowers
+        compdef _gh gh
+        compdef _uv uv
 
         # ── Dynamic Tool Completions ───────────────────────────────────────────
         eval "$(${pkgs.nix-your-shell}/bin/nix-your-shell zsh)"
-        which gh >/dev/null 2>&1 && eval "$(gh completion -s zsh 2>/dev/null)"
-        which uv >/dev/null 2>&1 && eval "$(uv generate-shell-completion zsh 2>/dev/null)"
 
         # ── FZF Environment & Dracula/Nord Ergonomics ──────────────────────────
         export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'

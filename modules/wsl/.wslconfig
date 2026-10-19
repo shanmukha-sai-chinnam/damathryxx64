@@ -12,7 +12,9 @@ processors=4
 # Set swap storage to 4GB
 swap=4GB
 
-# Default connection to bind WSL 2 localhost to Windows localhost
+# Mirrored networking for zero-overhead local port sharing and fast DNS tunneling
+networkingMode=mirrored
+dnsTunneling=true
 localhostforwarding=true
 
 [experimental]

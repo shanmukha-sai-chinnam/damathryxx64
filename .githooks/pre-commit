@@ -22,9 +22,9 @@ fi
 
 # 3. Deadnix check
 echo "  ↳ [3/3] Checking dead code (Deadnix)..."
-if ! deadnix --fail --exclude .direnv result . > /dev/null 2>&1; then
+if ! deadnix --fail --exclude .direnv,result . > /dev/null 2>&1; then
   echo -e "\033[1;31m❌ Deadnix detected unused Nix code.\033[0m"
-  deadnix --exclude .direnv result .
+  deadnix --exclude .direnv,result .
   exit 1
 fi
 

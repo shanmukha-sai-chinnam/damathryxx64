@@ -4,6 +4,7 @@
     echo ""
     echo -e "\033[1;33mHandy Task Commands:\033[0m"
     echo "  dots-validate                  → Run full 4-stage validation (Alejandra, Statix, Deadnix, Flake)"
+    echo "  dots-test-vm                   → Safe dry build, nvd package diff & systemd activation check"
     echo "  dots-fmt                       → Format Nix expressions with Alejandra"
     echo "  dots-lint                      → Run Statix & Deadnix anti-pattern checks"
     echo "  dots-build                     → Fast build with progress (nh os build)"
@@ -28,6 +29,11 @@
     echo "  nix-diff <d1> <d2>             → Explain differences between two derivations"
     echo "  nix-tree                       → Interactive TUI for exploring store closure trees"
     echo "  nix-inspect                    → Interactive TUI data explorer"
+    echo ""
+    echo -e "\033[1;33mDeclarative Secret Management (sops-nix):\033[0m"
+    echo "  sops secrets/secrets.yaml      → Edit Age-encrypted secrets"
+    echo "  age-keygen -y <keyfile>        → View public key"
+    echo "  ssh-to-age < <ssh-pubkey>      → Convert SSH host key to Age"
     echo ""
     echo -e "\033[1;33mAntigravity Superpowers & AI Agents:\033[0m"
     echo "  antigravity-superpowers init   → Scaffold .agents directory"
@@ -54,11 +60,16 @@
   '';
 
   dotsSyncSkills = pkgs.writeShellScriptBin "dots-sync-skills" ''
-    exec ${pkgs.python3}/bin/python3 /home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py "$@"
+    DEV_SCRIPT="/home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py"
+    if [ -f "$DEV_SCRIPT" ]; then
+      exec ${pkgs.python3}/bin/python3 "$DEV_SCRIPT" "$@"
+    else
+      exec ${pkgs.python3}/bin/python3 ${../../scripts/sync-forks.py} "$@"
+    fi
   '';
 
   refreshSkills = pkgs.writeShellScriptBin "refresh-skills" ''
-    exec ${pkgs.python3}/bin/python3 /home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py refresh "$@"
+    exec ${dotsSyncSkills}/bin/dots-sync-skills refresh "$@"
   '';
 in {
   devShell = pkgs.mkShell {
