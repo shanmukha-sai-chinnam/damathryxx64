@@ -3,1886 +3,2896 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>damathryxx64 · NixOS Orchestration Engine</title>
-  <meta name="description" content="Declarative NixOS-WSL system orchestrator powering Antigravity 2.0, autonomous AI agent skills, and multi-repo synchronization.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Autonomous Agent Hive · Full Infrastructure 3D Engine</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-/* ── Reset & Color Tokens ──────────────────────────────────────── */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#030508;
-  --bg-card:rgba(6,10,16,0.92);
-  --green:#00ff41;
-  --green-glow:rgba(0,255,65,0.4);
-  --cyan:#00e5ff;
-  --cyan-glow:rgba(0,229,255,0.4);
-  --purple:#b055ff;
-  --purple-glow:rgba(176,85,255,0.4);
-  --pink:#ff55b0;
-  --pink-glow:rgba(255,85,176,0.4);
-  --amber:#ffb800;
-  --amber-glow:rgba(255,184,0,0.4);
-  --text-main:#a2b1c6;
-  --text-bright:#f0f4f9;
-  --text-dim:#4a5970;
-  --border-subtle:rgba(0,255,65,0.16);
-  --border-bright:rgba(0,255,65,0.45);
-  --mono:'JetBrains Mono','Fira Code',ui-monospace,monospace;
-  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);
-  color:var(--text-main);
-  font-family:var(--mono);
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
 
-/* ── Cyber Matrix Background Grid ──────────────────────────────── */
-.bg-grid{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background-size:40px 40px;
-  background-image:
-    linear-gradient(to right, rgba(0,255,65,0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,255,65,0.03) 1px, transparent 1px);
-}
-.scanlines{
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.05) 0px,rgba(0,0,0,0.05) 1px,transparent 1px,transparent 3px);
-}
-.vignette{
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-  background:radial-gradient(ellipse at center,transparent 50%,rgba(3,5,8,0.85) 100%);
-}
+    body {
+      margin: 0;
+      background: #020408;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+      user-select: none;
+    }
 
-/* ── Top Navigation Bar ────────────────────────────────────────── */
-nav{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 28px;
-  background:rgba(3,5,8,0.9);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--border-subtle);
-}
-.nav-brand{
-  font-size:13px;
-  font-weight:700;
-  color:var(--green);
-  text-shadow:0 0 10px var(--green-glow);
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.nav-links{display:flex;gap:20px}
-.nav-links a{
-  color:var(--text-dim);
-  text-decoration:none;
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:0.8px;
-  text-transform:uppercase;
-  transition:color .2s,text-shadow .2s;
-}
-.nav-links a:hover{
-  color:var(--green);
-  text-shadow:0 0 8px var(--green-glow);
-}
-.gh-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  color:var(--text-bright);
-  text-decoration:none;
-  font-size:11px;
-  padding:5px 14px;
-  border:1px solid var(--border-subtle);
-  border-radius:6px;
-  background:rgba(0,255,65,0.04);
-  transition:all .2s;
-}
-.gh-btn:hover{
-  border-color:var(--green);
-  color:var(--green);
-  box-shadow:0 0 14px var(--green-glow);
-}
+    /* Cyber Matrix Canvas Grid */
+    .cyber-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 255, 65, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 255, 65, 0.04) 1px, transparent 1px);
+    }
 
-/* ── Container Layout ──────────────────────────────────────────── */
-.container{
-  position:relative;
-  z-index:2;
-  max-width:1160px;
-  margin:0 auto;
-  padding:80px 24px 60px;
-}
+    /* Scanlines effect */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.06) 0px,
+        rgba(0, 0, 0, 0.06) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 10;
+    }
 
-/* ── Hero Section ──────────────────────────────────────────────── */
-.hero{
-  text-align:center;
-  padding:40px 0 30px;
-}
-.hero-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 18px;
-  background:rgba(0,255,65,0.06);
-  border:1px solid rgba(0,255,65,0.25);
-  border-radius:999px;
-  font-size:11px;
-  font-weight:600;
-  color:var(--green);
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  margin-bottom:20px;
-}
-.pulse-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-  animation:p-glow 2s ease-in-out infinite;
-}
-@keyframes p-glow{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.85)}}
-.glitch-title{
-  font-family:var(--mono);
-  font-size:clamp(38px,7vw,72px);
-  font-weight:700;
-  color:var(--text-bright);
-  position:relative;
-  text-shadow:0 0 25px rgba(0,255,65,0.25);
-  margin-bottom:14px;
-  line-height:1.1;
-}
-.hero-desc{
-  font-family:var(--sans);
-  font-size:15px;
-  color:var(--text-main);
-  max-width:700px;
-  margin:0 auto 28px;
-  line-height:1.75;
-  font-weight:300;
-}
-.hero-desc code{
-  color:var(--green);
-  background:rgba(0,255,65,0.08);
-  padding:2px 7px;
-  border-radius:4px;
-  font-size:13px;
-  font-family:var(--mono);
-}
-.hero-stats-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:center;
-}
-.hero-stat{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 16px;
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:8px;
-  font-size:11px;
-}
-.hero-stat strong{color:var(--green);font-weight:700}
+    /* CRT Vignette */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(2, 4, 8, 0.85) 100%);
+      z-index: 10;
+    }
 
-/* ── 3D Interactive Stage ──────────────────────────────────────── */
-.stage-section{
-  margin:24px 0 64px;
-}
-.stage-container{
-  background:var(--bg-card);
-  border:1px solid var(--border-bright);
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 0 45px rgba(0,255,65,0.1), 0 20px 50px rgba(0,0,0,0.7);
-  position:relative;
-}
-.stage-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 20px;
-  background:rgba(8,12,18,0.95);
-  border-bottom:1px solid var(--border-subtle);
-  flex-wrap:wrap;
-  gap:10px;
-}
-.stage-title-wrap{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.stage-live-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-size:10px;
-  color:var(--green);
-  font-weight:700;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  background:rgba(0,255,65,0.08);
-  padding:3px 8px;
-  border-radius:4px;
-}
-.stage-title{
-  font-size:13px;
-  font-weight:700;
-  color:var(--text-bright);
-  letter-spacing:0.5px;
-}
-.stage-controls{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.stage-btn{
-  background:rgba(0,255,65,0.05);
-  border:1px solid var(--border-subtle);
-  border-radius:6px;
-  color:var(--text-main);
-  font-family:var(--mono);
-  font-size:11px;
-  padding:6px 12px;
-  cursor:pointer;
-  transition:all .15s ease;
-  user-select:none;
-}
-.stage-btn:hover,
-.stage-btn.active{
-  background:rgba(0,255,65,0.18);
-  border-color:var(--green);
-  color:var(--green);
-  box-shadow:0 0 12px var(--green-glow);
-}
+    /* Custom range sliders */
+    input[type=range] {
+      accent-color: #00ffcc;
+    }
 
-/* ── 3D Canvas Viewport ────────────────────────────────────────── */
-.viewport-3d-wrap{
-  position:relative;
-  width:100%;
-  height:560px;
-  background:radial-gradient(ellipse at center, rgba(0,255,65,0.05) 0%, rgba(3,5,8,0.98) 75%);
-  overflow:hidden;
-}
-#threeCanvas{
-  width:100%;
-  height:100%;
-  display:block;
-  cursor:grab;
-}
-#threeCanvas:active{
-  cursor:grabbing;
-}
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #060a12; }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 204, 0.6); }
 
-/* ── Stage HUD Telemetry Overlay ───────────────────────────────── */
-.stage-hud{
-  position:absolute;
-  bottom:16px;
-  left:16px;
-  background:rgba(5,9,14,0.9);
-  border:1px solid var(--green);
-  border-radius:8px;
-  padding:14px 18px;
-  font-size:11px;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  pointer-events:none;
-  max-width:340px;
-  box-shadow:0 8px 28px rgba(0,0,0,0.6);
-  transition:border-color .2s, box-shadow .2s;
-}
-.hud-title{
-  color:var(--green);
-  font-weight:700;
-  font-size:13px;
-  margin-bottom:4px;
-}
-.hud-desc{
-  font-family:var(--sans);
-  color:var(--text-bright);
-  font-size:11px;
-  line-height:1.55;
-  margin-bottom:6px;
-}
-.hud-meta{
-  color:var(--text-dim);
-  font-size:10px;
-  font-family:var(--mono);
-}
-.stage-hint{
-  position:absolute;
-  top:16px;
-  right:16px;
-  background:rgba(5,9,14,0.75);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:6px;
-  padding:6px 12px;
-  font-size:10px;
-  color:var(--text-dim);
-  pointer-events:none;
-  backdrop-filter:blur(8px);
-}
+    .glow-text {
+      text-shadow: 0 0 12px currentColor;
+    }
 
-/* ── Section Shell ─────────────────────────────────────────────── */
-.sect{margin-bottom:64px}
-.sect-header{margin-bottom:28px}
-.sect-tag{
-  font-size:10px;
-  color:var(--green);
-  letter-spacing:2.5px;
-  text-transform:uppercase;
-  margin-bottom:8px;
-  text-shadow:0 0 10px var(--green-glow);
-}
-.sect-h{
-  font-size:clamp(22px,3.5vw,34px);
-  font-weight:700;
-  color:var(--text-bright);
-  margin-bottom:10px;
-  font-family:var(--sans);
-  letter-spacing:-0.5px;
-}
-.sect-p{
-  font-family:var(--sans);
-  font-size:14px;
-  color:var(--text-main);
-  max-width:700px;
-  line-height:1.75;
-  font-weight:300;
-}
+    .glass-card {
+      background: rgba(6, 11, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 255, 204, 0.16);
+    }
 
-/* ── 2D Schematic Diagram ──────────────────────────────────────── */
-.schematic-box{
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:12px;
-  padding:28px;
-  backdrop-filter:blur(16px);
-  margin-bottom:28px;
-  overflow-x:auto;
-}
-.schematic-svg{
-  width:100%;
-  min-width:760px;
-  height:auto;
-  display:block;
-}
-
-/* ── Repositories Grid ─────────────────────────────────────────── */
-.repo-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
-  gap:16px;
-}
-.repo-card{
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:12px;
-  padding:24px;
-  backdrop-filter:blur(16px);
-  text-decoration:none;
-  color:inherit;
-  transition:all .25s ease;
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-.repo-card::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:2px;
-  background:var(--rc);
-  opacity:0;
-  transition:opacity .25s;
-}
-.repo-card:hover::before{opacity:1}
-.repo-card:hover{
-  border-color:color-mix(in srgb,var(--rc) 45%,transparent);
-  box-shadow:0 0 25px color-mix(in srgb,var(--rc) 15%,transparent);
-  transform:translateY(-3px);
-}
-.repo-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-}
-.repo-name-wrap{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.repo-dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:var(--rc);
-  box-shadow:0 0 10px var(--rc);
-}
-.repo-name{
-  font-size:15px;
-  font-weight:700;
-  color:var(--text-bright);
-}
-.repo-badge{
-  font-size:10px;
-  padding:2px 8px;
-  border-radius:4px;
-  background:rgba(255,255,255,0.04);
-  color:var(--rc);
-  border:1px solid color-mix(in srgb,var(--rc) 30%,transparent);
-}
-.repo-role{
-  font-size:11px;
-  color:var(--rc);
-  letter-spacing:1px;
-  text-transform:uppercase;
-  margin-bottom:10px;
-  font-weight:600;
-}
-.repo-summary{
-  font-size:12px;
-  color:var(--text-main);
-  line-height:1.65;
-  margin-bottom:16px;
-  font-family:var(--sans);
-  flex-grow:1;
-}
-.repo-files{
-  background:rgba(0,0,0,0.35);
-  border:1px solid rgba(255,255,255,0.04);
-  border-radius:6px;
-  padding:10px 12px;
-  margin-bottom:16px;
-}
-.repo-files-title{
-  font-size:10px;
-  color:var(--text-dim);
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  margin-bottom:6px;
-}
-.repo-files ul{list-style:none}
-.repo-files li{
-  font-size:11px;
-  color:var(--text-main);
-  font-family:var(--mono);
-  padding:1px 0;
-}
-.repo-files li::before{
-  content:'› ';
-  color:var(--rc);
-}
-.repo-footer{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  font-size:11px;
-  color:var(--text-dim);
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,0.04);
-}
-.repo-branch{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  color:var(--green);
-}
-
-/* ── MCP Servers Grid ──────────────────────────────────────────── */
-.mcp-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:12px;
-}
-.mcp-item{
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:8px;
-  padding:16px;
-  backdrop-filter:blur(16px);
-  transition:all .2s;
-}
-.mcp-item:hover{
-  border-color:var(--border-bright);
-  background:rgba(0,255,65,0.03);
-}
-.mcp-name{
-  font-size:13px;
-  font-weight:700;
-  color:var(--text-bright);
-  margin-bottom:4px;
-}
-.mcp-cmd{
-  font-size:11px;
-  color:var(--green);
-  font-family:var(--mono);
-  margin-bottom:6px;
-}
-.mcp-desc{
-  font-size:11px;
-  color:var(--text-dim);
-  line-height:1.55;
-  font-family:var(--sans);
-}
-
-/* ── Terminal Simulator ────────────────────────────────────────── */
-.term-shell{
-  background:rgba(4,6,9,0.96);
-  border:1px solid var(--border-bright);
-  border-radius:12px;
-  overflow:hidden;
-  backdrop-filter:blur(20px);
-  box-shadow:0 0 35px rgba(0,255,65,0.06);
-}
-.term-bar{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:12px 18px;
-  background:rgba(10,14,20,0.95);
-  border-bottom:1px solid var(--border-subtle);
-}
-.term-dots{display:flex;gap:6px}
-.term-dot{width:10px;height:10px;border-radius:50%}
-.term-info{
-  font-size:11px;
-  color:var(--text-dim);
-  margin-left:12px;
-  letter-spacing:0.5px;
-}
-.term-output{
-  padding:20px;
-  font-size:12px;
-  line-height:1.8;
-  min-height:260px;
-  max-height:400px;
-  overflow-y:auto;
-}
-.term-output::-webkit-scrollbar{width:4px}
-.term-output::-webkit-scrollbar-thumb{background:rgba(0,255,65,0.25);border-radius:2px}
-.tline{white-space:pre-wrap;word-break:break-all}
-.tp{color:var(--cyan)}.tc{color:var(--text-bright)}.ts{color:var(--green)}.ti{color:var(--cyan)}.tw{color:var(--amber)}.td{color:var(--text-dim)}
-.term-cursor{animation:blink-cur 1s step-end infinite;color:var(--green)}
-@keyframes blink-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
-.cmd-tray{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:18px;
-}
-.cmd-btn{
-  padding:8px 16px;
-  background:rgba(0,255,65,0.06);
-  border:1px solid rgba(0,255,65,0.22);
-  border-radius:6px;
-  color:var(--green);
-  font-family:var(--mono);
-  font-size:12px;
-  cursor:pointer;
-  transition:all .2s;
-  user-select:none;
-}
-.cmd-btn:hover{
-  background:rgba(0,255,65,0.14);
-  border-color:var(--green);
-  box-shadow:0 0 12px var(--green-glow);
-}
-
-/* ── Commands Reference Table ──────────────────────────────────── */
-.tbl-shell{
-  background:var(--bg-card);
-  border:1px solid var(--border-subtle);
-  border-radius:12px;
-  overflow-x:auto;
-  backdrop-filter:blur(16px);
-}
-.cmd-tbl{
-  width:100%;
-  border-collapse:collapse;
-  font-size:12px;
-}
-.cmd-tbl th{
-  text-align:left;
-  padding:12px 18px;
-  color:var(--green);
-  font-weight:600;
-  font-size:11px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  border-bottom:1px solid var(--border-subtle);
-  background:rgba(0,255,65,0.03);
-}
-.cmd-tbl td{
-  padding:12px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.03);
-  font-family:var(--sans);
-}
-.cmd-tbl tr:hover td{background:rgba(0,255,65,0.02)}
-.cmd-tbl code{
-  color:var(--green);
-  background:rgba(0,255,65,0.08);
-  padding:3px 8px;
-  border-radius:4px;
-  font-size:11px;
-  font-family:var(--mono);
-}
-
-/* ── Clean Footer ──────────────────────────────────────────────── */
-footer{
-  text-align:center;
-  padding:48px 24px 24px;
-  border-top:1px solid var(--border-subtle);
-  font-size:12px;
-  color:var(--text-dim);
-  font-family:var(--sans);
-}
-.footer-links{
-  display:flex;
-  gap:20px;
-  justify-content:center;
-  margin-bottom:14px;
-  flex-wrap:wrap;
-}
-.footer-links a{
-  color:var(--text-main);
-  text-decoration:none;
-  font-family:var(--mono);
-  font-size:11px;
-}
-.footer-links a:hover{
-  color:var(--green);
-  text-decoration:underline;
-}
-
-/* ── Responsive ────────────────────────────────────────────────── */
-@media(max-width:768px){
-  .nav-links{display:none}
-  .viewport-3d-wrap{height:420px}
-  .repo-grid{grid-template-columns:1fr}
-}
+    .cluster-filter-btn.active {
+      background: rgba(0, 255, 204, 0.18);
+      border-color: rgba(0, 255, 204, 0.8);
+      color: #00ffcc;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.25);
+    }
   </style>
 </head>
-<body>
+<body class="bg-[#020408] text-slate-400 min-h-screen flex flex-col justify-between cyber-grid relative">
 
-<div class="bg-grid"></div>
-<div class="scanlines"></div>
-<div class="vignette"></div>
+  <!-- Scanlines & Vignette -->
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
 
-<!-- Top Navigation -->
-<nav>
-  <div class="nav-brand">
-    <span>❄</span>
-    <span>damathryxx64 <span style="color:var(--text-dim)">/</span> nixos-workspace</span>
+  <!-- Main Container -->
+  <div class="relative z-20 flex flex-col min-h-screen p-3 md:p-6 max-w-7xl mx-auto w-full">
+
+    <!-- Top Bar Header -->
+    <header class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-cyan-500/20 mb-3">
+      <div class="flex items-center gap-3">
+        <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#00ffcc] animate-pulse"></div>
+        <div>
+          <h1 class="text-cyan-300 font-bold text-sm md:text-base tracking-wider uppercase glow-text flex items-center gap-2">
+            <span>❄</span> Autonomous Agent Hive · 3D Infrastructure Hologram
+            <span class="text-[11px] font-normal text-emerald-400 border border-emerald-500/40 bg-emerald-950/40 px-2 py-0.5 rounded">Local Preview · Port 8088</span>
+          </h1>
+          <p class="text-xs text-slate-400 font-sans">Interactive 3D Neural Constellation Mapping NixOS-WSL, 9 MCP Servers, 6 Autonomous Agents, 4 Upstreams & 31+ Skills</p>
+        </div>
+      </div>
+
+      <!-- Quick Telemetry Chips -->
+      <div class="flex items-center gap-2 md:gap-3 text-xs">
+        <div class="px-2.5 py-1 rounded bg-slate-900/90 border border-emerald-500/20 text-emerald-300 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          FPS: <span id="fpsVal" class="font-bold text-white">60</span>
+        </div>
+        <div class="px-2.5 py-1 rounded bg-slate-900/90 border border-cyan-500/20 text-cyan-300 flex items-center gap-1.5">
+          Nodes: <span id="nodeCountVal" class="font-bold text-white">51</span>
+        </div>
+        <div class="px-2.5 py-1 rounded bg-slate-900/90 border border-purple-500/20 text-purple-300 flex items-center gap-1.5">
+          Filaments: <span id="edgeCountVal" class="font-bold text-white">57</span>
+        </div>
+        <div class="px-2.5 py-1 rounded bg-slate-900/90 border border-amber-500/20 text-amber-300 flex items-center gap-1.5">
+          Packets: <span id="packetCountVal" class="font-bold text-white">48</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Model Switcher Ribbon -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
+      <button onclick="switchModel('neural')" id="tab-neural" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-cyan-500/60 bg-cyan-950/40 text-cyan-200 shadow-[0_0_15px_rgba(0,255,204,0.25)]">
+        <span class="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
+          <span>MODEL 03 ★</span>
+          <span>FULL INFRA</span>
+        </span>
+        <span class="font-bold tracking-wide text-white text-xs">Autonomous Agent Hive</span>
+        <span class="text-[11px] font-sans text-cyan-300/80 truncate">Entire 51-Node Infrastructure</span>
+      </button>
+
+      <button onclick="switchModel('quantum')" id="tab-quantum" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-emerald-500/40 hover:text-emerald-300">
+        <span class="flex items-center justify-between text-[11px] text-emerald-400 font-mono">
+          <span>MODEL 01</span>
+          <span>4D TORUS</span>
+        </span>
+        <span class="font-bold tracking-wide text-slate-200 text-xs">Quantum Singularity</span>
+        <span class="text-[11px] font-sans text-slate-400 truncate">Hopf Fibration & Pure Nix Store</span>
+      </button>
+
+      <button onclick="switchModel('reactor')" id="tab-reactor" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300">
+        <span class="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
+          <span>MODEL 02</span>
+          <span>REACTOR</span>
+        </span>
+        <span class="font-bold tracking-wide text-slate-200 text-xs">Orbital Star Engine</span>
+        <span class="text-[11px] font-sans text-slate-400 truncate">NixOS Confinement Rings</span>
+      </button>
+
+      <button onclick="switchModel('sentinel')" id="tab-sentinel" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-amber-500/40 hover:text-amber-300">
+        <span class="flex items-center justify-between text-[11px] text-amber-400 font-mono">
+          <span>MODEL 04</span>
+          <span>RADAR SHIELD</span>
+        </span>
+        <span class="font-bold tracking-wide text-slate-200 text-xs">Kinetic Security Dome</span>
+        <span class="text-[11px] font-sans text-slate-400 truncate">ClamAV inotify Sentinel Sweep</span>
+      </button>
+
+      <button onclick="switchModel('mech')" id="tab-mech" class="model-tab col-span-2 md:col-span-1 px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-pink-500/40 hover:text-pink-300">
+        <span class="flex items-center justify-between text-[11px] text-pink-400 font-mono">
+          <span>MODEL 05</span>
+          <span>INSTRUMENT</span>
+        </span>
+        <span class="font-bold tracking-wide text-slate-200 text-xs">Sci-Fi Chronometer</span>
+        <span class="text-[11px] font-sans text-slate-400 truncate">Gear Ratios, Dials & Pistons</span>
+      </button>
+    </div>
+
+    <!-- Cluster Subsystem Filter Strip (Active for Model 03) -->
+    <div id="clusterFilterBar" class="glass-card rounded-lg p-2 mb-3 flex items-center gap-1.5 overflow-x-auto text-xs">
+      <span class="text-[11px] text-slate-400 uppercase font-bold px-2 whitespace-nowrap">INFRA CLUSTERS:</span>
+      <button onclick="filterCluster('all')" id="btn-cluster-all" class="cluster-filter-btn active px-2.5 py-1 rounded border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition whitespace-nowrap">
+        🌌 All Infra (51)
+      </button>
+      <button onclick="filterCluster('core')" id="btn-cluster-core" class="cluster-filter-btn px-2.5 py-1 rounded border border-cyan-500/40 bg-slate-900/80 text-cyan-300 hover:text-white transition whitespace-nowrap">
+        🧠 Core Brain (4)
+      </button>
+      <button onclick="filterCluster('nixos')" id="btn-cluster-nixos" class="cluster-filter-btn px-2.5 py-1 rounded border border-emerald-500/40 bg-slate-900/80 text-emerald-300 hover:text-white transition whitespace-nowrap">
+        ❄️ NixOS & Flakes (9)
+      </button>
+      <button onclick="filterCluster('mcp')" id="btn-cluster-mcp" class="cluster-filter-btn px-2.5 py-1 rounded border border-teal-500/40 bg-slate-900/80 text-teal-300 hover:text-white transition whitespace-nowrap">
+        🔌 MCP Mesh (9)
+      </button>
+      <button onclick="filterCluster('agents')" id="btn-cluster-agents" class="cluster-filter-btn px-2.5 py-1 rounded border border-purple-500/40 bg-slate-900/80 text-purple-300 hover:text-white transition whitespace-nowrap">
+        🤖 Agent Swarm (6)
+      </button>
+      <button onclick="filterCluster('pipeline')" id="btn-cluster-pipeline" class="cluster-filter-btn px-2.5 py-1 rounded border border-amber-500/40 bg-slate-900/80 text-amber-300 hover:text-white transition whitespace-nowrap">
+        🔄 Skills Hub & Pipeline (8)
+      </button>
+      <button onclick="filterCluster('skills')" id="btn-cluster-skills" class="cluster-filter-btn px-2.5 py-1 rounded border border-sky-500/40 bg-slate-900/80 text-sky-300 hover:text-white transition whitespace-nowrap">
+        📜 Runtime Skills (11)
+      </button>
+      <button onclick="filterCluster('security')" id="btn-cluster-security" class="cluster-filter-btn px-2.5 py-1 rounded border border-red-500/40 bg-slate-900/80 text-red-300 hover:text-white transition whitespace-nowrap">
+        🛡️ Security Sentinel (4)
+      </button>
+    </div>
+
+    <!-- 3D Canvas Stage & Controls Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-grow mb-4">
+      
+      <!-- Center 3D Stage (3 Columns) -->
+      <div class="lg:col-span-3 glass-card rounded-xl relative overflow-hidden flex flex-col shadow-[0_0_35px_rgba(0,0,0,0.8)]">
+        
+        <!-- Viewport Canvas Container -->
+        <div class="relative w-full h-[470px] md:h-[560px] flex-grow bg-radial from-slate-900/20 via-[#03060c] to-[#020408]">
+          <canvas id="stageCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+          <!-- Top-Left Interactive Pill -->
+          <div class="absolute top-3 left-3 flex items-center gap-2 pointer-events-none z-10">
+            <span class="px-2.5 py-1 rounded bg-black/85 border border-cyan-500/40 text-xs font-mono flex items-center gap-1.5 shadow">
+              <span id="modelIndicatorDot" class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span id="modelIndicatorTitle" class="text-white font-bold">Autonomous Agent Hive</span>
+            </span>
+            <span class="hidden md:inline px-2 py-0.5 rounded bg-black/60 border border-slate-800 text-[11px] text-slate-300">
+              Hover Node for HUD · Click to Inspect · Drag to Orbit · Scroll to Zoom
+            </span>
+          </div>
+
+          <!-- Top-Right Action Controls -->
+          <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+            <button onclick="toggleAutoRotate()" id="btnRotate" class="px-2.5 py-1 rounded bg-black/80 hover:bg-slate-800 border border-slate-700 text-xs text-cyan-300 flex items-center gap-1 transition">
+              <span id="rotateIcon">🔄</span>
+              <span class="hidden sm:inline">Auto-Orbit</span>
+            </button>
+            <button onclick="resetCamera()" class="px-2.5 py-1 rounded bg-black/80 hover:bg-slate-800 border border-slate-700 text-xs text-slate-300 hover:text-white transition">
+              Reset View
+            </button>
+          </div>
+
+          <!-- Bottom-Left Telemetry Overlay -->
+          <div class="absolute bottom-3 left-3 max-w-sm p-3 rounded-lg bg-black/90 border border-slate-800 text-xs pointer-events-none z-10 shadow-lg">
+            <div id="telemetryHeading" class="text-cyan-400 font-bold mb-1 flex items-center gap-2">
+              <span>🧠 Neural Infrastructure Hive</span>
+            </div>
+            <p id="telemetryDetail" class="text-slate-300 font-sans text-xs leading-relaxed mb-1.5">
+              Live holographic topology of entire system: 51 interconnected nodes across NixOS-WSL, 9 MCP servers, 6 autonomous agents, and 4 upstreams.
+            </p>
+            <div id="telemetryFormula" class="text-[11px] text-cyan-500/80 font-mono">
+              Topology(V, E): |V| = 51 nodes · |E| = 57 filaments · PacketFlow = Active
+            </div>
+          </div>
+
+          <!-- Bottom-Right Theme Style Pills -->
+          <div class="absolute bottom-3 right-3 flex items-center gap-1.5 z-10">
+            <span class="text-[11px] text-slate-500 hidden sm:inline mr-1">THEME:</span>
+            <button onclick="setTheme('cyan')" class="px-2 py-1 rounded bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/50 text-[11px] text-cyan-300">Deep Space</button>
+            <button onclick="setTheme('matrix')" class="px-2 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-[11px] text-emerald-300">Matrix</button>
+            <button onclick="setTheme('cyberpunk')" class="px-2 py-1 rounded bg-pink-950/80 hover:bg-pink-900 border border-pink-500/50 text-[11px] text-pink-300">Cyberpunk</button>
+            <button onclick="setTheme('solar')" class="px-2 py-1 rounded bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 text-[11px] text-amber-300">Solaris</button>
+          </div>
+        </div>
+
+        <!-- Camera Preset Bar -->
+        <div class="flex items-center justify-between p-2.5 bg-slate-950/90 border-t border-slate-800 text-xs flex-wrap gap-2">
+          <div class="flex items-center gap-1.5 text-slate-400">
+            <span class="text-slate-500 text-[11px]">CAMERA ANGLE:</span>
+            <button onclick="setCameraPreset('iso')" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">Isometric 45°</button>
+            <button onclick="setCameraPreset('front')" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">Front Elevation</button>
+            <button onclick="setCameraPreset('top')" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">Top-Down Polar</button>
+            <button onclick="setCameraPreset('close')" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white">Core Focus</button>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">
+            Zero CDN Dependencies · 60 FPS Native Canvas
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Control & Node Inspector Panel (1 Column) -->
+      <div class="glass-card rounded-xl p-4 flex flex-col justify-between gap-4 text-xs">
+        <div>
+          <!-- Panel Header -->
+          <h2 class="text-white font-bold text-xs uppercase tracking-wider pb-2 border-b border-slate-800 flex items-center justify-between">
+            <span id="panelModeTitle">🔍 Node Inspector</span>
+            <span id="panelBadge" class="text-cyan-400 text-[10px] bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-500/30">CLICK NODE</span>
+          </h2>
+
+          <!-- Interactive Node Details (Displays selected or hovered node) -->
+          <div id="nodeDetailContainer" class="mt-3 space-y-2.5 p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="flex items-center justify-between">
+              <span id="inspNodeName" class="font-bold text-white text-xs">Antigravity 2.0 Core</span>
+              <span id="inspClusterTag" class="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">CORE</span>
+            </div>
+            <div id="inspSubtitle" class="text-[11px] text-cyan-400 font-medium">Master Autonomous Agent</div>
+            
+            <div class="space-y-1.5 pt-1 border-t border-slate-800 text-[11px]">
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase">Path / Config</span>
+                <code id="inspPath" class="text-emerald-400 font-mono text-[10px] break-all">modules/ai/default.nix</code>
+              </div>
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase">CLI / Invocation</span>
+                <code id="inspCmd" class="text-purple-300 font-mono text-[10px] break-all">agy / antigravity2</code>
+              </div>
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase">Execution Protocol</span>
+                <span id="inspProto" class="text-slate-300">Core Brain / Orchestrator</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block text-[10px] uppercase">Role in Ecosystem</span>
+                <p id="inspRole" class="text-slate-300 font-sans leading-relaxed text-[11px]">
+                  Master autonomous coding assistant, pair programmer & system architect.
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 flex gap-2">
+              <button onclick="focusCurrentNode()" class="w-full py-1 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/50 text-[11px] text-cyan-300 font-bold transition">
+                🎯 Target Node
+              </button>
+            </div>
+          </div>
+
+          <!-- Control Sliders -->
+          <div class="space-y-3 mt-4 pt-3 border-t border-slate-800">
+            <span class="text-slate-500 text-[10px] uppercase font-bold tracking-wider block">Telemetry & Physics</span>
+            
+            <div>
+              <div class="flex justify-between mb-1 text-[11px]">
+                <span class="text-slate-400">Rotation Velocity</span>
+                <span id="speedVal" class="text-cyan-400 font-bold">1.0x</span>
+              </div>
+              <input type="range" id="sliderSpeed" min="0" max="3" step="0.1" value="1.0" oninput="updateSpeed(this.value)" class="w-full h-1 bg-slate-800 rounded cursor-pointer">
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1 text-[11px]">
+                <span class="text-slate-400">Synaptic Flow Rate</span>
+                <span id="flowVal" class="text-emerald-400 font-bold">1.4x</span>
+              </div>
+              <input type="range" id="sliderFlow" min="0" max="3" step="0.1" value="1.4" oninput="updateFlow(this.value)" class="w-full h-1 bg-slate-800 rounded cursor-pointer">
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1 text-[11px]">
+                <span class="text-slate-400">Pulse Amplitude</span>
+                <span id="pulseVal" class="text-purple-400 font-bold">1.0x</span>
+              </div>
+              <input type="range" id="sliderPulse" min="0" max="2.5" step="0.1" value="1.0" oninput="updatePulse(this.value)" class="w-full h-1 bg-slate-800 rounded cursor-pointer">
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1 text-[11px]">
+                <span class="text-slate-400">Glow Intensity</span>
+                <span id="glowVal" class="text-pink-400 font-bold">1.4x</span>
+              </div>
+              <input type="range" id="sliderGlow" min="0.5" max="3" step="0.1" value="1.4" oninput="updateGlow(this.value)" class="w-full h-1 bg-slate-800 rounded cursor-pointer">
+            </div>
+          </div>
+
+          <!-- Feature Toggles -->
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5">
+            <span class="text-slate-500 text-[10px] uppercase font-bold tracking-wider block mb-1">Visual Layers</span>
+            <label class="flex items-center justify-between cursor-pointer text-[11px] text-slate-300 hover:text-white">
+              <span>Synaptic Data Packets</span>
+              <input type="checkbox" id="chkPackets" checked onchange="toggleOption('packets', this.checked)" class="accent-cyan-400 rounded">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer text-[11px] text-slate-300 hover:text-white">
+              <span>Cluster Orbits & Rings</span>
+              <input type="checkbox" id="chkOrbits" checked onchange="toggleOption('orbits', this.checked)" class="accent-cyan-400 rounded">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer text-[11px] text-slate-300 hover:text-white">
+              <span>Lightning Spark Arcs</span>
+              <input type="checkbox" id="chkLightning" checked onchange="toggleOption('lightning', this.checked)" class="accent-cyan-400 rounded">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer text-[11px] text-slate-300 hover:text-white">
+              <span>Floor Matrix Grid</span>
+              <input type="checkbox" id="chkGrid" checked onchange="toggleOption('grid', this.checked)" class="accent-cyan-400 rounded">
+            </label>
+          </div>
+        </div>
+
+        <!-- System Architecture Footnote -->
+        <div class="p-2.5 rounded bg-slate-900/80 border border-slate-800 text-[11px]">
+          <div class="text-cyan-400 font-bold mb-1 flex items-center justify-between">
+            <span>SYSTEM TOPOLOGY</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">IN-SYNC</span>
+          </div>
+          <div class="text-slate-400 font-sans space-y-0.5 text-[10px]">
+            <div>• damathryxx64/flake.nix Driver</div>
+            <div>• 9 MCP Stdio Servers Configured</div>
+            <div>• 4 Upstreams Synced with Zero Drift</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Architectural Real-World Mapping Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <div class="glass-card rounded-lg p-3 text-xs border border-emerald-500/20">
+        <div class="text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
+          <span>❄️</span> Zero-Drift Flake Core
+        </div>
+        <p class="text-slate-400 font-sans text-xs leading-relaxed">
+          The models demonstrate spatial representations of <code class="text-emerald-300 bg-emerald-950/60 px-1 py-0.5 rounded">damathryxx64/flake.nix</code>, ensuring every derivation is an immutable geometric invariant.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
+        <div class="text-cyan-400 font-bold flex items-center gap-1.5 mb-1">
+          <span>🧠</span> Autonomous Agent Hive
+        </div>
+        <p class="text-slate-400 font-sans text-xs leading-relaxed">
+          Dynamic synaptic lightning and flowing particles visualize real-time message routing between Antigravity 2.0, Jev System One, and 31+ Gemini skills.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-lg p-3 text-xs border border-amber-500/20">
+        <div class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
+          <span>🛡️</span> Inotify Kernel Sentinel
+        </div>
+        <p class="text-slate-400 font-sans text-xs leading-relaxed">
+          Radar sweeping domes simulate the active ClamAV sentinel continuously scanning file drop events across the workspace repository topology.
+        </p>
+      </div>
+    </div>
+
+
+    <!-- ── 2D Architectural Schematic (Visual Reference) ────────────── -->
+    <section id="schematic" class="mb-6">
+      <div class="mb-3">
+        <span class="text-xs text-cyan-400 font-mono tracking-wider uppercase block">// ARCHITECTURAL TOPOLOGY SCHEMATIC</span>
+        <h2 class="text-base font-bold text-white">System Conduit &amp; Data-Flow Map</h2>
+        <p class="text-xs text-slate-400 font-sans mt-0.5">
+          How the Windows host, WSL2 microVM, declarative Nix store, MCP servers, and autonomous agent skill trees interconnect without host pollution.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-xl p-4 overflow-x-auto">
+        <svg class="w-full min-w-[760px] h-auto max-h-[380px]" viewBox="0 0 940 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gradCore" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00ffcc" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#00ffcc" stop-opacity="0.05"/>
+            </linearGradient>
+            <linearGradient id="gradLineG" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00ffcc"/>
+              <stop offset="100%" stop-color="#38bdf8"/>
+            </linearGradient>
+            <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+
+          <!-- Windows Host Boundary -->
+          <rect x="20" y="20" width="220" height="340" rx="10" fill="#080e16" stroke="rgba(56,189,248,0.25)" stroke-dasharray="4 4"/>
+          <text x="35" y="48" fill="#38bdf8" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">WINDOWS 11 HOST</text>
+          <text x="35" y="68" fill="#64748b" font-family="'Inter',sans-serif" font-size="10">External Host Environment</text>
+
+          <rect x="35" y="90" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(56,189,248,0.4)"/>
+          <text x="47" y="115" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Antigravity 2.0</text>
+          <text x="47" y="133" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">Headless GUI / Protocol Client</text>
+
+          <rect x="35" y="170" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(255,255,255,0.08)"/>
+          <text x="47" y="195" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Windows Terminal</text>
+          <text x="47" y="213" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">agy2 launcher interop</text>
+
+          <!-- Bridge Arrow -->
+          <path d="M 240 120 L 310 120" stroke="url(#gradLineG)" stroke-width="2" filter="url(#glowCyan)"/>
+          <text x="248" y="112" fill="#00ffcc" font-family="'JetBrains Mono',monospace" font-size="9">WSL Bridge</text>
+
+          <!-- NixOS-WSL Container Boundary -->
+          <rect x="310" y="20" width="610" height="340" rx="10" fill="#060a10" stroke="rgba(16,185,129,0.3)"/>
+          <text x="330" y="48" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NIXOS-WSL x86_64 PURE GUEST (/home/damathryxx64/)</text>
+
+          <!-- Central Flake Box -->
+          <rect x="330" y="80" width="240" height="150" rx="8" fill="url(#gradCore)" stroke="#00ffcc" stroke-width="1.5"/>
+          <text x="345" y="108" fill="#00ffcc" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700">damathryxx64 (Primary Flake)</text>
+          <text x="345" y="128" fill="#f0f4f9" font-family="'Inter',sans-serif" font-size="11">Single Source of Truth</text>
+          <text x="345" y="152" fill="#94a3b8" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/configuration.nix</text>
+          <text x="345" y="170" fill="#94a3b8" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/ai/skills.nix</text>
+          <text x="345" y="188" fill="#94a3b8" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/mcp/default.nix</text>
+          <text x="345" y="206" fill="#94a3b8" font-family="'JetBrains Mono',monospace" font-size="10">└── task-runners: dots-validate</text>
+
+          <!-- Conduits to Satellites -->
+          <path d="M 570 110 L 640 90" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <path d="M 570 135 L 640 150" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <path d="M 570 165 L 640 210" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <path d="M 570 195 L 640 270" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+          <!-- Satellite 1: skills -->
+          <rect x="640" y="70" width="260" height="50" rx="6" fill="#081410" stroke="#34d399" stroke-width="1.2"/>
+          <text x="655" y="92" fill="#34d399" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">skills (gemini-skills)</text>
+          <text x="655" y="108" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">31+ Skills · 5 Upstreams Auto-Sync &amp; Audit</text>
+
+          <!-- Satellite 2: NixOS-WSL -->
+          <rect x="640" y="130" width="260" height="50" rx="6" fill="#120a1c" stroke="#c084fc" stroke-width="1.2"/>
+          <text x="655" y="152" fill="#c084fc" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NixOS-WSL (nixos-wsl)</text>
+          <text x="655" y="168" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">systemd Native · Kernel 6.6+ · Mirrored Net</text>
+
+          <!-- Satellite 3: superpowers -->
+          <rect x="640" y="190" width="260" height="50" rx="6" fill="#180a14" stroke="#f472b6" stroke-width="1.2"/>
+          <text x="655" y="212" fill="#f472b6" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">superpowers (antigravity-super)</text>
+          <text x="655" y="228" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">Doctor Diagnostics · Watcher Auto-Fix</text>
+
+          <!-- Satellite 4: clamav-scanner -->
+          <rect x="640" y="250" width="260" height="50" rx="6" fill="#181408" stroke="#fbbf24" stroke-width="1.2"/>
+          <text x="655" y="272" fill="#fbbf24" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">clamav-scanner (clamav-scanner)</text>
+          <text x="655" y="288" fill="#94a3b8" font-family="'Inter',sans-serif" font-size="10">Real-Time Inotify Sentinel · Docker ClamAV</text>
+
+          <!-- Pre-commit Gate Box -->
+          <rect x="330" y="250" width="240" height="85" rx="6" fill="#08140c" stroke="#10b981" stroke-width="1.2"/>
+          <text x="345" y="272" fill="#10b981" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">PRE-COMMIT QUALITY GATE</text>
+          <text x="345" y="288" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="10">dots-validate Pipeline</text>
+          <text x="345" y="304" fill="#94a3b8" font-family="'JetBrains Mono',monospace" font-size="10">Alejandra → Statix → Deadnix → Flake Check</text>
+          <text x="345" y="320" fill="#64748b" font-family="'Inter',sans-serif" font-size="10">Run before any commit or system rebuild</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ── Repositories Detail Grid ─────────────────────────────────── -->
+    <section id="repos" class="mb-6">
+      <div class="mb-3">
+        <span class="text-xs text-emerald-400 font-mono tracking-wider uppercase block">// WORKSPACE REPOSITORY TOPOLOGY</span>
+        <h2 class="text-base font-bold text-white">The Five Managed Repositories</h2>
+        <p class="text-xs text-slate-400 font-sans mt-0.5">
+          Modular, immutable repositories pinned in <code class="text-emerald-300 bg-emerald-950/60 px-1 py-0.2 rounded">damathryxx64/flake.lock</code> with zero unmanaged state.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Repo 1 -->
+        <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="glass-card rounded-lg p-3.5 border border-emerald-500/30 hover:border-emerald-500 transition block group text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white group-hover:text-emerald-300 transition text-sm">damathryxx64</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40">Primary Flake</span>
+          </div>
+          <div class="text-emerald-400 font-semibold mb-1">Central Flake Driver &amp; System Engine</div>
+          <p class="text-slate-400 font-sans leading-relaxed mb-2.5">
+            Single source of truth for NixOS-WSL system modules, devShells (Python 3.12, DevOps, Resume), declarative skills synchronizer, and task runners.
+          </p>
+          <div class="space-y-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 mb-2">
+            <div>• flake.nix &amp; flake.lock</div>
+            <div>• modules/configuration.nix</div>
+            <div>• modules/ai/skills.nix</div>
+            <div>• modules/packages/task-runners.nix</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/50">
+            <span>⎇ trunk</span>
+            <span>18 Modules · 4 devShells</span>
+          </div>
+        </a>
+
+        <!-- Repo 2 -->
+        <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener" class="glass-card rounded-lg p-3.5 border border-teal-500/30 hover:border-teal-500 transition block group text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white group-hover:text-teal-300 transition text-sm">skills</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-500/40">gemini-skills</span>
+          </div>
+          <div class="text-teal-400 font-semibold mb-1">AI Agent Skills &amp; Rules Hub</div>
+          <p class="text-slate-400 font-sans leading-relaxed mb-2.5">
+            Unified skills repository tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy). Automated daily fetch, merge, rewrite, and YAML frontmatter audit.
+          </p>
+          <div class="space-y-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 mb-2">
+            <div>• scripts/sync-upstreams.py</div>
+            <div>• skills/karpathy-guidelines/</div>
+            <div>• skills/systematic-debugging/</div>
+            <div>• .github/workflows/daily-upstream-sync.yml</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/50">
+            <span>⎇ main</span>
+            <span>31+ Skills · 5 Upstreams</span>
+          </div>
+        </a>
+
+        <!-- Repo 3 -->
+        <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener" class="glass-card rounded-lg p-3.5 border border-purple-500/30 hover:border-purple-500 transition block group text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white group-hover:text-purple-300 transition text-sm">NixOS-WSL</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/40">nixos-wsl</span>
+          </div>
+          <div class="text-purple-400 font-semibold mb-1">Distro Builder &amp; Guest Integration</div>
+          <p class="text-slate-400 font-sans leading-relaxed mb-2.5">
+            Fork of nix-community/NixOS-WSL providing guest systemd activation, Linux 6.6+ kernel modules, mirrored networking, and Windows host bridge interoperability.
+          </p>
+          <div class="space-y-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 mb-2">
+            <div>• modules/wsl-distro.nix</div>
+            <div>• modules/docker-desktop.nix</div>
+            <div>• flake.nix</div>
+            <div>• system.build.tarball</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/50">
+            <span>⎇ main</span>
+            <span>systemd Native · Kernel 6.6+</span>
+          </div>
+        </a>
+
+        <!-- Repo 4 -->
+        <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener" class="glass-card rounded-lg p-3.5 border border-pink-500/30 hover:border-pink-500 transition block group text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white group-hover:text-pink-300 transition text-sm">antigravity-superpowers</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-950 text-pink-300 border border-pink-500/40">superpowers</span>
+          </div>
+          <div class="text-pink-400 font-semibold mb-1">Agent Tooling &amp; Auto-Fix Watcher</div>
+          <p class="text-slate-400 font-sans leading-relaxed mb-2.5">
+            Superpowers CLI for Antigravity providing agent runtime diagnostics (<code>doctor</code>) and continuous background file watchers with automatic code formatting and lint repair.
+          </p>
+          <div class="space-y-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 mb-2">
+            <div>• bin/antigravity-superpowers</div>
+            <div>• templates/.agents/AGENTS.md</div>
+            <div>• flake.nix</div>
+            <div>• watch --fix engine</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/50">
+            <span>⎇ main</span>
+            <span>Doctor · Auto-Fix Watcher</span>
+          </div>
+        </a>
+
+        <!-- Repo 5 -->
+        <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener" class="glass-card rounded-lg p-3.5 border border-amber-500/30 hover:border-amber-500 transition block group text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white group-hover:text-amber-300 transition text-sm">clamav-scanner</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/40">clamav-scanner</span>
+          </div>
+          <div class="text-amber-400 font-semibold mb-1">Real-Time Security Sentinel</div>
+          <p class="text-slate-400 font-sans leading-relaxed mb-2.5">
+            Inotify kernel sentinel monitoring file drops across <code>/home/damathryxx64/repositories</code> with immediate real-time ClamAV daemon payload scanning.
+          </p>
+          <div class="space-y-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 mb-2">
+            <div>• docker-compose.yml</div>
+            <div>• scripts/sentinel.sh</div>
+            <div>• flake.nix</div>
+            <div>• clamd socket daemon</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/50">
+            <span>⎇ trunk</span>
+            <span>inotify Hook · Real-Time</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── MCP Servers Suite ───────────────────────────────────────── -->
+    <section id="mcp" class="mb-6">
+      <div class="mb-3">
+        <span class="text-xs text-cyan-400 font-mono tracking-wider uppercase block">// MODEL CONTEXT PROTOCOL</span>
+        <h2 class="text-base font-bold text-white">Native MCP Server Suite</h2>
+        <p class="text-xs text-slate-400 font-sans mt-0.5">
+          Configured declaratively in <code class="text-cyan-300 bg-cyan-950/60 px-1 py-0.2 rounded">modules/mcp/default.nix</code> and <code class="text-cyan-300 bg-cyan-950/60 px-1 py-0.2 rounded">.agents/mcp_config.json</code>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
+          <div class="text-white font-bold mb-0.5">NixOS Inspector</div>
+          <code class="text-cyan-300 font-mono text-[11px] block mb-1.5">mcp-nixos</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Queries NixOS/Home Manager options, package definitions, Nix store paths, and flake inputs.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
+          <div class="text-white font-bold mb-0.5">GitHub API Wrapped</div>
+          <code class="text-cyan-300 font-mono text-[11px] block mb-1.5">github-mcp-server-wrapped</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Auto-resolves gh authentication tokens to manage PRs, issues, commits, and workflows.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
+          <div class="text-white font-bold mb-0.5">Git Workspace Engine</div>
+          <code class="text-cyan-300 font-mono text-[11px] block mb-1.5">mcp-server-git</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Repository status, diffs, branch management, and commit operations on local git roots.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
+          <div class="text-white font-bold mb-0.5">Scoped Filesystem</div>
+          <code class="text-cyan-300 font-mono text-[11px] block mb-1.5">mcp-server-filesystem</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Controlled read/write operations strictly within configured repository boundaries.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-purple-500/20">
+          <div class="text-white font-bold mb-0.5">TypeSafe Jev AI</div>
+          <code class="text-purple-300 font-mono text-[11px] block mb-1.5">mcp-server-typesafe</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">System One advisory protocol for typed choices, scores, and surgical modification verification.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-purple-500/20">
+          <div class="text-white font-bold mb-0.5">Sequential Thinking</div>
+          <code class="text-purple-300 font-mono text-[11px] block mb-1.5">mcp-sequential-thinking</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Dynamic multi-step problem decomposition and structured planning loops.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-purple-500/20">
+          <div class="text-white font-bold mb-0.5">HTTP Content Fetcher</div>
+          <code class="text-purple-300 font-mono text-[11px] block mb-1.5">mcp-server-fetch</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Retrieves documentation, upstream API schemas, and external reference materials.</p>
+        </div>
+        <div class="glass-card rounded-lg p-3 text-xs border border-purple-500/20">
+          <div class="text-white font-bold mb-0.5">Gemini Docs (Eager)</div>
+          <code class="text-purple-300 font-mono text-[11px] block mb-1.5">gemini-api-docs</code>
+          <p class="text-slate-400 font-sans leading-relaxed text-[11px]">Direct SDK search and documentation retriever for official Gemini models and APIs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Interactive Terminal Simulator ──────────────────────────── -->
+    <section id="terminal" class="mb-6">
+      <div class="mb-3">
+        <span class="text-xs text-emerald-400 font-mono tracking-wider uppercase block">// LIVE CONSOLE SIMULATOR</span>
+        <h2 class="text-base font-bold text-white">System CLI Execution</h2>
+        <p class="text-xs text-slate-400 font-sans mt-0.5">
+          Click a command below to simulate quality gates, upstream synchronization, and build evaluations.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-xl overflow-hidden border border-slate-800">
+        <div class="flex items-center justify-between px-3.5 py-2 bg-slate-950 border-b border-slate-800 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          </div>
+          <span class="text-slate-400 font-mono text-[11px]">damathryxx64@nixos: ~/repositories/damathryxx64 (trunk)</span>
+        </div>
+        <div class="p-3.5 bg-black/90 font-mono text-xs text-slate-300 min-h-[160px] max-h-[260px] overflow-y-auto space-y-1" id="termOutput">
+          <div class="text-slate-400"><span class="text-emerald-400 font-bold">damathryxx64@nixos $ </span><span>echo "NixOS-WSL System Initialized."</span></div>
+          <div class="text-slate-300">NixOS-WSL System Initialized. 51 nodes online.</div>
+          <div class="text-slate-400"><span class="text-emerald-400 font-bold">damathryxx64@nixos $ </span><span class="animate-pulse">▌</span></div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-emerald-300 font-mono transition" onclick="execCmd('validate')">dots-validate</button>
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-cyan-300 font-mono transition" onclick="execCmd('sync')">dots-sync-skills status</button>
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-purple-300 font-mono transition" onclick="execCmd('doctor')">antigravity-superpowers doctor</button>
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-pink-300 font-mono transition" onclick="execCmd('agy2')">agy2</button>
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-amber-300 font-mono transition" onclick="execCmd('build')">dots-build</button>
+        <button type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-400 font-mono transition" onclick="execCmd('clear')">clear</button>
+      </div>
+    </section>
+
+    <!-- ── Commands Reference ──────────────────────────────────────── -->
+    <section id="cmds" class="mb-6">
+      <div class="mb-3">
+        <span class="text-xs text-emerald-400 font-mono tracking-wider uppercase block">// DECLARATIVE TASK RUNNERS</span>
+        <h2 class="text-base font-bold text-white">Command Reference</h2>
+        <p class="text-xs text-slate-400 font-sans mt-0.5">
+          All task runners are declared in <code class="text-emerald-300 bg-emerald-950/60 px-1 py-0.2 rounded">modules/packages/task-runners.nix</code> and accessible system-wide.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-xl overflow-x-auto border border-slate-800">
+        <table class="w-full text-left text-xs font-sans">
+          <thead class="bg-slate-950 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+            <tr>
+              <th class="p-3">Command</th>
+              <th class="p-3">Type</th>
+              <th class="p-3">Declared Behavior</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 text-slate-300">
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-validate</td>
+              <td class="p-3 text-cyan-300 font-mono text-[11px]">Quality Gate</td>
+              <td class="p-3 leading-relaxed">Executes 4-stage validation: Alejandra format, Statix anti-patterns, Deadnix dead code, and Nix flake check impure.</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-build</td>
+              <td class="p-3 text-amber-300 font-mono text-[11px]">Dry-Run</td>
+              <td class="p-3 leading-relaxed">Dry-builds live system derivation via <code>nh os build</code> with visual closure diff (no switch applied).</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-upgrade</td>
+              <td class="p-3 text-purple-300 font-mono text-[11px]">System Upgrade</td>
+              <td class="p-3 leading-relaxed">Runs <code>dots-validate</code>, updates all flake inputs, and switches the live NixOS system in a single step.</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-workspace-pull</td>
+              <td class="p-3 text-blue-300 font-mono text-[11px]">Git Sentinel</td>
+              <td class="p-3 leading-relaxed">Pulls all 5 repositories from origin automatically on user login via systemd user service.</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-workspace-sync</td>
+              <td class="p-3 text-pink-300 font-mono text-[11px]">Full Pipeline</td>
+              <td class="p-3 leading-relaxed">Manual pipeline: pulls all repos + runs <code>dots-validate</code> + executes <code>nh os switch</code>.</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-mono text-emerald-400">dots-sync-skills status</td>
+              <td class="p-3 text-teal-300 font-mono text-[11px]">Anti-Drift</td>
+              <td class="p-3 leading-relaxed">Inspects real-time git divergence (ahead/behind upstream &amp; origin) across managed skills repositories.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-6 pb-4 border-t border-slate-800 text-center text-xs text-slate-500 font-mono">
+      <div>damathryxx64 · NixOS-WSL Pure Runtime · Pinned on commit trunk</div>
+      <div class="mt-1 text-[11px] text-slate-600">Zero Unmanaged State · Antigravity 2.0 Autonomous Agent Architecture</div>
+    </footer>
   </div>
-  <div class="nav-links">
-    <a href="#stage">3D Architecture</a>
-    <a href="#schematic">Schematic</a>
-    <a href="#repos">Repositories</a>
-    <a href="#mcp">MCP Servers</a>
-    <a href="#terminal">CLI Console</a>
-    <a href="#cmds">Commands</a>
-  </div>
-  <div class="nav-actions">
-    <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="gh-btn">
-      <span>GitHub</span> ↗
-    </a>
-  </div>
-</nav>
 
-<div class="container">
+  <script>
 
-  <!-- Hero Header -->
-  <header class="hero">
-    <div class="hero-pill">
-      <span class="pulse-dot"></span>
-      <span>NIXOS-WSL PURE RUNTIME · ZERO DRIFT · ANTIGRAVITY 2.0</span>
-    </div>
-    <h1 class="glitch-title">damathryxx64</h1>
-    <p class="hero-desc">
-      A declarative NixOS-WSL development engine orchestrated by a single <code>flake.nix</code>.
-      Directly drives Google Antigravity 2.0, 9 native MCP servers, and an autonomous multi-upstream AI skills runtime across 5 synchronized repositories.
-    </p>
-    <div class="hero-stats-row">
-      <div class="hero-stat">📦 <strong>5</strong> Repositories Pinned</div>
-      <div class="hero-stat">🔌 <strong>9</strong> Native MCP Servers</div>
-      <div class="hero-stat">🧠 <strong>31+</strong> Active Skills</div>
-      <div class="hero-stat">🛡️ <strong>4-Stage</strong> Quality Gates</div>
-      <div class="hero-stat">⚡ <strong>0.00%</strong> Drift</div>
-    </div>
-  </header>
-
-  <!-- ── 3D Architectural Stage (Interactive Centerpiece) ────────── -->
-  <section id="stage" class="stage-section">
-    <div class="stage-container">
-      <div class="stage-header">
-        <div class="stage-title-wrap">
-          <span class="stage-live-badge"><span class="pulse-dot"></span> 3D LIVE ENGINE</span>
-          <span class="stage-title">System Topology &amp; Conduit Harmony</span>
-        </div>
-        <div class="stage-controls">
-          <button type="button" class="stage-btn active" id="btn-core" onclick="focusNode('core')">Flake Core</button>
-          <button type="button" class="stage-btn" id="btn-skills" onclick="focusNode('skills')">skills</button>
-          <button type="button" class="stage-btn" id="btn-nixos-wsl" onclick="focusNode('nixos-wsl')">NixOS-WSL</button>
-          <button type="button" class="stage-btn" id="btn-superpowers" onclick="focusNode('superpowers')">superpowers</button>
-          <button type="button" class="stage-btn" id="btn-clamav" onclick="focusNode('clamav')">clamav-scanner</button>
-          <button type="button" class="stage-btn" id="btn-reset" onclick="resetCameraView()">Reset View</button>
-        </div>
-      </div>
-
-      <div class="viewport-3d-wrap">
-        <canvas id="threeCanvas"></canvas>
-
-        <div class="stage-hint">DRAG TO ORBIT · SCROLL TO ZOOM · CLICK NODE TO INSPECT</div>
-
-        <div class="stage-hud" id="stageHud">
-          <div class="hud-title" id="hudTitle">damathryxx64 (Primary Flake)</div>
-          <div class="hud-desc" id="hudDesc">Central NixOS-WSL flake driver orchestrating modules, devShells, and skills synchronizer.</div>
-          <div class="hud-meta" id="hudMeta">Branch: trunk · 18 Modules · Zero Mutable State</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── 2D Architecture Schematic (Visual Reference) ────────────── -->
-  <section id="schematic" class="sect">
-    <div class="sect-header">
-      <div class="sect-tag">// ARCHITECTURAL TOPOLOGY SCHEMATIC</div>
-      <h2 class="sect-h">System Conduit &amp; Data-Flow Map</h2>
-      <p class="sect-p">
-        How the Windows host, WSL2 microVM, declarative Nix store, MCP servers, and autonomous agent skill trees interconnect without host pollution.
-      </p>
-    </div>
-
-    <div class="schematic-box">
-      <svg class="schematic-svg" viewBox="0 0 940 380" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="gradCore" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00ff41" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="#00ff41" stop-opacity="0.05"/>
-          </linearGradient>
-          <linearGradient id="gradLineG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00ff41"/>
-            <stop offset="100%" stop-color="#00e5ff"/>
-          </linearGradient>
-          <filter id="glowGreen" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-          </filter>
-        </defs>
-
-        <!-- Windows Host Boundary -->
-        <rect x="20" y="20" width="220" height="340" rx="10" fill="#080e16" stroke="rgba(0,229,255,0.25)" stroke-dasharray="4 4"/>
-        <text x="35" y="48" fill="#00e5ff" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">WINDOWS 11 HOST</text>
-        <text x="35" y="68" fill="#4a5970" font-family="'Inter',sans-serif" font-size="10">External Host Environment</text>
-
-        <rect x="35" y="90" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(0,229,255,0.4)"/>
-        <text x="47" y="115" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Antigravity 2.0</text>
-        <text x="47" y="133" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">Headless GUI / Protocol Client</text>
-
-        <rect x="35" y="170" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(255,255,255,0.08)"/>
-        <text x="47" y="195" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Windows Terminal</text>
-        <text x="47" y="213" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">agy2 launcher interop</text>
-
-        <!-- Bridge Arrow -->
-        <path d="M 240 120 L 310 120" stroke="url(#gradLineG)" stroke-width="2" filter="url(#glowGreen)"/>
-        <text x="248" y="112" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="9">WSL Bridge</text>
-
-        <!-- NixOS-WSL Container Boundary -->
-        <rect x="310" y="20" width="610" height="340" rx="10" fill="#060a10" stroke="rgba(0,255,65,0.3)"/>
-        <text x="330" y="48" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NIXOS-WSL x86_64 PURE GUEST (/home/damathryxx64/)</text>
-
-        <!-- Central Flake Box -->
-        <rect x="330" y="80" width="240" height="150" rx="8" fill="url(#gradCore)" stroke="#00ff41" stroke-width="1.5"/>
-        <text x="345" y="108" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700">damathryxx64 (Primary Flake)</text>
-        <text x="345" y="128" fill="#f0f4f9" font-family="'Inter',sans-serif" font-size="11">Single Source of Truth</text>
-        <text x="345" y="152" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/configuration.nix</text>
-        <text x="345" y="170" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/ai/skills.nix</text>
-        <text x="345" y="188" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/mcp/default.nix</text>
-        <text x="345" y="206" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">└── task-runners: dots-validate</text>
-
-        <!-- Conduits to Satellites -->
-        <path d="M 570 110 L 640 90" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <path d="M 570 135 L 640 150" stroke="#b055ff" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <path d="M 570 165 L 640 210" stroke="#ff55b0" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <path d="M 570 195 L 640 270" stroke="#ffb800" stroke-width="1.5" stroke-dasharray="3 3"/>
-
-        <!-- Satellite 1: skills -->
-        <rect x="640" y="70" width="260" height="50" rx="6" fill="#081410" stroke="#34d399" stroke-width="1.2"/>
-        <text x="655" y="92" fill="#34d399" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">skills (gemini-skills)</text>
-        <text x="655" y="108" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">31+ Skills · 5 Upstreams Auto-Sync &amp; Audit</text>
-
-        <!-- Satellite 2: NixOS-WSL -->
-        <rect x="640" y="130" width="260" height="50" rx="6" fill="#120a1c" stroke="#b055ff" stroke-width="1.2"/>
-        <text x="655" y="152" fill="#b055ff" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NixOS-WSL (nixos-wsl)</text>
-        <text x="655" y="168" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">systemd Native · Kernel 6.6+ · Mirrored Net</text>
-
-        <!-- Satellite 3: superpowers -->
-        <rect x="640" y="190" width="260" height="50" rx="6" fill="#180a14" stroke="#ff55b0" stroke-width="1.2"/>
-        <text x="655" y="212" fill="#ff55b0" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">superpowers (antigravity-super)</text>
-        <text x="655" y="228" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">Doctor Diagnostics · Watcher Auto-Fix</text>
-
-        <!-- Satellite 4: clamav-scanner -->
-        <rect x="640" y="250" width="260" height="50" rx="6" fill="#1a1406" stroke="#ffb800" stroke-width="1.2"/>
-        <text x="655" y="272" fill="#ffb800" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">clamav-scanner (clamav-scanner)</text>
-        <text x="655" y="288" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">inotify Kernel Sentinel · Real-Time Scan</text>
-
-        <!-- Bottom Pipeline Bar -->
-        <rect x="330" y="260" width="240" height="70" rx="6" fill="#080e14" stroke="rgba(0,255,65,0.2)"/>
-        <text x="345" y="284" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700">4-STAGE ZERO-DRIFT QUALITY GATES</text>
-        <text x="345" y="304" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">Alejandra → Statix → Deadnix → Flake Check</text>
-        <text x="345" y="320" fill="#4a5970" font-family="'Inter',sans-serif" font-size="10">Run before any commit or system rebuild</text>
-      </svg>
-    </div>
-  </section>
-
-  <!-- ── Repositories Detail Grid ─────────────────────────────────── -->
-  <section id="repos" class="sect">
-    <div class="sect-header">
-      <div class="sect-tag">// WORKSPACE REPOSITORY TOPOLOGY</div>
-      <h2 class="sect-h">The Five Managed Repositories</h2>
-      <p class="sect-p">
-        Modular, immutable repositories pinned in <code>damathryxx64/flake.lock</code> with zero unmanaged state.
-      </p>
-    </div>
-
-    <div class="repo-grid">
-      <!-- Repo 1 -->
-      <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="repo-card" style="--rc:#00ff41">
-        <div class="repo-top">
-          <div class="repo-name-wrap">
-            <span class="repo-dot"></span>
-            <span class="repo-name">damathryxx64</span>
-          </div>
-          <span class="repo-badge">Primary Flake</span>
-        </div>
-        <div class="repo-role">Central Flake Driver &amp; System Engine</div>
-        <div class="repo-summary">
-          Single source of truth for NixOS-WSL system modules, devShells (Python 3.12, DevOps, Resume), declarative skills synchronizer, and task runners.
-        </div>
-        <div class="repo-files">
-          <div class="repo-files-title">Core Declarations</div>
-          <ul>
-            <li>flake.nix</li>
-            <li>modules/configuration.nix</li>
-            <li>modules/ai/skills.nix</li>
-            <li>modules/packages/task-runners.nix</li>
-          </ul>
-        </div>
-        <div class="repo-footer">
-          <span class="repo-branch">⎇ trunk</span>
-          <span>18 Modules · 4 devShells</span>
-        </div>
-      </a>
-
-      <!-- Repo 2 -->
-      <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener" class="repo-card" style="--rc:#34d399">
-        <div class="repo-top">
-          <div class="repo-name-wrap">
-            <span class="repo-dot"></span>
-            <span class="repo-name">skills</span>
-          </div>
-          <span class="repo-badge">gemini-skills</span>
-        </div>
-        <div class="repo-role">AI Agent Skills &amp; Rules Hub</div>
-        <div class="repo-summary">
-          Unified skills repository tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy). Automated daily fetch, merge, rewrite, and YAML frontmatter audit.
-        </div>
-        <div class="repo-files">
-          <div class="repo-files-title">Core Declarations</div>
-          <ul>
-            <li>scripts/sync-upstreams.py</li>
-            <li>skills/karpathy-guidelines/</li>
-            <li>skills/systematic-debugging/</li>
-            <li>.github/workflows/daily-upstream-sync.yml</li>
-          </ul>
-        </div>
-        <div class="repo-footer">
-          <span class="repo-branch">⎇ main</span>
-          <span>31+ Skills · 5 Upstreams</span>
-        </div>
-      </a>
-
-      <!-- Repo 3 -->
-      <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener" class="repo-card" style="--rc:#b055ff">
-        <div class="repo-top">
-          <div class="repo-name-wrap">
-            <span class="repo-dot"></span>
-            <span class="repo-name">NixOS-WSL</span>
-          </div>
-          <span class="repo-badge">nixos-wsl</span>
-        </div>
-        <div class="repo-role">Distro Builder &amp; Guest Integration</div>
-        <div class="repo-summary">
-          Fork of nix-community/NixOS-WSL providing guest systemd activation, Linux 6.6+ kernel modules, mirrored networking, and Windows host bridge interoperability.
-        </div>
-        <div class="repo-files">
-          <div class="repo-files-title">Core Declarations</div>
-          <ul>
-            <li>modules/wsl-distro.nix</li>
-            <li>modules/docker-desktop.nix</li>
-            <li>flake.nix</li>
-            <li>system.build.tarball</li>
-          </ul>
-        </div>
-        <div class="repo-footer">
-          <span class="repo-branch">⎇ main</span>
-          <span>systemd Native · Kernel 6.6+</span>
-        </div>
-      </a>
-
-      <!-- Repo 4 -->
-      <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener" class="repo-card" style="--rc:#ff55b0">
-        <div class="repo-top">
-          <div class="repo-name-wrap">
-            <span class="repo-dot"></span>
-            <span class="repo-name">superpowers</span>
-          </div>
-          <span class="repo-badge">antigravity-superpowers</span>
-        </div>
-        <div class="repo-role">Agent Tooling &amp; Auto-Fix Watcher</div>
-        <div class="repo-summary">
-          Superpowers CLI for Antigravity providing agent runtime diagnostics (<code>doctor</code>) and continuous background file watchers with automatic code formatting and lint repair.
-        </div>
-        <div class="repo-files">
-          <div class="repo-files-title">Core Declarations</div>
-          <ul>
-            <li>bin/antigravity-superpowers</li>
-            <li>templates/.agents/AGENTS.md</li>
-            <li>flake.nix</li>
-            <li>watch --fix engine</li>
-          </ul>
-        </div>
-        <div class="repo-footer">
-          <span class="repo-branch">⎇ main</span>
-          <span>Doctor · Auto-Fix Watcher</span>
-        </div>
-      </a>
-
-      <!-- Repo 5 -->
-      <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener" class="repo-card" style="--rc:#ffb800">
-        <div class="repo-top">
-          <div class="repo-name-wrap">
-            <span class="repo-dot"></span>
-            <span class="repo-name">clamav-scanner</span>
-          </div>
-          <span class="repo-badge">clamav-scanner</span>
-        </div>
-        <div class="repo-role">Real-Time Security Sentinel</div>
-        <div class="repo-summary">
-          Inotify kernel sentinel monitoring file drops across <code>/home/damathryxx64/repositories</code> with immediate real-time ClamAV daemon payload scanning.
-        </div>
-        <div class="repo-files">
-          <div class="repo-files-title">Core Declarations</div>
-          <ul>
-            <li>docker-compose.yml</li>
-            <li>scripts/sentinel.sh</li>
-            <li>flake.nix</li>
-            <li>clamd socket daemon</li>
-          </ul>
-        </div>
-        <div class="repo-footer">
-          <span class="repo-branch">⎇ trunk</span>
-          <span>inotify Hook · Real-Time</span>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- ── MCP Servers Suite ───────────────────────────────────────── -->
-  <section id="mcp" class="sect">
-    <div class="sect-header">
-      <div class="sect-tag">// MODEL CONTEXT PROTOCOL</div>
-      <h2 class="sect-h">Native MCP Server Suite</h2>
-      <p class="sect-p">
-        Configured declaratively in <code>modules/mcp/default.nix</code>. Provides deep system awareness and tool access directly to Antigravity 2.0 and subagents.
-      </p>
-    </div>
-    <div class="mcp-grid">
-      <div class="mcp-item">
-        <div class="mcp-name">NixOS Inspector</div>
-        <div class="mcp-cmd">mcp-nixos</div>
-        <div class="mcp-desc">Queries NixOS/Home Manager options, package definitions, Nix store paths, and flake inputs.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">GitHub API Wrapped</div>
-        <div class="mcp-cmd">github-mcp-server-wrapped</div>
-        <div class="mcp-desc">Auto-resolves gh authentication tokens to manage PRs, issues, commits, and workflows.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">Git Workspace Engine</div>
-        <div class="mcp-cmd">mcp-server-git</div>
-        <div class="mcp-desc">Repository status, diffs, branch management, and commit operations on local git roots.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">Scoped Filesystem</div>
-        <div class="mcp-cmd">mcp-server-filesystem</div>
-        <div class="mcp-desc">Controlled read/write operations strictly within configured repository boundaries.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">TypeSafe Jev AI</div>
-        <div class="mcp-cmd">mcp-server-typesafe</div>
-        <div class="mcp-desc">System One advisory protocol for typed choices, scores, and surgical modification verification.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">Sequential Thinking</div>
-        <div class="mcp-cmd">mcp-server-sequential-thinking</div>
-        <div class="mcp-desc">Dynamic multi-step problem decomposition and structured planning loops.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">HTTP Content Fetcher</div>
-        <div class="mcp-cmd">mcp-server-fetch</div>
-        <div class="mcp-desc">Retrieves documentation, upstream API schemas, and external reference materials.</div>
-      </div>
-      <div class="mcp-item">
-        <div class="mcp-name">Persistent Memory</div>
-        <div class="mcp-cmd">mcp-server-memory</div>
-        <div class="mcp-desc">Knowledge item persistence and structured cross-session context retention.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Interactive Terminal Simulator ──────────────────────────── -->
-  <section id="terminal" class="sect">
-    <div class="sect-header">
-      <div class="sect-tag">// LIVE CONSOLE SIMULATOR</div>
-      <h2 class="sect-h">System CLI Execution</h2>
-      <p class="sect-p">
-        Interact with the declarative task runners. Click a command below to simulate quality gates, upstream synchronization, and build evaluations.
-      </p>
-    </div>
-    <div class="term-shell">
-      <div class="term-bar">
-        <div class="term-dots">
-          <div class="term-dot" style="background:#ff4d4d"></div>
-          <div class="term-dot" style="background:#ffb800"></div>
-          <div class="term-dot" style="background:#00ff41"></div>
-        </div>
-        <span class="term-info">damathryxx64@nixos: ~/repositories/damathryxx64 (trunk)</span>
-      </div>
-      <div class="term-output" id="termOutput">
-        <div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>
-      </div>
-    </div>
-    <div class="cmd-tray">
-      <button type="button" class="cmd-btn" onclick="execCmd('validate')">dots-validate</button>
-      <button type="button" class="cmd-btn" onclick="execCmd('sync')">dots-sync-skills status</button>
-      <button type="button" class="cmd-btn" onclick="execCmd('doctor')">antigravity-superpowers doctor</button>
-      <button type="button" class="cmd-btn" onclick="execCmd('agy2')">agy2</button>
-      <button type="button" class="cmd-btn" onclick="execCmd('build')">dots-build</button>
-      <button type="button" class="cmd-btn" onclick="execCmd('clear')">clear</button>
-    </div>
-  </section>
-
-  <!-- ── Commands Reference ──────────────────────────────────────── -->
-  <section id="cmds" class="sect">
-    <div class="sect-header">
-      <div class="sect-tag">// DECLARATIVE TASK RUNNERS</div>
-      <h2 class="sect-h">Command Reference</h2>
-      <p class="sect-p">
-        All task runners are declared in <code>modules/packages/task-runners.nix</code> and <code>modules/ai/skills.nix</code>, accessible system-wide.
-      </p>
-    </div>
-    <div class="tbl-shell">
-      <table class="cmd-tbl">
-        <thead>
-          <tr>
-            <th>Command</th>
-            <th>Type</th>
-            <th>Declared Behavior</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>dots-validate</code></td>
-            <td>Quality Gate</td>
-            <td>Executes 4-stage validation: Alejandra format, Statix anti-patterns, Deadnix dead code, and Nix flake check impure.</td>
-          </tr>
-          <tr>
-            <td><code>dots-build</code></td>
-            <td>Dry-Run</td>
-            <td>Dry-builds live system derivation via <code>nh os build</code> with visual closure diff (no switch applied).</td>
-          </tr>
-          <tr>
-            <td><code>dots-upgrade</code></td>
-            <td>System Upgrade</td>
-            <td>Runs <code>dots-validate</code>, updates all flake inputs, and switches the live NixOS system in a single step.</td>
-          </tr>
-          <tr>
-            <td><code>dots-workspace-pull</code></td>
-            <td>Git Sentinel</td>
-            <td>Pulls all 5 repositories from origin automatically on user login via systemd user service.</td>
-          </tr>
-          <tr>
-            <td><code>dots-workspace-sync</code></td>
-            <td>Full Pipeline</td>
-            <td>Manual pipeline: pulls all repos + runs <code>dots-validate</code> + executes <code>nh os switch</code>.</td>
-          </tr>
-          <tr>
-            <td><code>dots-sync-skills status</code></td>
-            <td>Anti-Drift</td>
-            <td>Inspects git divergence across origin and upstreams and compares against <code>flake.lock</code> pins.</td>
-          </tr>
-          <tr>
-            <td><code>refresh-skills</code></td>
-            <td>Skills Pipeline</td>
-            <td>Automated pipeline: fetch → sync → rewrite foreign providers → audit frontmatter → sync to <code>~/.gemini/config</code>.</td>
-          </tr>
-          <tr>
-            <td><code>agy2</code></td>
-            <td>AI Launcher</td>
-            <td>Launches Antigravity 2.0 on the Windows host, connected to the NixOS-WSL language server.</td>
-          </tr>
-          <tr>
-            <td><code>antigravity-superpowers doctor</code></td>
-            <td>Diagnostic</td>
-            <td>Verifies agent runtime environments, tool dependencies, and MCP server health.</td>
-          </tr>
-          <tr>
-            <td><code>nix develop .#python</code></td>
-            <td>devShell</td>
-            <td>Enters isolated Python 3.12 development environment with required language tooling.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Clean Footer -->
-  <footer>
-    <div class="footer-links">
-      <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener">damathryxx64</a>
-      <span>·</span>
-      <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener">skills</a>
-      <span>·</span>
-      <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener">NixOS-WSL</a>
-      <span>·</span>
-      <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener">superpowers</a>
-      <span>·</span>
-      <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener">clamav-scanner</a>
-    </div>
-    <p>Declarative NixOS-WSL System Foundation · Single Source of Truth</p>
-  </footer>
-
-</div>
-
-<!-- ── SCRIPT 1: Terminal Simulator (Independent, Zero-Dependencies) ── -->
-<script>
-(function(){
-  "use strict";
-
-  var CLI_SCRIPTS = {
-    validate: {
-      cmd: "dots-validate",
-      steps: [
-        { t: "==> [1/4] Checking Nix code formatting (Alejandra)...", c: "ti", d: 240 },
-        { t: "    Checking style in 18 files using 4 threads.", c: "td", d: 140 },
-        { t: "    ✓ Congratulations! Your code complies with the Alejandra style.", c: "ts", d: 140 },
-        { t: "==> [2/4] Checking Nix anti-patterns (Statix)...", c: "ti", d: 220 },
-        { t: "    ✓ Statix check clean (0 anti-patterns)", c: "ts", d: 130 },
-        { t: "==> [3/4] Checking dead code (Deadnix)...", c: "ti", d: 220 },
-        { t: "    ✓ Deadnix clean (0 unused declarations)", c: "ts", d: 130 },
-        { t: "==> [4/4] Verifying Nix flake evaluations & checks...", c: "ti", d: 320 },
-        { t: "    evaluating flake outputs (nixosConfigurations, devShells)...", c: "td", d: 180 },
-        { t: "    all checks passed!", c: "ts", d: 140 },
-        { t: "✓ All Nix dots quality gates passed cleanly!", c: "ts", d: 0 }
-      ]
-    },
-    sync: {
-      cmd: "dots-sync-skills status",
-      steps: [
-        { t: "==> Workspace Repositories Divergence:", c: "ti", d: 200 },
-        { t: "  skills             origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-        { t: "  antigravity-super  origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-        { t: "  NixOS-WSL          origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-        { t: "  clamav-scanner     origin/trunk  ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
-        { t: "", c: "", d: 50 },
-        { t: "==> Flake Lock Synchronization:", c: "ti", d: 160 },
-        { t: "  gemini-skills            ✓ pinned at latest commit", c: "ts", d: 90 },
-        { t: "  antigravity-superpowers  ✓ pinned at latest commit", c: "ts", d: 90 },
-        { t: "  nixos-wsl                ✓ pinned at latest commit", c: "ts", d: 90 },
-        { t: "  clamav-scanner           ✓ pinned at latest commit", c: "ts", d: 90 },
-        { t: "✓ Zero drift detected across all managed repositories.", c: "ts", d: 0 }
-      ]
-    },
-    doctor: {
-      cmd: "antigravity-superpowers doctor",
-      steps: [
-        { t: "==> Antigravity Superpowers Diagnostics:", c: "ti", d: 200 },
-        { t: "  [✓] Operating System: NixOS-WSL (x86_64-linux)", c: "ts", d: 110 },
-        { t: "  [✓] Antigravity 2.0 Host Bridge: Ready", c: "ts", d: 110 },
-        { t: "  [✓] Alejandra Formatter: Installed (/nix/store/...)", c: "ts", d: 110 },
-        { t: "  [✓] Statix Anti-pattern Linter: Ready", c: "ts", d: 110 },
-        { t: "  [✓] Deadnix Unused Variable Scanner: Ready", c: "ts", d: 110 },
-        { t: "  [✓] ShellCheck Linter: Ready", c: "ts", d: 110 },
-        { t: "  [✓] Active Agent Skills: 31 loaded in ~/.gemini/config/skills", c: "ts", d: 130 },
-        { t: "  [✓] Background Sentinel: clamav daemon active", c: "ts", d: 110 },
-        { t: "✓ All agent runtime subsystems fully operational.", c: "ts", d: 0 }
-      ]
-    },
-    agy2: {
-      cmd: "agy2",
-      steps: [
-        { t: "→ Detecting host environment: Windows 11 WSL2", c: "ti", d: 200 },
-        { t: "→ Target distribution: NixOS (/home/damathryxx64)", c: "ti", d: 160 },
-        { t: "→ Resolving language server binary: ~/.antigravity-server/bin/language_server", c: "ti", d: 220 },
-        { t: "→ Invoking: wsl.exe -d NixOS -u damathryxx64 -e bash -l -c language_server", c: "ti", d: 250 },
-        { t: "→ Handshake: JSON-RPC 2.0 protocol initialized", c: "ts", d: 280 },
-        { t: "→ Workspace root: /home/damathryxx64/repositories", c: "ti", d: 140 },
-        { t: "→ Registered MCP Servers: 9 native servers active", c: "ti", d: 140 },
-        { t: "✓ Antigravity 2.0 bridge active — headless execution ready.", c: "ts", d: 0 }
-      ]
-    },
-    build: {
-      cmd: "dots-build",
-      steps: [
-        { t: "→ Dry-building system derivation (nh os build)...", c: "ti", d: 300 },
-        { t: "  evaluating nixosConfigurations.nixos in /home/damathryxx64/repositories/damathryxx64...", c: "td", d: 220 },
-        { t: "  derivation: /nix/store/znpxgl...-nixos-system-nixos-25.05pre.drv", c: "td", d: 180 },
-        { t: "", c: "", d: 50 },
-        { t: "  Closure size: 1,264 store paths", c: "ti", d: 130 },
-        { t: "  Closure disk: 4.2 GiB", c: "ti", d: 130 },
-        { t: "  Closure diff: 0 paths added, 0 paths removed", c: "ts", d: 130 },
-        { t: "✓ System dry-build complete — no live switch performed.", c: "ts", d: 0 }
-      ]
-    }
-  };
-
-  var isBusy = false;
-  window.execCmd = function(key){
-    var out = document.getElementById("termOutput");
-    if(!out) return;
-    if(key === "clear"){
-      out.innerHTML = '<div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>';
-      return;
-    }
-    if(isBusy) return;
-    var script = CLI_SCRIPTS[key];
-    if(!script) return;
-    isBusy = true;
-
-    var cur = out.querySelectorAll(".term-cursor");
-    for(var c=0; c<cur.length; c++) cur[c].remove();
-
-    var cl = document.createElement("div");
-    cl.className = "tline";
-    cl.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="tc">' + script.cmd + '</span>';
-    out.appendChild(cl);
-
-    var delay = 120;
-    script.steps.forEach(function(st, idx){
-      delay += st.d;
-      setTimeout(function(){
-        var line = document.createElement("div");
-        line.className = "tline";
-        line.innerHTML = '<span class="' + st.c + '">' + st.t + '</span>';
-        out.appendChild(line);
-        out.scrollTop = out.scrollHeight;
-
-        if(idx === script.steps.length - 1){
-          setTimeout(function(){
-            var pl = document.createElement("div");
-            pl.className = "tline";
-            pl.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span>';
-            out.appendChild(pl);
-            out.scrollTop = out.scrollHeight;
-            isBusy = false;
-          }, 180);
-        }
-      }, delay);
-    });
-  };
-})();
-</script>
-
-<!-- ── SCRIPT 2: 3D Architectural Engine (100% Self-Contained, Zero CDN) ── -->
-<script>
-(function(){
-  "use strict";
-
-  var canvas = document.getElementById("threeCanvas");
-  if (!canvas) return;
-  var ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  var NODES_DATA = {
-    core: {
-      name: "damathryxx64 (Primary Flake)",
-      desc: "Central NixOS-WSL flake driver orchestrating modules, devShells, and skills synchronizer.",
-      meta: "Branch: trunk · 18 Modules · Alejandra/Statix/Deadnix Quality Gates",
-      color: "#00ff41",
-      targetAngle: 0,
-      zoom: 1.05
-    },
-    skills: {
-      name: "skills (gemini-skills)",
-      desc: "Unified AI agent skills hub tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy).",
-      meta: "Branch: main · 31+ Skills · Daily Automated Upstream Sync & Audit",
-      color: "#34d399",
-      targetAngle: 0,
-      zoom: 1.25
-    },
-    "nixos-wsl": {
-      name: "NixOS-WSL (nixos-wsl)",
-      desc: "Distro builder providing guest systemd activation, kernel modules & Windows host bridge.",
-      meta: "Branch: main · Linux Kernel 6.6+ · Mirrored Networking · WSL2",
-      color: "#b055ff",
-      targetAngle: Math.PI * 0.5,
-      zoom: 1.25
-    },
-    superpowers: {
-      name: "superpowers (antigravity-superpowers)",
-      desc: "Superpowers CLI for Antigravity with doctor diagnostics & background auto-fix file watcher.",
-      meta: "Branch: main · Doctor Diagnostics · Continuous File Watcher",
-      color: "#ff55b0",
-      targetAngle: Math.PI,
-      zoom: 1.25
-    },
-    clamav: {
-      name: "clamav-scanner (clamav-scanner)",
-      desc: "Real-time inotify file creation sentinel and Docker ClamAV daemon guarding workspace files.",
-      meta: "Branch: trunk · inotify Kernel Sentinel · Real-Time Daemon Socket",
-      color: "#ffb800",
-      targetAngle: Math.PI * 1.5,
-      zoom: 1.25
-    }
-  };
-
-  /* ── 3D Polyhedron Geometries ────────────────────────────────── */
-  var phi = (1 + Math.sqrt(5)) / 2;
-
-  // Icosahedron (12 vertices, 30 edges)
-  var icoRaw = [
-    [-1,  phi, 0], [ 1,  phi, 0], [-1, -phi, 0], [ 1, -phi, 0],
-    [ 0, -1,  phi], [ 0,  1,  phi], [ 0, -1, -phi], [ 0,  1, -phi],
-    [ phi, 0, -1], [ phi, 0,  1], [-phi, 0, -1], [-phi, 0,  1]
-  ];
-  var icoVerts = icoRaw.map(function(v){
-    var len = Math.hypot(v[0], v[1], v[2]);
-    return [v[0]/len, v[1]/len, v[2]/len];
-  });
-  var icoEdges = [];
-  for (var i = 0; i < icoVerts.length; i++) {
-    for (var j = i + 1; j < icoVerts.length; j++) {
-      var d = Math.hypot(
-        icoVerts[i][0] - icoVerts[j][0],
-        icoVerts[i][1] - icoVerts[j][1],
-        icoVerts[i][2] - icoVerts[j][2]
-      );
-      if (Math.abs(d - 1.05146) < 0.08) {
-        icoEdges.push([i, j]);
+    // ── Interactive Terminal Simulator CLI Scripts ──────────────
+    var CLI_SCRIPTS = {
+      validate: {
+        cmd: "dots-validate",
+        steps: [
+          { t: "→ Stage 1/4: Alejandra Nix format audit...", c: "text-cyan-300", d: 250 },
+          { t: "  ✓ 18 modules checked — 0 formatting divergences", c: "text-emerald-400", d: 180 },
+          { t: "→ Stage 2/4: Statix anti-pattern scan...", c: "text-cyan-300", d: 200 },
+          { t: "  ✓ 0 anti-patterns detected", c: "text-emerald-400", d: 150 },
+          { t: "→ Stage 3/4: Deadnix dead declaration scan...", c: "text-cyan-300", d: 200 },
+          { t: "  ✓ 0 unused declarations found", c: "text-emerald-400", d: 150 },
+          { t: "→ Stage 4/4: Flake evaluation (nix flake check --impure)...", c: "text-cyan-300", d: 350 },
+          { t: "  ✓ Evaluation complete: 0 warnings, 0 errors", c: "text-emerald-400", d: 200 },
+          { t: "✓ All 4 validation gates PASSED cleanly (0.00% drift).", c: "text-emerald-300 font-bold", d: 0 }
+        ]
+      },
+      sync: {
+        cmd: "dots-sync-skills status",
+        steps: [
+          { t: "→ Querying remotes for 5 managed repositories...", c: "text-cyan-300", d: 200 },
+          { t: "  skills               up to date (origin/main · 31 skills)", c: "text-emerald-400", d: 140 },
+          { t: "  damathryxx64         up to date (origin/trunk · locked)", c: "text-emerald-400", d: 140 },
+          { t: "  NixOS-WSL            up to date (origin/main)", c: "text-emerald-400", d: 140 },
+          { t: "  antigravity-super    up to date (origin/main)", c: "text-emerald-400", d: 140 },
+          { t: "  clamav-scanner       up to date (origin/trunk)", c: "text-emerald-400", d: 140 },
+          { t: "✓ Multi-repo topology verified — zero git divergence.", c: "text-emerald-300 font-bold", d: 0 }
+        ]
+      },
+      doctor: {
+        cmd: "antigravity-superpowers doctor",
+        steps: [
+          { t: "→ Diagnosing Antigravity agent runtime...", c: "text-cyan-300", d: 250 },
+          { t: "  ✓ NixOS-WSL environment: Healthy (Nix 2.24+)", c: "text-emerald-400", d: 150 },
+          { t: "  ✓ 9 Native MCP servers: Connected via stdio", c: "text-emerald-400", d: 150 },
+          { t: "  ✓ Skills synchronizer: Active (~/.gemini/config/skills)", c: "text-emerald-400", d: 150 },
+          { t: "  ✓ Superpowers watcher: Online (zero lint errors)", c: "text-emerald-400", d: 150 },
+          { t: "✓ Agent readiness score: 100/100 (Optimal).", c: "text-emerald-300 font-bold", d: 0 }
+        ]
+      },
+      agy2: {
+        cmd: "agy2",
+        steps: [
+          { t: "→ Launching Antigravity 2.0 host bridge via WSL interop...", c: "text-cyan-300", d: 250 },
+          { t: "  Host binary: /mnt/c/Users/.../Antigravity/antigravity.exe", c: "text-slate-400", d: 150 },
+          { t: "  Target: NixOS WSL (/home/damathryxx64/repositories)", c: "text-slate-400", d: 150 },
+          { t: "✓ Antigravity 2.0 bridge active — headless execution ready.", c: "text-emerald-300 font-bold", d: 0 }
+        ]
+      },
+      build: {
+        cmd: "dots-build",
+        steps: [
+          { t: "→ Dry-building system derivation (nh os build)...", c: "text-cyan-300", d: 300 },
+          { t: "  evaluating nixosConfigurations.nixos in damathryxx64...", c: "text-slate-400", d: 220 },
+          { t: "  derivation: /nix/store/znpxgl...-nixos-system-nixos-25.05pre.drv", c: "text-slate-400", d: 180 },
+          { t: "  Closure size: 1,264 store paths", c: "text-slate-300", d: 130 },
+          { t: "  Closure diff: 0 paths added, 0 paths removed", c: "text-emerald-400", d: 130 },
+          { t: "✓ System dry-build complete — no live switch performed.", c: "text-emerald-300 font-bold", d: 0 }
+        ]
       }
-    }
-  }
-
-  // Octahedron (6 vertices, 12 edges)
-  var octVerts = [
-    [ 1, 0, 0], [-1, 0, 0],
-    [ 0, 1, 0], [ 0,-1, 0],
-    [ 0, 0, 1], [ 0, 0,-1]
-  ];
-  var octEdges = [
-    [0,2], [0,3], [0,4], [0,5],
-    [1,2], [1,3], [1,4], [1,5],
-    [2,4], [4,3], [3,5], [5,2]
-  ];
-
-  /* ── 4 Orbiting Satellites ───────────────────────────────────── */
-  var SATELLITES = [
-    { id: "skills",      name: "skills",         baseAngle: 0,             y:  0.7, color: "#34d399", geo: "ico" },
-    { id: "nixos-wsl",   name: "NixOS-WSL",      baseAngle: Math.PI * 0.5, y: -0.4, color: "#b055ff", geo: "oct" },
-    { id: "superpowers", name: "superpowers",    baseAngle: Math.PI,       y:  0.5, color: "#ff55b0", geo: "oct" },
-    { id: "clamav",      name: "clamav-scanner", baseAngle: Math.PI * 1.5, y: -0.5, color: "#ffb800", geo: "ico" }
-  ];
-
-  /* ── Orbit Conduit Flow Packets ──────────────────────────────── */
-  var PACKETS_PER_CONDUIT = 12;
-  var packets = [];
-  for (var s = 0; s < SATELLITES.length; s++) {
-    for (var p = 0; p < PACKETS_PER_CONDUIT; p++) {
-      packets.push({
-        satIndex: s,
-        prog: (p / PACKETS_PER_CONDUIT) + Math.random() * 0.05,
-        speed: 0.0035 + Math.random() * 0.002
-      });
-    }
-  }
-
-  /* ── Ambient Floating Particles ──────────────────────────────── */
-  var AMBIENT = [];
-  for (var a = 0; a < 80; a++) {
-    AMBIENT.push({
-      x: (Math.random() - 0.5) * 36,
-      y: (Math.random() - 0.5) * 22,
-      z: (Math.random() - 0.5) * 36,
-      size: 1 + Math.random() * 2
-    });
-  }
-
-  /* ── Camera & Orbit Control State ────────────────────────────── */
-  var cameraRotX = 0.45;
-  var cameraRotY = 0.2;
-  var targetRotX = 0.45;
-  var targetRotY = 0.2;
-  var currentZoom = 1.0;
-  var targetZoom = 1.0;
-  var autoRotate = true;
-  var isDragging = false;
-  var lastMouseX = 0, lastMouseY = 0;
-
-  var ORBIT_DIST = 9.5;
-
-  /* ── Canvas Sizing ───────────────────────────────────────────── */
-  var width = 800, height = 540;
-  function resizeCanvas() {
-    var rect = canvas.parentElement.getBoundingClientRect();
-    width = rect.width || 800;
-    height = rect.height || 540;
-    var dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
-  }
-  window.addEventListener("resize", resizeCanvas);
-  resizeCanvas();
-
-  /* ── 3D Projection Function ──────────────────────────────────── */
-  function project3D(x, y, z) {
-    // Rotate Y (azimuth)
-    var cosY = Math.cos(cameraRotY), sinY = Math.sin(cameraRotY);
-    var x1 = x * cosY + z * sinY;
-    var z1 = -x * sinY + z * cosY;
-
-    // Rotate X (elevation)
-    var cosX = Math.cos(cameraRotX), sinX = Math.sin(cameraRotX);
-    var y2 = y * cosX - z1 * sinX;
-    var z2 = y * sinX + z1 * cosX;
-
-    // Perspective transformation
-    var fov = 380;
-    var dist = 18 + z2;
-    var scale = (fov * currentZoom) / (dist > 0.5 ? dist : 0.5);
-
-    return {
-      x: width / 2 + x1 * scale,
-      y: height / 2 - y2 * scale,
-      z: z2,
-      scale: scale,
-      visible: dist > 0.5
     };
+
+    var isBusy = false;
+    window.execCmd = function(key){
+      var out = document.getElementById("termOutput");
+      if(!out) return;
+      if(key === "clear"){
+        out.innerHTML = '<div class="text-slate-400"><span class="text-emerald-400 font-bold">damathryxx64@nixos $ </span><span class="animate-pulse">▌</span></div>';
+        return;
+      }
+      if(isBusy) return;
+      var script = CLI_SCRIPTS[key];
+      if(!script) return;
+      isBusy = true;
+
+      var cl = document.createElement("div");
+      cl.className = "text-slate-300";
+      cl.innerHTML = '<span class="text-emerald-400 font-bold">damathryxx64@nixos $ </span><span class="text-white font-bold">' + script.cmd + '</span>';
+      out.appendChild(cl);
+
+      var delay = 120;
+      script.steps.forEach(function(st, idx){
+        delay += st.d;
+        setTimeout(function(){
+          var line = document.createElement("div");
+          line.className = st.c;
+          line.textContent = st.t;
+          out.appendChild(line);
+          out.scrollTop = out.scrollHeight;
+
+          if(idx === script.steps.length - 1){
+            setTimeout(function(){
+              var pl = document.createElement("div");
+              pl.className = "text-slate-400";
+              pl.innerHTML = '<span class="text-emerald-400 font-bold">damathryxx64@nixos $ </span><span class="animate-pulse">▌</span>';
+              out.appendChild(pl);
+              out.scrollTop = out.scrollHeight;
+              isBusy = false;
+            }, 180);
+          }
+        }, delay);
+      });
+    };
+
+  (function(){
+    var canvas = document.getElementById("stageCanvas");
+    var ctx = canvas.getContext("2d");
+
+    var width, height;
+    function resize() {
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    // ── Infrastructure Graph Data ────────────────────────────────
+    var infraNodes = [
+  {
+    "id": "core-agy",
+    "cluster": "core",
+    "name": "Antigravity 2.0 Core",
+    "subtitle": "Master Autonomous Agent",
+    "path": "modules/ai/default.nix",
+    "protocol": "Core Brain / Orchestrator",
+    "role": "Master autonomous coding assistant, pair programmer & system architect.",
+    "cmd": "agy / antigravity2",
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0,
+    "color": "#00ffcc",
+    "size": 10,
+    "important": true
+  },
+  {
+    "id": "core-jev",
+    "cluster": "core",
+    "name": "Jev TypeSafe AI",
+    "subtitle": "System One Intuition",
+    "path": ".agents/skills/typesafe-ai",
+    "protocol": "TypeSafe System One REST",
+    "role": "Pre-edit semantic consultation, surgical choice selection & policy evaluation.",
+    "cmd": "typesafe_choice / typesafe_score",
+    "x": -1.4,
+    "y": 0.5,
+    "z": 0.9,
+    "color": "#c084fc",
+    "size": 7,
+    "important": true
+  },
+  {
+    "id": "core-llm",
+    "cluster": "core",
+    "name": "Gemini 3.8 / Omni Engine",
+    "subtitle": "LLM Foundation Backbone",
+    "path": "gemini-api / google-genai",
+    "protocol": "Multimodal Token Stream",
+    "role": "Deep reasoning, context synthesis, code generation & multi-turn interaction.",
+    "cmd": "google-genai SDK 3.8",
+    "x": 1.4,
+    "y": 0.5,
+    "z": -0.9,
+    "color": "#38bdf8",
+    "size": 7,
+    "important": true
+  },
+  {
+    "id": "core-dispatcher",
+    "cluster": "core",
+    "name": "Task Dispatcher & Scheduler",
+    "subtitle": "Reactive Wakeup Daemon",
+    "path": "builtin/schedule & cron",
+    "protocol": "Single-Flow Reactive",
+    "role": "Manages subagent lifecycle, cron automations & async task resume notifications.",
+    "cmd": "schedule / manage_task",
+    "x": 0.0,
+    "y": -0.8,
+    "z": 1.4,
+    "color": "#f59e0b",
+    "size": 6,
+    "important": true
+  },
+  {
+    "id": "nix-flake",
+    "cluster": "nixos",
+    "name": "damathryxx64 / Flake Core",
+    "subtitle": "Single Source of Truth",
+    "path": "damathryxx64/flake.nix",
+    "protocol": "Nix Flake 2.0 (Pure / Impure)",
+    "role": "Central driver declaring all packages, agent runtimes, devShells & inputs.",
+    "cmd": "nix flake check --impure",
+    "x": 0.0,
+    "y": -2.6,
+    "z": -2.0,
+    "color": "#10b981",
+    "size": 8,
+    "important": true
+  },
+  {
+    "id": "nix-config",
+    "cluster": "nixos",
+    "name": "System Configuration Module",
+    "subtitle": "Modular Orchestrator",
+    "path": "modules/configuration.nix",
+    "protocol": "NixOS Module Hierarchy",
+    "role": "Orchestrates development, shells, fonts, mcp, maintenance & packages.",
+    "cmd": "nixosConfigurations.nixos",
+    "x": -2.5,
+    "y": -2.5,
+    "z": -1.2,
+    "color": "#10b981",
+    "size": 6
+  },
+  {
+    "id": "nix-wsl",
+    "cluster": "nixos",
+    "name": "NixOS-WSL System",
+    "subtitle": "WSL2 Virtualization Kernel",
+    "path": "inputs.nixos-wsl",
+    "protocol": "WSL 2 Native Linux",
+    "role": "Mirrored networking, auto-memory reclamation, systemd boot & login shell.",
+    "cmd": "wsl -d NixOS -u damathryxx64",
+    "x": 2.5,
+    "y": -2.5,
+    "z": -1.2,
+    "color": "#10b981",
+    "size": 6
+  },
+  {
+    "id": "nix-store",
+    "cluster": "nixos",
+    "name": "Immutable /nix/store",
+    "subtitle": "Content-Addressed Closures",
+    "path": "/nix/store/*",
+    "protocol": "Cryptographic Hash Graph",
+    "role": "Zero mutable state: every compiler, library and tool derivation is isolated.",
+    "cmd": "nix-store --verify --check-contents",
+    "x": -3.8,
+    "y": -3.2,
+    "z": 1.2,
+    "color": "#10b981",
+    "size": 7
+  },
+  {
+    "id": "nix-shells",
+    "cluster": "nixos",
+    "name": "DevShell Toolchains",
+    "subtitle": "Declarative Environments",
+    "path": "modules/shells/*.nix",
+    "protocol": "nix develop Environments",
+    "role": "Isolated sandboxes: default, python (3.12), devops (AWS/K8s/TF), and resume.",
+    "cmd": "nix develop .#default",
+    "x": 3.8,
+    "y": -3.2,
+    "z": 1.2,
+    "color": "#10b981",
+    "size": 6
+  },
+  {
+    "id": "nix-fmt",
+    "cluster": "nixos",
+    "name": "Alejandra Formatter",
+    "subtitle": "System Nix Formatter",
+    "path": "formatter.alejandra",
+    "protocol": "CLI AST Formatter",
+    "role": "Enforces deterministic, zero-variance formatting across all Nix expressions.",
+    "cmd": "dots-fmt / nix fmt -- .",
+    "x": -1.8,
+    "y": -2.2,
+    "z": 3.2,
+    "color": "#10b981",
+    "size": 5
+  },
+  {
+    "id": "nix-lint",
+    "cluster": "nixos",
+    "name": "Statix & Deadnix Lint",
+    "subtitle": "Anti-Pattern Sentinel",
+    "path": "dots-lint",
+    "protocol": "Static Analysis Engine",
+    "role": "Catches Nix anti-patterns, unreferenced attributes & deprecated declarations.",
+    "cmd": "dots-lint / statix check .",
+    "x": 1.8,
+    "y": -2.2,
+    "z": 3.2,
+    "color": "#10b981",
+    "size": 5
+  },
+  {
+    "id": "nix-systemd",
+    "cluster": "nixos",
+    "name": "Systemd User Services",
+    "subtitle": "Background Automation",
+    "path": "modules/nixos-maintenance/",
+    "protocol": "systemd --user Units",
+    "role": "Executes agent-skills-sync on login, dots-workspace-pull & daily timers.",
+    "cmd": "systemctl --user status",
+    "x": -4.8,
+    "y": -2.8,
+    "z": -2.8,
+    "color": "#10b981",
+    "size": 5
+  },
+  {
+    "id": "nix-bridge",
+    "cluster": "nixos",
+    "name": "WSL-Windows Host Bridge",
+    "subtitle": "Zero-Pollution Interop",
+    "path": "modules/ai/default.nix",
+    "protocol": "Inter-Process Pipe Bridge",
+    "role": "cb clipboard bridge, agy2 launcher, rundll32 browser bridge & path translation.",
+    "cmd": "cb / agy2 / wslpath",
+    "x": 4.8,
+    "y": -2.8,
+    "z": -2.8,
+    "color": "#10b981",
+    "size": 6
+  },
+  {
+    "id": "mcp-nixos",
+    "cluster": "mcp",
+    "name": "mcp-nixos Server",
+    "subtitle": "NixOS Knowledge Gateway",
+    "path": "modules/mcp/default.nix",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Semantic queries for NixOS options, packages, flake inputs, wiki & dev docs.",
+    "cmd": "call_mcp_tool mcp-nixos",
+    "x": 4.5,
+    "y": 0.2,
+    "z": 0.0,
+    "color": "#06b6d4",
+    "size": 6,
+    "important": true
+  },
+  {
+    "id": "mcp-github",
+    "cluster": "mcp",
+    "name": "github-mcp-server",
+    "subtitle": "GitHub Cloud Operations",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Automates GitHub PRs, issues, commits, repo collaborations & code search.",
+    "cmd": "github-mcp-server-wrapped",
+    "x": 3.4,
+    "y": -0.4,
+    "z": 2.9,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-git",
+    "cluster": "mcp",
+    "name": "mcp-server-git",
+    "subtitle": "Local Git Repository Ops",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Direct local repository operations: diffs, status, branches, commits & logs.",
+    "cmd": "mcp-server-git",
+    "x": 0.0,
+    "y": 0.6,
+    "z": 4.5,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-fs",
+    "cluster": "mcp",
+    "name": "mcp-server-filesystem",
+    "subtitle": "Local File Tree Gateway",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Sandboxed file operations, directory trees, multi-file inspection & search.",
+    "cmd": "mcp-server-filesystem",
+    "x": -3.4,
+    "y": -0.3,
+    "z": 2.9,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-fetch",
+    "cluster": "mcp",
+    "name": "mcp-server-fetch",
+    "subtitle": "HTTP Content Harvester",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Fast HTTP scraping, documentation fetch & raw URL ingestion without browser.",
+    "cmd": "mcp-server-fetch",
+    "x": -4.5,
+    "y": 0.3,
+    "z": 0.0,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-seq",
+    "cluster": "mcp",
+    "name": "mcp-sequential-thinking",
+    "subtitle": "Multi-Step Reasoner",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Structured problem decomposition, step hypotheses & recursive verification.",
+    "cmd": "mcp-server-sequential-thinking",
+    "x": -3.4,
+    "y": -0.4,
+    "z": -2.9,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-typesafe",
+    "cluster": "mcp",
+    "name": "mcp-server-typesafe",
+    "subtitle": "Jev System One Interface",
+    "path": ".agents/mcp_config.json",
+    "protocol": "JSON-RPC 2.0 (stdio)",
+    "role": "Consults Jev model for fast typed decisions, categorical scores & booleans.",
+    "cmd": "mcp-server-typesafe",
+    "x": 0.0,
+    "y": 0.5,
+    "z": -4.5,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-gemini",
+    "cluster": "mcp",
+    "name": "gemini-api-docs",
+    "subtitle": "Eager SDK Knowledge",
+    "path": "builtin eager MCP",
+    "protocol": "Direct Native Tool",
+    "role": "Instant access to official Google Gemini API docs, SDK examples & guides.",
+    "cmd": "gemini_search_docs",
+    "x": 3.4,
+    "y": -0.3,
+    "z": -2.9,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "mcp-clamav",
+    "cluster": "mcp",
+    "name": "clamav-scanner Gateway",
+    "subtitle": "Sentinel Bridge",
+    "path": "repositories/clamav-scanner",
+    "protocol": "Docker / Inotify Sentinel",
+    "role": "Real-time inotify file creation monitor and virus scanner bridge.",
+    "cmd": "docker ps --filter name=clamav",
+    "x": 2.2,
+    "y": 0.8,
+    "z": 3.8,
+    "color": "#06b6d4",
+    "size": 6
+  },
+  {
+    "id": "agent-self",
+    "cluster": "agents",
+    "name": "self (Recursive Subagent)",
+    "subtitle": "Full Capability Clone",
+    "path": "invoke_subagent 'self'",
+    "protocol": "Subagent Context Isolation",
+    "role": "Spawns parallel agent conversations inheriting parent tools and model tier.",
+    "cmd": "invoke_subagent (TypeName: self)",
+    "x": 0.0,
+    "y": 4.5,
+    "z": 0.0,
+    "color": "#e879f9",
+    "size": 8,
+    "important": true
+  },
+  {
+    "id": "agent-research",
+    "cluster": "agents",
+    "name": "research Subagent",
+    "subtitle": "Read-Only Explorer",
+    "path": "invoke_subagent 'research'",
+    "protocol": "Read-Only Sandbox",
+    "role": "Conducts deep codebase searches, documentation reviews & web investigations.",
+    "cmd": "invoke_subagent (TypeName: research)",
+    "x": -2.8,
+    "y": 3.4,
+    "z": -1.8,
+    "color": "#c084fc",
+    "size": 6
+  },
+  {
+    "id": "agent-reviewer",
+    "cluster": "agents",
+    "name": "code-reviewer Subagent",
+    "subtitle": "Audit & Standards Gate",
+    "path": "invoke_subagent 'code-reviewer'",
+    "protocol": "Review Gate",
+    "role": "Independent auditor reviewing diffs against plan requirements and guidelines.",
+    "cmd": "invoke_subagent (TypeName: code-reviewer)",
+    "x": 2.8,
+    "y": 3.4,
+    "z": -1.8,
+    "color": "#c084fc",
+    "size": 6
+  },
+  {
+    "id": "agent-image",
+    "cluster": "agents",
+    "name": "image-generator Subagent",
+    "subtitle": "Visual Synthesis",
+    "path": "invoke_subagent 'image-generator'",
+    "protocol": "Multimodal Generation",
+    "role": "Produces and edits diagram assets, graphics and visual representations.",
+    "cmd": "invoke_subagent (TypeName: image-generator)",
+    "x": -2.2,
+    "y": 3.2,
+    "z": 2.4,
+    "color": "#c084fc",
+    "size": 5
+  },
+  {
+    "id": "agent-hacker",
+    "cluster": "agents",
+    "name": "threejs-hacker-site Agent",
+    "subtitle": "Visual Architect",
+    "path": "brain/agents/threejs-hacker-site",
+    "protocol": "Specialized Subagent",
+    "role": "Designs interactive 3D procedural models, hacker HUDs & live shaders.",
+    "cmd": "invoke_subagent (threejs-hacker-site)",
+    "x": 2.2,
+    "y": 3.2,
+    "z": 2.4,
+    "color": "#c084fc",
+    "size": 6
+  },
+  {
+    "id": "agent-superpowers",
+    "cluster": "agents",
+    "name": "antigravity-superpowers",
+    "subtitle": "Agent Runtime Sentinel",
+    "path": "skainguyen1412/antigravity-superpowers",
+    "protocol": "CLI Sentinel & Tool Suite",
+    "role": "Diagnoses readiness, auto-fixes lints on watch & syncs skills globally.",
+    "cmd": "antigravity-superpowers watch --fix",
+    "x": 0.0,
+    "y": 3.6,
+    "z": -3.2,
+    "color": "#c084fc",
+    "size": 6
+  },
+  {
+    "id": "hub-skills",
+    "cluster": "pipeline",
+    "name": "Central Skills Hub",
+    "subtitle": "Unified Skills Repository",
+    "path": "repositories/skills",
+    "protocol": "Multi-Remote Git Hub",
+    "role": "Aggregates Google, Superpowers, Karpathy & ADHD skills into one tracked repo.",
+    "cmd": "dots-sync-skills status",
+    "x": 7.8,
+    "y": 0.0,
+    "z": 0.0,
+    "color": "#f59e0b",
+    "size": 8,
+    "important": true
+  },
+  {
+    "id": "up-google",
+    "cluster": "pipeline",
+    "name": "Upstream: Google",
+    "subtitle": "google/skills",
+    "path": "upstream-google remote",
+    "protocol": "Git Upstream Track",
+    "role": "Official Google Cloud, Gemini API & developer tools upstream fork.",
+    "cmd": "git fetch upstream-google",
+    "x": 5.5,
+    "y": -0.6,
+    "z": 5.5,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "up-superpowers",
+    "cluster": "pipeline",
+    "name": "Upstream: Superpowers",
+    "subtitle": "skainguyen1412/antigravity-superpowers",
+    "path": "upstream-superpowers remote",
+    "protocol": "Git Upstream Track",
+    "role": "Curated agent workflows, skills and execution patterns.",
+    "cmd": "git fetch upstream-superpowers",
+    "x": 0.0,
+    "y": 0.6,
+    "z": 7.8,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "up-karpathy",
+    "cluster": "pipeline",
+    "name": "Upstream: Karpathy",
+    "subtitle": "karpathy-guidelines",
+    "path": "upstream-karpathy remote",
+    "protocol": "Git Upstream Track",
+    "role": "Core engineering discipline: simplicity first, surgical diffs & verification.",
+    "cmd": "git fetch upstream-karpathy",
+    "x": -5.5,
+    "y": -0.5,
+    "z": 5.5,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "up-adhd",
+    "cluster": "pipeline",
+    "name": "Upstream: ADHD",
+    "subtitle": "i-have-adhd assistive",
+    "path": "upstream-adhd remote",
+    "protocol": "Git Upstream Track",
+    "role": "High-focus assistive workflows: clear step numbering & scannable actions.",
+    "cmd": "git fetch upstream-adhd",
+    "x": -7.8,
+    "y": 0.0,
+    "z": 0.0,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "pipe-rewrite",
+    "cluster": "pipeline",
+    "name": "sync-upstreams.py",
+    "subtitle": "Purge & Rewrite Engine",
+    "path": "scripts/sync-upstreams.py",
+    "protocol": "Python AST Regex Parser",
+    "role": "Purges Claude/Cursor/Codex references & adapts frontmatter to Antigravity.",
+    "cmd": "dots-sync-skills rewrite",
+    "x": -5.5,
+    "y": 0.5,
+    "z": -5.5,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "pipe-sync",
+    "cluster": "pipeline",
+    "name": "dots-sync-skills",
+    "subtitle": "Multi-Stage Synchronizer",
+    "path": "modules/ai/skills.nix",
+    "protocol": "CLI Driver Pipeline",
+    "role": "Fetch -> Sync -> Rewrite -> Audit -> Push -> Bump-Flake orchestrator.",
+    "cmd": "dots-sync-skills all",
+    "x": 0.0,
+    "y": -0.6,
+    "z": -7.8,
+    "color": "#f59e0b",
+    "size": 7
+  },
+  {
+    "id": "pipe-refresh",
+    "cluster": "pipeline",
+    "name": "refresh-skills",
+    "subtitle": "Zero-Drift Auto Sync",
+    "path": "modules/ai/skills.nix",
+    "protocol": "Automated Pipeline",
+    "role": "Runs complete upstream pull, rewrite & syncs active skills into ~/.gemini/config.",
+    "cmd": "refresh-skills",
+    "x": 5.5,
+    "y": 0.5,
+    "z": -5.5,
+    "color": "#f59e0b",
+    "size": 6
+  },
+  {
+    "id": "sk-wsl",
+    "cluster": "skills",
+    "name": "nixos-wsl (Skill)",
+    "subtitle": "System Maintenance",
+    "path": ".agents/skills/nixos-wsl",
+    "protocol": "SKILL.md",
+    "role": "Module authoring, devShell creation, flake revisions & NixOS derivation builds.",
+    "cmd": "view_file nixos-wsl/SKILL.md",
+    "x": -5.8,
+    "y": 1.5,
+    "z": 1.5,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-flake",
+    "cluster": "skills",
+    "name": "nix-flake-management",
+    "subtitle": "Lockfile Hygiene",
+    "path": "~/.gemini/config/skills/nix-flake-management",
+    "protocol": "SKILL.md",
+    "role": "Flake inputs, lockfile hygiene, overlays & devShell management.",
+    "cmd": "nix flake metadata",
+    "x": -4.2,
+    "y": -1.5,
+    "z": 4.2,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-audit",
+    "cluster": "skills",
+    "name": "nix-code-audit",
+    "subtitle": "Quality & Dead Code",
+    "path": "~/.gemini/config/skills/nix-code-audit",
+    "protocol": "SKILL.md",
+    "role": "Alejandra style checks, Statix anti-patterns & Deadnix dead code detection.",
+    "cmd": "dots-lint",
+    "x": -1.5,
+    "y": -1.8,
+    "z": 5.8,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-karpathy",
+    "cluster": "skills",
+    "name": "karpathy-guidelines",
+    "subtitle": "Surgical Changes",
+    "path": "~/.gemini/config/skills/karpathy-guidelines",
+    "protocol": "SKILL.md",
+    "role": "Think Before Coding, Simplicity First, Surgical Diffs & Goal Verification.",
+    "cmd": "view_file karpathy-guidelines/SKILL.md",
+    "x": 1.5,
+    "y": 1.8,
+    "z": 5.8,
+    "color": "#38bdf8",
+    "size": 6,
+    "important": true
+  },
+  {
+    "id": "sk-debug",
+    "cluster": "skills",
+    "name": "systematic-debugging",
+    "subtitle": "Root Cause Isolation",
+    "path": "~/.gemini/config/skills/systematic-debugging",
+    "protocol": "SKILL.md",
+    "role": "Four-phase investigation: isolate root cause before proposing any code fixes.",
+    "cmd": "view_file systematic-debugging/SKILL.md",
+    "x": 4.2,
+    "y": 1.5,
+    "z": 4.2,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-verify",
+    "cluster": "skills",
+    "name": "verification-before-completion",
+    "subtitle": "Evidence First",
+    "path": "~/.gemini/config/skills/verification-before-completion",
+    "protocol": "SKILL.md",
+    "role": "Evidence before assertions: verify command output before claiming task is complete.",
+    "cmd": "view_file verification-before-completion/SKILL.md",
+    "x": 5.8,
+    "y": -1.5,
+    "z": 1.5,
+    "color": "#38bdf8",
+    "size": 6,
+    "important": true
+  },
+  {
+    "id": "sk-report",
+    "cluster": "skills",
+    "name": "outcome-driven-reporting",
+    "subtitle": "Cited Tool Evidence",
+    "path": "~/.gemini/config/skills/outcome-driven-reporting",
+    "protocol": "SKILL.md",
+    "role": "Cite exact tool outputs, files and URLs \u2014 eliminate speculative reporting.",
+    "cmd": "view_file outcome-driven-reporting/SKILL.md",
+    "x": 5.8,
+    "y": 1.5,
+    "z": -1.5,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-auto",
+    "cluster": "skills",
+    "name": "autonomous-execution",
+    "subtitle": "Bias Towards Action",
+    "path": "~/.gemini/config/skills/autonomous-execution",
+    "protocol": "SKILL.md",
+    "role": "Bias towards action: carry reversible tasks to full completion without hesitation.",
+    "cmd": "view_file autonomous-execution/SKILL.md",
+    "x": 4.2,
+    "y": -1.5,
+    "z": -4.2,
+    "color": "#38bdf8",
+    "size": 6,
+    "important": true
+  },
+  {
+    "id": "sk-scan",
+    "cluster": "skills",
+    "name": "scannable-output-formatting",
+    "subtitle": "High Signal Ratio",
+    "path": "~/.gemini/config/skills/scannable-output-formatting",
+    "protocol": "SKILL.md",
+    "role": "Direct openings, structured tables, zero filler phrases & no labeled closings.",
+    "cmd": "view_file scannable-output-formatting/SKILL.md",
+    "x": 1.5,
+    "y": 1.8,
+    "z": -5.8,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-memory",
+    "cluster": "skills",
+    "name": "persistent-memory-protocol",
+    "subtitle": "Knowledge Item Store",
+    "path": "~/.gemini/config/skills/persistent-memory-protocol",
+    "protocol": "SKILL.md",
+    "role": "Records non-obvious architecture facts and preferences across sessions.",
+    "cmd": "view_file persistent-memory-protocol/SKILL.md",
+    "x": -1.5,
+    "y": -1.8,
+    "z": -5.8,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sk-science",
+    "cluster": "skills",
+    "name": "Science Sidecar Plugins",
+    "subtitle": "Interactive Biomolecular",
+    "path": "~/.gemini/config/plugins/science",
+    "protocol": "Sidecar Viewers (Mol*)",
+    "role": "Interactive 3D molecular viewer, ChEMBL, AlphaFold, PubMed & OpenAlex pipelines.",
+    "cmd": "sidecar://biomolecular-structure-viewer",
+    "x": -4.2,
+    "y": 1.5,
+    "z": -4.2,
+    "color": "#38bdf8",
+    "size": 5
+  },
+  {
+    "id": "sec-validate",
+    "cluster": "security",
+    "name": "dots-validate Pipeline",
+    "subtitle": "Automated 4-Stage Gate",
+    "path": "modules/packages/default.nix",
+    "protocol": "Zero-Drift Sentinel",
+    "role": "Executes Alejandra formatting, Statix, Deadnix & Nix flake check before any commit.",
+    "cmd": "dots-validate",
+    "x": -10.5,
+    "y": 0.8,
+    "z": 0.0,
+    "color": "#ef4444",
+    "size": 8,
+    "important": true
+  },
+  {
+    "id": "sec-build",
+    "cluster": "security",
+    "name": "dots-build Sandbox",
+    "subtitle": "Dry-Run Derivation Check",
+    "path": "modules/packages/default.nix",
+    "protocol": "Impure Top-Level Build",
+    "role": "Safely dry-builds the system top-level derivation without switching live system.",
+    "cmd": "dots-build",
+    "x": 10.5,
+    "y": 0.8,
+    "z": 0.0,
+    "color": "#ef4444",
+    "size": 7
+  },
+  {
+    "id": "sec-switch",
+    "cluster": "security",
+    "name": "dots-switch Gate",
+    "subtitle": "Live System Activation",
+    "path": "modules/packages/default.nix",
+    "protocol": "Activation Gatekeeper",
+    "role": "Strict policy: NEVER run dots-switch or nh os switch without explicit user command.",
+    "cmd": "dots-switch (Requires Approval)",
+    "x": 0.0,
+    "y": -1.8,
+    "z": -10.5,
+    "color": "#ef4444",
+    "size": 7,
+    "important": true
+  },
+  {
+    "id": "sec-clamav",
+    "cluster": "security",
+    "name": "ClamAV Docker Sentinel",
+    "subtitle": "Inotify Filesystem Sentinel",
+    "path": "repositories/clamav-scanner",
+    "protocol": "Inotify Daemon / Docker",
+    "role": "Real-time inotify watcher intercepting file drop events and scanning signatures.",
+    "cmd": "docker-compose up -d clamav",
+    "x": 0.0,
+    "y": -1.8,
+    "z": 10.5,
+    "color": "#ef4444",
+    "size": 8,
+    "important": true
   }
+];
+    var infraEdges = [
+  {
+    "from": 0,
+    "to": 1,
+    "type": "eval"
+  },
+  {
+    "from": 0,
+    "to": 2,
+    "type": "foundation"
+  },
+  {
+    "from": 0,
+    "to": 3,
+    "type": "dispatch"
+  },
+  {
+    "from": 0,
+    "to": 4,
+    "type": "driver"
+  },
+  {
+    "from": 0,
+    "to": 22,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 23,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 24,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 25,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 26,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 27,
+    "type": "subagent"
+  },
+  {
+    "from": 0,
+    "to": 13,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 14,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 15,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 16,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 17,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 18,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 19,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 20,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 21,
+    "type": "mcp"
+  },
+  {
+    "from": 0,
+    "to": 39,
+    "type": "guideline"
+  },
+  {
+    "from": 0,
+    "to": 41,
+    "type": "guideline"
+  },
+  {
+    "from": 0,
+    "to": 43,
+    "type": "guideline"
+  },
+  {
+    "from": 0,
+    "to": 42,
+    "type": "guideline"
+  },
+  {
+    "from": 0,
+    "to": 45,
+    "type": "guideline"
+  },
+  {
+    "from": 0,
+    "to": 40,
+    "type": "guideline"
+  },
+  {
+    "from": 4,
+    "to": 5,
+    "type": "hierarchy"
+  },
+  {
+    "from": 4,
+    "to": 6,
+    "type": "import"
+  },
+  {
+    "from": 4,
+    "to": 7,
+    "type": "derivation"
+  },
+  {
+    "from": 4,
+    "to": 8,
+    "type": "devshell"
+  },
+  {
+    "from": 4,
+    "to": 9,
+    "type": "formatter"
+  },
+  {
+    "from": 4,
+    "to": 10,
+    "type": "linter"
+  },
+  {
+    "from": 4,
+    "to": 11,
+    "type": "service"
+  },
+  {
+    "from": 4,
+    "to": 12,
+    "type": "bridge"
+  },
+  {
+    "from": 13,
+    "to": 4,
+    "type": "query"
+  },
+  {
+    "from": 13,
+    "to": 36,
+    "type": "skill-query"
+  },
+  {
+    "from": 15,
+    "to": 47,
+    "type": "git-check"
+  },
+  {
+    "from": 16,
+    "to": 50,
+    "type": "file-watch"
+  },
+  {
+    "from": 19,
+    "to": 1,
+    "type": "typesafe-api"
+  },
+  {
+    "from": 21,
+    "to": 50,
+    "type": "sentinel-pipe"
+  },
+  {
+    "from": 37,
+    "to": 4,
+    "type": "flake-hygiene"
+  },
+  {
+    "from": 38,
+    "to": 9,
+    "type": "format-check"
+  },
+  {
+    "from": 38,
+    "to": 10,
+    "type": "linter-check"
+  },
+  {
+    "from": 28,
+    "to": 29,
+    "type": "remote"
+  },
+  {
+    "from": 28,
+    "to": 30,
+    "type": "remote"
+  },
+  {
+    "from": 28,
+    "to": 31,
+    "type": "remote"
+  },
+  {
+    "from": 28,
+    "to": 32,
+    "type": "remote"
+  },
+  {
+    "from": 28,
+    "to": 33,
+    "type": "purge-engine"
+  },
+  {
+    "from": 33,
+    "to": 34,
+    "type": "sync-flow"
+  },
+  {
+    "from": 34,
+    "to": 35,
+    "type": "refresh-flow"
+  },
+  {
+    "from": 35,
+    "to": 11,
+    "type": "systemd-timer"
+  },
+  {
+    "from": 28,
+    "to": 39,
+    "type": "skill-sync"
+  },
+  {
+    "from": 28,
+    "to": 36,
+    "type": "skill-sync"
+  },
+  {
+    "from": 28,
+    "to": 46,
+    "type": "plugin-sync"
+  },
+  {
+    "from": 47,
+    "to": 4,
+    "type": "flake-check"
+  },
+  {
+    "from": 47,
+    "to": 48,
+    "type": "dry-build"
+  },
+  {
+    "from": 48,
+    "to": 49,
+    "type": "switch-gate"
+  },
+  {
+    "from": 50,
+    "to": 7,
+    "type": "store-scan"
+  }
+];
 
-  /* ── Mouse & Touch Event Handlers ────────────────────────────── */
-  canvas.addEventListener("mousedown", function(e){
-    isDragging = true;
-    autoRotate = false;
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-  });
-  window.addEventListener("mouseup", function(){ isDragging = false; });
-  canvas.addEventListener("mousemove", function(e){
-    if (!isDragging) return;
-    var dx = e.clientX - lastMouseX;
-    var dy = e.clientY - lastMouseY;
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
+    // Theme definitions
+    var themes = {
+      cyan: {
+        primary: "#00ffcc",
+        secondary: "#38bdf8",
+        accent: "#c084fc",
+        highlight: "#ffffff",
+        bgFloor: "rgba(0, 255, 204, 0.07)",
+        glow: "rgba(0, 255, 204, 0.45)"
+      },
+      matrix: {
+        primary: "#00ff41",
+        secondary: "#008f11",
+        accent: "#a3e635",
+        highlight: "#ffffff",
+        bgFloor: "rgba(0, 255, 65, 0.08)",
+        glow: "rgba(0, 255, 65, 0.45)"
+      },
+      cyberpunk: {
+        primary: "#ff007f",
+        secondary: "#00f0ff",
+        accent: "#ffe600",
+        highlight: "#ffffff",
+        bgFloor: "rgba(255, 0, 127, 0.08)",
+        glow: "rgba(255, 0, 127, 0.45)"
+      },
+      solar: {
+        primary: "#ffb400",
+        secondary: "#ff4d00",
+        accent: "#ffd000",
+        highlight: "#ffffff",
+        bgFloor: "rgba(255, 180, 0, 0.08)",
+        glow: "rgba(255, 180, 0, 0.45)"
+      }
+    };
+    var currentTheme = themes.cyan;
 
-    targetRotY += dx * 0.007;
-    targetRotX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.007));
-  });
+    // Camera & Projection State
+    var currentModel = "neural"; // Default to Model 03 Full Infra!
+    var activeFilter = "all";
+    var cameraRotX = 0.52; // Elevation
+    var cameraRotY = 0.65; // Azimuth
+    var targetRotX = 0.52;
+    var targetRotY = 0.65;
+    var cameraPanX = 0;
+    var cameraPanY = 0;
+    var targetPanX = 0;
+    var targetPanY = 0;
+    var currentZoom = 0.95;
+    var targetZoom = 0.95;
+    var isDragging = false;
+    var isRightDragging = false;
+    var lastMouseX = 0;
+    var lastMouseY = 0;
+    var mouseX = -999;
+    var mouseY = -999;
+    var autoRotate = true;
 
-  canvas.addEventListener("wheel", function(e){
-    e.preventDefault();
-    targetZoom = Math.max(0.65, Math.min(2.0, targetZoom - e.deltaY * 0.0015));
-  }, { passive: false });
+    // Simulation Sliders
+    var speedMultiplier = 1.0;
+    var flowMultiplier = 1.4;
+    var pulseMultiplier = 1.0;
+    var glowIntensity = 1.4;
 
-  // Touch Support
-  canvas.addEventListener("touchstart", function(e){
-    if (e.touches.length === 1) {
-      isDragging = true;
+    // Visual Feature Toggles
+    var optPackets = true;
+    var optOrbits = true;
+    var optLightning = true;
+    var optGrid = true;
+    var optBloom = true;
+
+    // Interactive Hover & Selection
+    var hoveredNodeIndex = -1;
+    var selectedNodeIndex = 0; // Antigravity 2.0 selected by default
+
+    // Traveling Data Packets along Filaments
+    var packets = [];
+    var packetCount = 48;
+    for (var p = 0; p < packetCount; p++) {
+      var randEdge = Math.floor(Math.random() * infraEdges.length);
+      packets.push({
+        edgeIdx: randEdge,
+        progress: Math.random(),
+        speed: 0.006 + Math.random() * 0.012,
+        color: Math.random() > 0.5 ? "#00ffcc" : "#a855f7",
+        size: 2.2 + Math.random() * 1.5
+      });
+    }
+
+    // Synaptic Lightning Bolts
+    var activeSparks = [];
+
+    // Background Particle Matrix
+    var particles = [];
+    for (var pi = 0; pi < 120; pi++) {
+      particles.push({
+        x: (Math.random() - 0.5) * 36,
+        y: (Math.random() - 0.5) * 20,
+        z: (Math.random() - 0.5) * 36,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.5 + Math.random() * 1.5,
+        size: 1 + Math.random() * 2
+      });
+    }
+
+    // ── 3D Projection Math ───────────────────────────────────────
+    function project3D(x, y, z) {
+      // Rotate around Y axis
+      var cosY = Math.cos(cameraRotY), sinY = Math.sin(cameraRotY);
+      var x1 = x * cosY + z * sinY;
+      var z1 = -x * sinY + z * cosY;
+
+      // Rotate around X axis
+      var cosX = Math.cos(cameraRotX), sinX = Math.sin(cameraRotX);
+      var y2 = y * cosX - z1 * sinX;
+      var z2 = y * sinX + z1 * cosX;
+
+      // Pan offset
+      x1 += cameraPanX;
+      y2 += cameraPanY;
+
+      // Camera Distance & Perspective Divisor
+      var cameraDist = 26;
+      var depth = cameraDist - z2;
+      if (depth < 0.8) depth = 0.8;
+
+      var fov = 680 * currentZoom;
+      var scale = fov / depth;
+
+      return {
+        x: width / 2 + x1 * scale,
+        y: height / 2 - y2 * scale,
+        scale: scale,
+        depth: depth,
+        visible: depth > 1.2
+      };
+    }
+
+    // ── Mouse & Touch Handlers ───────────────────────────────────
+    canvas.addEventListener("mousedown", function(e){
+      if (e.button === 2) {
+        isRightDragging = true;
+      } else {
+        isDragging = true;
+      }
       autoRotate = false;
-      lastMouseX = e.touches[0].clientX;
-      lastMouseY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-  window.addEventListener("touchend", function(){ isDragging = false; });
-  canvas.addEventListener("touchmove", function(e){
-    if (!isDragging || e.touches.length !== 1) return;
-    var dx = e.touches[0].clientX - lastMouseX;
-    var dy = e.touches[0].clientY - lastMouseY;
-    lastMouseX = e.touches[0].clientX;
-    lastMouseY = e.touches[0].clientY;
-
-    targetRotY += dx * 0.008;
-    targetRotX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.008));
-  }, { passive: true });
-
-  /* ── Global Controls: Focus & Reset ──────────────────────────── */
-  window.focusNode = function(key){
-    var data = NODES_DATA[key];
-    if (!data) return;
-
-    autoRotate = false;
-    var btns = document.querySelectorAll(".stage-btn");
-    for (var b = 0; b < btns.length; b++) btns[b].classList.remove("active");
-
-    var activeBtn = document.getElementById("btn-" + key);
-    if (activeBtn) activeBtn.classList.add("active");
-
-    var titleEl = document.getElementById("hudTitle");
-    var descEl = document.getElementById("hudDesc");
-    var metaEl = document.getElementById("hudMeta");
-    var hudCard = document.getElementById("stageHud");
-
-    if (titleEl) { titleEl.textContent = data.name; titleEl.style.color = data.color; }
-    if (descEl) descEl.textContent = data.desc;
-    if (metaEl) metaEl.textContent = data.meta;
-    if (hudCard) {
-      hudCard.style.borderColor = data.color;
-      hudCard.style.boxShadow = "0 8px 30px " + data.color + "33";
-    }
-
-    if (key === "core") {
-      targetRotX = 0.45;
-      targetZoom = 1.05;
-    } else {
-      targetRotY = -data.targetAngle - Math.PI / 2;
-      targetRotX = 0.35;
-      targetZoom = data.zoom;
-    }
-  };
-
-  window.resetCameraView = function(){
-    autoRotate = true;
-    var btns = document.querySelectorAll(".stage-btn");
-    for (var b = 0; b < btns.length; b++) btns[b].classList.remove("active");
-    var coreBtn = document.getElementById("btn-core");
-    if (coreBtn) coreBtn.classList.add("active");
-    focusNode("core");
-  };
-
-  /* ── Helper: Draw 3D Ring ────────────────────────────────────── */
-  function drawRing3D(cx, cy, cz, radius, segs, color, rotAxis, rotAngle) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    var first = true;
-    for (var s = 0; s <= segs; s++) {
-      var a = (s / segs) * Math.PI * 2;
-      var rx = Math.cos(a) * radius;
-      var rz = Math.sin(a) * radius;
-      var ry = 0;
-
-      // Apply local rotation
-      if (rotAxis === "x") {
-        var ty = ry * Math.cos(rotAngle) - rz * Math.sin(rotAngle);
-        var tz = ry * Math.sin(rotAngle) + rz * Math.cos(rotAngle);
-        ry = ty; rz = tz;
-      } else if (rotAxis === "z") {
-        var tx = rx * Math.cos(rotAngle) - ry * Math.sin(rotAngle);
-        var ty2 = rx * Math.sin(rotAngle) + ry * Math.cos(rotAngle);
-        rx = tx; ry = ty2;
-      }
-
-      var pt = project3D(cx + rx, cy + ry, cz + rz);
-      if (first) { ctx.moveTo(pt.x, pt.y); first = false; }
-      else { ctx.lineTo(pt.x, pt.y); }
-    }
-    ctx.stroke();
-  }
-
-  /* ── Main Animation Render Loop ──────────────────────────────── */
-  function render(timeMs) {
-    requestAnimationFrame(render);
-    var t = timeMs * 0.001;
-
-    // Smooth camera interpolation
-    if (autoRotate) {
-      targetRotY += 0.003;
-    }
-    cameraRotX += (targetRotX - cameraRotX) * 0.08;
-    cameraRotY += (targetRotY - cameraRotY) * 0.08;
-    currentZoom += (targetZoom - currentZoom) * 0.08;
-
-    // Clear frame
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw Perspective Grid Floor
-    ctx.strokeStyle = "rgba(0, 255, 65, 0.09)";
-    ctx.lineWidth = 1;
-    var gridExtent = 18;
-    var gridStep = 3;
-    var floorY = -4.5;
-    for (var gx = -gridExtent; gx <= gridExtent; gx += gridStep) {
-      var pA = project3D(gx, floorY, -gridExtent);
-      var pB = project3D(gx, floorY, gridExtent);
-      ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
-    }
-    for (var gz = -gridExtent; gz <= gridExtent; gz += gridStep) {
-      var p1 = project3D(-gridExtent, floorY, gz);
-      var p2 = project3D(gridExtent, floorY, gz);
-      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-    }
-
-    // Ambient floating particles
-    ctx.fillStyle = "rgba(0, 255, 65, 0.4)";
-    for (var a = 0; a < AMBIENT.length; a++) {
-      var ap = AMBIENT[a];
-      var ppt = project3D(ap.x, ap.y + Math.sin(t + a) * 0.4, ap.z);
-      if (ppt.visible) {
-        ctx.beginPath();
-        ctx.arc(ppt.x, ppt.y, Math.max(0.5, ap.size * (ppt.scale / 22)), 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // Pinned Orbit Ring around Core
-    drawRing3D(0, 0, 0, ORBIT_DIST, 72, "rgba(0, 255, 65, 0.18)", null, 0);
-
-    // Calculate dynamic satellite positions
-    var satWorldPositions = [];
-    for (var s = 0; s < SATELLITES.length; s++) {
-      var sat = SATELLITES[s];
-      var ang = sat.baseAngle + t * 0.08;
-      var sx = Math.cos(ang) * ORBIT_DIST;
-      var sz = Math.sin(ang) * ORBIT_DIST;
-      var sy = sat.y + Math.sin(t * 1.5 + s * 1.6) * 0.4;
-      satWorldPositions.push({ x: sx, y: sy, z: sz });
-    }
-
-    // Conduits from Core to Satellites
-    for (var c = 0; c < SATELLITES.length; c++) {
-      var satColor = SATELLITES[c].color;
-      var sw = satWorldPositions[c];
-      var corePt = project3D(0, 0, 0);
-      var satPt = project3D(sw.x, sw.y, sw.z);
-
-      ctx.save();
-      ctx.strokeStyle = satColor;
-      ctx.globalAlpha = 0.35;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(corePt.x, corePt.y);
-      ctx.lineTo(satPt.x, satPt.y);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // Flowing Energy Packets on Conduits
-    for (var pk = 0; pk < packets.length; pk++) {
-      var pObj = packets[pk];
-      pObj.prog += pObj.speed;
-      if (pObj.prog > 1) pObj.prog = 0;
-
-      var targetSw = satWorldPositions[pObj.satIndex];
-      var u = pObj.prog;
-      var px = targetSw.x * u;
-      var py = targetSw.y * u + Math.sin(u * Math.PI) * 1.2;
-      var pz = targetSw.z * u;
-
-      var packetScreen = project3D(px, py, pz);
-      if (packetScreen.visible) {
-        ctx.save();
-        ctx.fillStyle = SATELLITES[pObj.satIndex].color;
-        ctx.shadowColor = SATELLITES[pObj.satIndex].color;
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(packetScreen.x, packetScreen.y, Math.max(1, 2.8 * (packetScreen.scale / 22)), 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    // Central Core: damathryxx64 Flake Core (Icosahedron + Glowing Nucleus)
-    var coreScale = 2.0 * (1 + Math.sin(t * 3) * 0.05);
-    var coreRotY = t * 0.35;
-    var coreRotX = t * 0.18;
-
-    // Draw Core Gyroscope Rings
-    drawRing3D(0, 0, 0, 3.2, 48, "rgba(0, 255, 65, 0.45)", "x", t * 0.4);
-    drawRing3D(0, 0, 0, 3.6, 48, "rgba(0, 229, 255, 0.4)", "z", t * 0.3);
-
-    // Project Icosahedron Vertices
-    var coreTransformed = icoVerts.map(function(v){
-      var x0 = v[0] * coreScale, y0 = v[1] * coreScale, z0 = v[2] * coreScale;
-      // Local rotation Y
-      var x1 = x0 * Math.cos(coreRotY) + z0 * Math.sin(coreRotY);
-      var z1 = -x0 * Math.sin(coreRotY) + z0 * Math.cos(coreRotY);
-      // Local rotation X
-      var y2 = y0 * Math.cos(coreRotX) - z1 * Math.sin(coreRotX);
-      var z2 = y0 * Math.sin(coreRotX) + z1 * Math.cos(coreRotX);
-      return project3D(x1, y2, z2);
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
     });
 
-    // Draw Icosahedron Wireframe
-    ctx.save();
-    ctx.strokeStyle = "#00ff41";
-    ctx.shadowColor = "#00ff41";
-    ctx.shadowBlur = 12;
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    for (var ie = 0; ie < icoEdges.length; ie++) {
-      var eA = coreTransformed[icoEdges[ie][0]];
-      var eB = coreTransformed[icoEdges[ie][1]];
-      if (eA.visible && eB.visible) {
-        ctx.moveTo(eA.x, eA.y);
-        ctx.lineTo(eB.x, eB.y);
+    window.addEventListener("mouseup", function(){ 
+      isDragging = false; 
+      isRightDragging = false; 
+    });
+
+    canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+
+    canvas.addEventListener("mousemove", function(e){
+      var rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+
+      if (isDragging) {
+        var dx = e.clientX - lastMouseX;
+        var dy = e.clientY - lastMouseY;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        targetRotY += dx * 0.006;
+        targetRotX = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.006));
+      } else if (isRightDragging) {
+        var dx = e.clientX - lastMouseX;
+        var dy = e.clientY - lastMouseY;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        targetPanX += dx * 0.02;
+        targetPanY -= dy * 0.02;
       }
+    });
+
+    canvas.addEventListener("click", function(e){
+      if (hoveredNodeIndex !== -1) {
+        selectNode(hoveredNodeIndex);
+      }
+    });
+
+    canvas.addEventListener("wheel", function(e){
+      e.preventDefault();
+      targetZoom = Math.max(0.4, Math.min(2.8, targetZoom - e.deltaY * 0.0015));
+    }, { passive: false });
+
+    // Touch support
+    var touchStartX = 0, touchStartY = 0;
+    canvas.addEventListener("touchstart", function(e){
+      if (e.touches.length === 1) {
+        isDragging = true;
+        autoRotate = false;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      }
+    });
+    window.addEventListener("touchend", function(){ isDragging = false; });
+    canvas.addEventListener("touchmove", function(e){
+      if (e.touches.length === 1 && isDragging) {
+        var dx = e.touches[0].clientX - lastMouseX;
+        var dy = e.touches[0].clientY - lastMouseY;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+        targetRotY += dx * 0.008;
+        targetRotX = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, targetRotX + dy * 0.008));
+      }
+    });
+
+    // ── Node Inspector & Selection ──────────────────────────────
+    function selectNode(idx) {
+      selectedNodeIndex = idx;
+      var node = infraNodes[idx];
+      if (!node) return;
+
+      var nameEl = document.getElementById("inspNodeName");
+      var subEl = document.getElementById("inspSubtitle");
+      var tagEl = document.getElementById("inspClusterTag");
+      var pathEl = document.getElementById("inspPath");
+      var cmdEl = document.getElementById("inspCmd");
+      var protoEl = document.getElementById("inspProto");
+      var roleEl = document.getElementById("inspRole");
+
+      if (nameEl) nameEl.textContent = node.name;
+      if (subEl) subEl.textContent = node.subtitle || node.cluster.toUpperCase();
+      if (tagEl) {
+        tagEl.textContent = node.cluster.toUpperCase();
+        tagEl.style.borderColor = node.color;
+        tagEl.style.color = node.color;
+      }
+      if (pathEl) pathEl.textContent = node.path || "N/A";
+      if (cmdEl) cmdEl.textContent = node.cmd || "N/A";
+      if (protoEl) protoEl.textContent = node.protocol || "Standard";
+      if (roleEl) roleEl.textContent = node.role || "";
     }
-    ctx.stroke();
-    ctx.restore();
 
-    // Central Glowing Nucleus
-    var centerPt = project3D(0, 0, 0);
-    if (centerPt.visible) {
-      ctx.save();
-      var grad = ctx.createRadialGradient(
-        centerPt.x, centerPt.y, 2,
-        centerPt.x, centerPt.y, Math.max(10, 32 * (centerPt.scale / 22))
-      );
-      grad.addColorStop(0, "rgba(0, 229, 255, 0.95)");
-      grad.addColorStop(0.4, "rgba(0, 255, 65, 0.5)");
-      grad.addColorStop(1, "rgba(0, 255, 65, 0)");
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(centerPt.x, centerPt.y, Math.max(10, 32 * (centerPt.scale / 22)), 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
+    window.focusCurrentNode = function() {
+      if (selectedNodeIndex < 0 || selectedNodeIndex >= infraNodes.length) return;
+      var node = infraNodes[selectedNodeIndex];
+      targetPanX = -node.x * 0.8;
+      targetPanY = node.y * 0.8;
+      targetZoom = 1.35;
+    };
 
-    // Draw 4 Satellites
-    for (var st = 0; st < SATELLITES.length; st++) {
-      var satData = SATELLITES[st];
-      var satPos = satWorldPositions[st];
-      var satProj = project3D(satPos.x, satPos.y, satPos.z);
-      if (!satProj.visible) continue;
+    // ── Cluster Filter Handling ─────────────────────────────────
+    window.filterCluster = function(clusterKey) {
+      activeFilter = clusterKey;
+      var buttons = document.querySelectorAll(".cluster-filter-btn");
+      buttons.forEach(function(b){ b.classList.remove("active"); });
+      var activeBtn = document.getElementById("btn-cluster-" + clusterKey);
+      if (activeBtn) activeBtn.classList.add("active");
 
-      var satGeomScale = 1.1;
-      var sRotY = t * (0.4 + st * 0.05);
-      var sRotX = t * (0.25 + st * 0.04);
+      // Smooth camera orientation per cluster
+      if (clusterKey === "core") {
+        targetRotX = 0.45; targetRotY = 0.5; targetZoom = 1.3; targetPanX = 0; targetPanY = 0;
+      } else if (clusterKey === "nixos") {
+        targetRotX = 0.72; targetRotY = 0.3; targetZoom = 1.1; targetPanX = 0; targetPanY = -2.2;
+      } else if (clusterKey === "agents") {
+        targetRotX = 0.35; targetRotY = 0.8; targetZoom = 1.15; targetPanX = 0; targetPanY = 2.4;
+      } else if (clusterKey === "pipeline") {
+        targetRotX = 0.3; targetRotY = 1.2; targetZoom = 0.85; targetPanX = 0; targetPanY = 0;
+      } else if (clusterKey === "security") {
+        targetRotX = 0.4; targetRotY = 0.1; targetZoom = 0.75; targetPanX = 0; targetPanY = 0;
+      } else {
+        targetRotX = 0.52; targetRotY = 0.65; targetZoom = 0.95; targetPanX = 0; targetPanY = 0;
+      }
+    };
 
-      var activeVerts = (satData.geo === "ico") ? icoVerts : octVerts;
-      var activeEdges = (satData.geo === "ico") ? icoEdges : octEdges;
-
-      var sTransformed = activeVerts.map(function(v){
-        var x0 = v[0] * satGeomScale, y0 = v[1] * satGeomScale, z0 = v[2] * satGeomScale;
-        var x1 = x0 * Math.cos(sRotY) + z0 * Math.sin(sRotY);
-        var z1 = -x0 * Math.sin(sRotY) + z0 * Math.cos(sRotY);
-        var y2 = y0 * Math.cos(sRotX) - z1 * Math.sin(sRotX);
-        var z2 = y0 * Math.sin(sRotX) + z1 * Math.cos(sRotX);
-        return project3D(satPos.x + x1, satPos.y + y2, satPos.z + z2);
+    // ── Model Switching ─────────────────────────────────────────
+    window.switchModel = function(modelKey) {
+      currentModel = modelKey;
+      var tabs = document.querySelectorAll(".model-tab");
+      tabs.forEach(function(t){
+        t.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-slate-300";
       });
 
-      // Satellite wireframe
-      ctx.save();
-      ctx.strokeStyle = satData.color;
-      ctx.shadowColor = satData.color;
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      for (var se = 0; se < activeEdges.length; se++) {
-        var saA = sTransformed[activeEdges[se][0]];
-        var saB = sTransformed[activeEdges[se][1]];
-        if (saA.visible && saB.visible) {
-          ctx.moveTo(saA.x, saA.y);
-          ctx.lineTo(saB.x, saB.y);
+      var activeTab = document.getElementById("tab-" + modelKey);
+      var indDot = document.getElementById("modelIndicatorDot");
+      var indTitle = document.getElementById("modelIndicatorTitle");
+      var tHead = document.getElementById("telemetryHeading");
+      var tDetail = document.getElementById("telemetryDetail");
+      var tForm = document.getElementById("telemetryFormula");
+      var clusterBar = document.getElementById("clusterFilterBar");
+
+      if (clusterBar) {
+        clusterBar.style.display = (modelKey === "neural") ? "flex" : "none";
+      }
+
+      if (modelKey === "neural") {
+        if (activeTab) activeTab.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-cyan-500/60 bg-cyan-950/40 text-cyan-200 shadow-[0_0_15px_rgba(0,255,204,0.25)]";
+        indDot.className = "w-2 h-2 rounded-full bg-cyan-400 animate-pulse";
+        indTitle.textContent = "Autonomous Agent Hive";
+        tHead.innerHTML = "<span>🧠 Neural Infrastructure Hive</span>";
+        tDetail.textContent = "Live holographic topology of entire system: 51 interconnected nodes across NixOS-WSL, 9 MCP servers, 6 autonomous agents, and 4 upstreams.";
+        tForm.textContent = "Topology(V, E): |V| = 51 nodes · |E| = 57 filaments · PacketFlow = Active";
+      } else if (modelKey === "quantum") {
+        if (activeTab) activeTab.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-emerald-500/60 bg-emerald-950/40 text-emerald-300 shadow-[0_0_12px_rgba(0,255,65,0.2)]";
+        indDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        indTitle.textContent = "Quantum Singularity";
+        tHead.innerHTML = "<span>⚡ Quantum Manifold Telemetry</span>";
+        tDetail.textContent = "Stereographic 4D projection with dual orthogonal nested energy manifolds representing immutable store derivations.";
+        tForm.textContent = "F(x,y,z,w) = x² + y² = r₁², z² + w² = r₂²";
+      } else if (modelKey === "reactor") {
+        if (activeTab) activeTab.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-cyan-500/60 bg-cyan-950/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]";
+        indDot.className = "w-2 h-2 rounded-full bg-cyan-400";
+        indTitle.textContent = "Orbital Star Engine";
+        tHead.innerHTML = "<span>🌀 Magnetic Confinement Field</span>";
+        tDetail.textContent = "Tri-axial gimbal rings rotating in harmonic resonance with high-density plasma core deflection fields.";
+        tForm.textContent = "B_plasma = (μ₀ I) / (2π r) · cos(3ωt)";
+      } else if (modelKey === "sentinel") {
+        if (activeTab) activeTab.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-amber-500/60 bg-amber-950/40 text-amber-300 shadow-[0_0_12px_rgba(255,184,0,0.2)]";
+        indDot.className = "w-2 h-2 rounded-full bg-amber-400";
+        indTitle.textContent = "Kinetic Security Dome";
+        tHead.innerHTML = "<span>🛡️ inotify Sentinel Shield</span>";
+        tDetail.textContent = "Geodesic defensive sphere with 360-degree radar beam sweep, intercepting file drop vectors in real-time.";
+        tForm.textContent = "Scan(θ,t) = R_geo(V, E) ∩ Sweeper(ω_radar t)";
+      } else if (modelKey === "mech") {
+        if (activeTab) activeTab.className = "model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-pink-500/60 bg-pink-950/40 text-pink-300 shadow-[0_0_12px_rgba(255,85,176,0.2)]";
+        indDot.className = "w-2 h-2 rounded-full bg-pink-400";
+        indTitle.textContent = "Sci-Fi Chronometer";
+        tHead.innerHTML = "<span>⚙️ Mechanical Instrument Rig</span>";
+        tDetail.textContent = "Interlocking involute gear trains, oscillating harmonic pistons, and twin analog dial indicators.";
+        tForm.textContent = "GearRatio = Z₁/Z₂ = 24/12 = 2.00000";
+      }
+    };
+
+    window.toggleAutoRotate = function(){
+      autoRotate = !autoRotate;
+      var btn = document.getElementById("btnRotate");
+      if (btn) {
+        btn.classList.toggle("text-cyan-300", autoRotate);
+        btn.classList.toggle("text-slate-400", !autoRotate);
+      }
+    };
+
+    window.resetCamera = function(){
+      targetRotX = 0.52;
+      targetRotY = 0.65;
+      targetPanX = 0;
+      targetPanY = 0;
+      targetZoom = 0.95;
+    };
+
+    window.setCameraPreset = function(preset){
+      targetPanX = 0;
+      targetPanY = 0;
+      if (preset === "iso") {
+        targetRotX = 0.615; targetRotY = 0.785; targetZoom = 0.95;
+      } else if (preset === "front") {
+        targetRotX = 0.05; targetRotY = 0.0; targetZoom = 1.05;
+      } else if (preset === "top") {
+        targetRotX = 1.50; targetRotY = 0.0; targetZoom = 0.85;
+      } else if (preset === "close") {
+        targetRotX = 0.45; targetRotY = 0.5; targetZoom = 1.45;
+      }
+    };
+
+    window.setTheme = function(name){
+      if (themes[name]) currentTheme = themes[name];
+    };
+
+    window.updateSpeed = function(val){
+      speedMultiplier = parseFloat(val);
+      document.getElementById("speedVal").textContent = val + "x";
+    };
+    window.updateFlow = function(val){
+      flowMultiplier = parseFloat(val);
+      document.getElementById("flowVal").textContent = val + "x";
+    };
+    window.updatePulse = function(val){
+      pulseMultiplier = parseFloat(val);
+      document.getElementById("pulseVal").textContent = val + "x";
+    };
+    window.updateGlow = function(val){
+      glowIntensity = parseFloat(val);
+      document.getElementById("glowVal").textContent = val + "x";
+    };
+    window.toggleOption = function(opt, isChecked){
+      if (opt === "packets") optPackets = isChecked;
+      if (opt === "orbits") optOrbits = isChecked;
+      if (opt === "lightning") optLightning = isChecked;
+      if (opt === "grid") optGrid = isChecked;
+    };
+
+    // ── RENDER MODEL 03: FULL INFRASTRUCTURE HIVE ───────────────
+    function renderFullInfrastructureHive(t) {
+      var projectedNodes = [];
+      hoveredNodeIndex = -1;
+      var closestDist = 16;
+
+      // 1. Calculate 3D projections for all 51 nodes
+      for (var i = 0; i < infraNodes.length; i++) {
+        var node = infraNodes[i];
+        
+        // Gentle organic bobbing & floating movement
+        var bobY = Math.sin(t * 1.5 + i * 0.7) * 0.12;
+        var bobX = Math.cos(t * 1.2 + i * 0.5) * 0.08;
+        
+        var pt = project3D(node.x + bobX, node.y + bobY, node.z);
+        projectedNodes.push(pt);
+
+        // Hit testing against mouse cursor
+        if (pt.visible) {
+          var dist = Math.hypot(pt.x - mouseX, pt.y - mouseY);
+          if (dist < closestDist) {
+            closestDist = dist;
+            hoveredNodeIndex = i;
+          }
         }
       }
-      ctx.stroke();
-      ctx.restore();
 
-      // Satellite glowing core
-      ctx.save();
-      var sGrad = ctx.createRadialGradient(
-        satProj.x, satProj.y, 2,
-        satProj.x, satProj.y, Math.max(8, 20 * (satProj.scale / 22))
-      );
-      sGrad.addColorStop(0, satData.color);
-      sGrad.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = sGrad;
-      ctx.beginPath();
-      ctx.arc(satProj.x, satProj.y, Math.max(8, 20 * (satProj.scale / 22)), 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      // Update cursor style
+      canvas.style.cursor = (hoveredNodeIndex !== -1) ? "pointer" : (isDragging ? "grabbing" : "grab");
 
-      // Satellite 3D HUD Badge
-      ctx.save();
-      ctx.font = "bold 11px 'JetBrains Mono', monospace";
-      var badgeText = satData.name;
-      var textWidth = ctx.measureText(badgeText).width;
-      var badgeX = satProj.x - textWidth / 2 - 8;
-      var badgeY = satProj.y - 28;
+      // 2. Draw Subsystem Orbital Guide Rings & Foundations
+      if (optOrbits) {
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
 
-      ctx.fillStyle = "rgba(4, 7, 12, 0.88)";
-      ctx.strokeStyle = satData.color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, textWidth + 16, 20, 4);
-      ctx.fill();
-      ctx.stroke();
+        // Bedrock Foundation Ring (NixOS level Y = -2.5)
+        ctx.strokeStyle = "rgba(16, 185, 129, 0.22)";
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 + 0.1; a += 0.15) {
+          var pBed = project3D(Math.cos(a) * 6.5, -2.6, Math.sin(a) * 6.5);
+          if (a === 0) ctx.moveTo(pBed.x, pBed.y); else ctx.lineTo(pBed.x, pBed.y);
+        }
+        ctx.stroke();
 
-      ctx.fillStyle = satData.color;
-      ctx.fillText(badgeText, badgeX + 8, badgeY + 14);
-      ctx.restore();
+        // Inner MCP Ring (Y = 0)
+        ctx.strokeStyle = "rgba(6, 182, 212, 0.25)";
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 + 0.1; a += 0.15) {
+          var pMcp = project3D(Math.cos(a) * 4.5, 0.1, Math.sin(a) * 4.5);
+          if (a === 0) ctx.moveTo(pMcp.x, pMcp.y); else ctx.lineTo(pMcp.x, pMcp.y);
+        }
+        ctx.stroke();
+
+        // Upper Agent Canopy Ring (Y = 3.4)
+        ctx.strokeStyle = "rgba(192, 132, 252, 0.22)";
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 + 0.1; a += 0.15) {
+          var pAg = project3D(Math.cos(a) * 4.2, 3.4, Math.sin(a) * 4.2);
+          if (a === 0) ctx.moveTo(pAg.x, pAg.y); else ctx.lineTo(pAg.x, pAg.y);
+        }
+        ctx.stroke();
+
+        // Outer Skills Hub Planetary Ring (Y = 0, Rad = 7.8)
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.2)";
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 + 0.1; a += 0.15) {
+          var pSk = project3D(Math.cos(a) * 7.8, Math.sin(a) * 0.4, Math.sin(a) * 7.8);
+          if (a === 0) ctx.moveTo(pSk.x, pSk.y); else ctx.lineTo(pSk.x, pSk.y);
+        }
+        ctx.stroke();
+
+        // Security Outer Perimeter Ring (Rad = 10.5)
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.22)";
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 + 0.1; a += 0.15) {
+          var pSec = project3D(Math.cos(a) * 10.5, 0, Math.sin(a) * 10.5);
+          if (a === 0) ctx.moveTo(pSec.x, pSec.y); else ctx.lineTo(pSec.x, pSec.y);
+        }
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+      }
+
+      // 3. Draw Synaptic Filaments (Edges)
+      for (var e = 0; e < infraEdges.length; e++) {
+        var edge = infraEdges[e];
+        var nA = infraNodes[edge.from];
+        var nB = infraNodes[edge.to];
+        var ptA = projectedNodes[edge.from];
+        var ptB = projectedNodes[edge.to];
+
+        if (!ptA.visible || !ptB.visible) continue;
+
+        // Check if edge is part of active cluster filter
+        var isFilterMatch = (activeFilter === "all") || (nA.cluster === activeFilter || nB.cluster === activeFilter);
+        var isConnectedToHover = (hoveredNodeIndex === edge.from || hoveredNodeIndex === edge.to);
+        var isConnectedToSelected = (selectedNodeIndex === edge.from || selectedNodeIndex === edge.to);
+
+        var alpha = 0.15;
+        var lineWidth = 1.0;
+        var strokeStyle = "rgba(0, 255, 204, 0.18)";
+
+        if (isConnectedToHover || isConnectedToSelected) {
+          alpha = 0.95;
+          lineWidth = 2.2;
+          strokeStyle = isConnectedToHover ? "#00ffcc" : "#a855f7";
+        } else if (isFilterMatch) {
+          var pulse = (Math.sin(t * 3 * flowMultiplier + e * 0.6) + 1) / 2;
+          alpha = 0.22 + pulse * 0.25;
+          lineWidth = 1.2;
+          strokeStyle = (edge.type === "subagent") ? "rgba(192, 132, 252, 0.45)" :
+                        (edge.type === "mcp") ? "rgba(6, 182, 212, 0.45)" :
+                        (edge.type === "derivation" || edge.type === "hierarchy") ? "rgba(16, 185, 129, 0.45)" :
+                        (edge.type === "remote" || edge.type === "purge-engine") ? "rgba(245, 158, 11, 0.45)" :
+                        "rgba(56, 189, 248, 0.35)";
+        } else {
+          alpha = 0.05; // Dimmed out when filter doesn't match
+        }
+
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = strokeStyle;
+        if (optBloom && (isConnectedToHover || isConnectedToSelected)) {
+          ctx.shadowColor = strokeStyle;
+          ctx.shadowBlur = 8 * glowIntensity;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(ptA.x, ptA.y);
+        ctx.lineTo(ptB.x, ptB.y);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+
+      // 4. Draw Flowing Photon Packets along Filaments
+      if (optPackets) {
+        for (var pi = 0; pi < packets.length; pi++) {
+          var pkt = packets[pi];
+          pkt.progress += pkt.speed * flowMultiplier * speedMultiplier;
+          if (pkt.progress >= 1.0) {
+            pkt.progress = 0;
+            pkt.edgeIdx = Math.floor(Math.random() * infraEdges.length);
+          }
+
+          var edge = infraEdges[pkt.edgeIdx];
+          var ptA = projectedNodes[edge.from];
+          var ptB = projectedNodes[edge.to];
+          if (!ptA.visible || !ptB.visible) continue;
+
+          var nA = infraNodes[edge.from];
+          var nB = infraNodes[edge.to];
+          var isFilterMatch = (activeFilter === "all") || (nA.cluster === activeFilter || nB.cluster === activeFilter);
+          if (!isFilterMatch) continue;
+
+          var px = ptA.x + (ptB.x - ptA.x) * pkt.progress;
+          var py = ptA.y + (ptB.y - ptA.y) * pkt.progress;
+          var tailProg = Math.max(0, pkt.progress - 0.08);
+          var tx = ptA.x + (ptB.x - ptA.x) * tailProg;
+          var ty = ptA.y + (ptB.y - ptA.y) * tailProg;
+
+          // Packet comet trail
+          ctx.strokeStyle = pkt.color;
+          ctx.lineWidth = pkt.size * (ptA.scale / 22);
+          ctx.globalAlpha = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+
+          // Packet head
+          ctx.fillStyle = "#ffffff";
+          ctx.globalAlpha = 0.95;
+          ctx.beginPath();
+          ctx.arc(px, py, Math.max(1.5, pkt.size * (ptA.scale / 24)), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 5. Dynamic Synaptic Electric Arcs (Sparks)
+      if (optLightning) {
+        // Randomly spawn a spark
+        if (Math.random() < 0.08 * flowMultiplier && infraEdges.length > 0) {
+          var randEdgeIdx = Math.floor(Math.random() * infraEdges.length);
+          activeSparks.push({
+            edgeIdx: randEdgeIdx,
+            life: 6,
+            maxLife: 6,
+            color: Math.random() > 0.4 ? "#00ffcc" : "#e879f9"
+          });
+        }
+
+        // Render and update active sparks
+        for (var si = activeSparks.length - 1; si >= 0; si--) {
+          var spk = activeSparks[si];
+          var edge = infraEdges[spk.edgeIdx];
+          var ptA = projectedNodes[edge.from];
+          var ptB = projectedNodes[edge.to];
+
+          if (ptA.visible && ptB.visible) {
+            ctx.strokeStyle = spk.color;
+            ctx.lineWidth = 1.8;
+            ctx.globalAlpha = spk.life / spk.maxLife;
+            ctx.beginPath();
+            ctx.moveTo(ptA.x, ptA.y);
+
+            var steps = 5;
+            for (var st = 1; st < steps; st++) {
+              var frac = st / steps;
+              var sx = ptA.x + (ptB.x - ptA.x) * frac + (Math.random() - 0.5) * 14;
+              var sy = ptA.y + (ptB.y - ptA.y) * frac + (Math.random() - 0.5) * 14;
+              ctx.lineTo(sx, sy);
+            }
+            ctx.lineTo(ptB.x, ptB.y);
+            ctx.stroke();
+          }
+
+          spk.life--;
+          if (spk.life <= 0) activeSparks.splice(si, 1);
+        }
+        ctx.globalAlpha = 1.0;
+      }
+
+      // 6. Draw Infrastructure Nodes
+      for (var n = 0; n < infraNodes.length; n++) {
+        var node = infraNodes[n];
+        var pt = projectedNodes[n];
+        if (!pt.visible) continue;
+
+        var isHovered = (n === hoveredNodeIndex);
+        var isSelected = (n === selectedNodeIndex);
+        var isFilterMatch = (activeFilter === "all") || (node.cluster === activeFilter);
+
+        var nodeAlpha = isFilterMatch ? 1.0 : 0.15;
+        var nodeRadius = (node.size || 5) * (pt.scale / 22);
+        if (isHovered || isSelected) nodeRadius *= 1.45;
+
+        ctx.globalAlpha = nodeAlpha;
+
+        // Outer pulsing ring beacon
+        if (isHovered || isSelected || node.important) {
+          var ringPulse = 1 + Math.sin(t * 4 * pulseMultiplier + n) * 0.25;
+          ctx.strokeStyle = isHovered ? "#ffffff" : node.color;
+          ctx.lineWidth = isHovered ? 2.0 : 1.2;
+          if (optBloom) {
+            ctx.shadowColor = node.color;
+            ctx.shadowBlur = 10 * glowIntensity;
+          }
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, nodeRadius * 1.8 * ringPulse, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Inner solid node core
+        ctx.fillStyle = isHovered ? "#ffffff" : node.color;
+        if (optBloom) {
+          ctx.shadowColor = node.color;
+          ctx.shadowBlur = (isHovered ? 16 : 8) * glowIntensity;
+        }
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, Math.max(2.5, nodeRadius), 0, Math.PI * 2);
+        ctx.fill();
+
+        // High-contrast center white point
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, Math.max(1, nodeRadius * 0.4), 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+
+        // Node Label Rendering
+        var shouldShowLabel = isHovered || isSelected || (node.important && isFilterMatch && currentZoom > 0.7);
+        if (shouldShowLabel && nodeAlpha > 0.3) {
+          ctx.fillStyle = isHovered ? "#ffffff" : (isSelected ? "#00ffcc" : "#e2e8f0");
+          ctx.font = isHovered ? "bold 11px monospace" : "10px monospace";
+          ctx.fillText(node.name, pt.x + nodeRadius + 5, pt.y + 4);
+        }
+      }
+      ctx.globalAlpha = 1.0;
+
+      // 7. Holographic HUD Tooltip on Hover
+      if (hoveredNodeIndex !== -1) {
+        var hNode = infraNodes[hoveredNodeIndex];
+        var hPt = projectedNodes[hoveredNodeIndex];
+
+        if (hPt.visible) {
+          // Crosshair Reticle Brackets
+          var retSize = 16;
+          ctx.strokeStyle = "#00ffcc";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          // Top-left
+          ctx.moveTo(hPt.x - retSize, hPt.y - retSize + 5);
+          ctx.lineTo(hPt.x - retSize, hPt.y - retSize);
+          ctx.lineTo(hPt.x - retSize + 5, hPt.y - retSize);
+          // Top-right
+          ctx.moveTo(hPt.x + retSize - 5, hPt.y - retSize);
+          ctx.lineTo(hPt.x + retSize, hPt.y - retSize);
+          ctx.lineTo(hPt.x + retSize, hPt.y - retSize + 5);
+          // Bottom-left
+          ctx.moveTo(hPt.x - retSize, hPt.y + retSize - 5);
+          ctx.lineTo(hPt.x - retSize, hPt.y + retSize);
+          ctx.lineTo(hPt.x - retSize + 5, hPt.y + retSize);
+          // Bottom-right
+          ctx.moveTo(hPt.x + retSize - 5, hPt.y + retSize);
+          ctx.lineTo(hPt.x + retSize, hPt.y + retSize);
+          ctx.lineTo(hPt.x + retSize, hPt.y + retSize - 5);
+          ctx.stroke();
+
+          // Tooltip Hologram Box
+          var boxX = Math.min(width - 240, hPt.x + 22);
+          var boxY = Math.max(20, Math.min(height - 110, hPt.y - 45));
+
+          // Box backdrop
+          ctx.fillStyle = "rgba(4, 9, 18, 0.94)";
+          ctx.strokeStyle = hNode.color;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.roundRect(boxX, boxY, 220, 84, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          // Node Title & Cluster
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 11px monospace";
+          ctx.fillText(hNode.name, boxX + 10, boxY + 18);
+
+          ctx.fillStyle = hNode.color;
+          ctx.font = "bold 9px monospace";
+          ctx.fillText("[" + hNode.cluster.toUpperCase() + "] · " + (hNode.protocol || "ACTIVE"), boxX + 10, boxY + 34);
+
+          // Path / Command
+          ctx.fillStyle = "#10b981";
+          ctx.font = "10px monospace";
+          var dispCmd = (hNode.cmd || hNode.path || "").substring(0, 32);
+          ctx.fillText("> " + dispCmd, boxX + 10, boxY + 52);
+
+          // Status Indicator
+          ctx.fillStyle = "#38bdf8";
+          ctx.font = "9px sans-serif";
+          ctx.fillText("Click to inspect & pin in sidebar", boxX + 10, boxY + 70);
+        }
+      }
     }
 
-    // Core 3D HUD Badge
-    if (centerPt.visible) {
-      ctx.save();
-      ctx.font = "bold 12px 'JetBrains Mono', monospace";
-      var coreBadgeText = "damathryxx64 (trunk)";
-      var coreTextWidth = ctx.measureText(coreBadgeText).width;
-      var cBadgeX = centerPt.x - coreTextWidth / 2 - 10;
-      var cBadgeY = centerPt.y - 48;
+    // ── FALLBACK MODELS 1, 2, 4, 5 (Preserved) ───────────────────
+    function renderQuantumTorus(t) {
+      var r1 = 3.6, r2 = 1.4;
+      var segU = 28, segV = 16;
+      var rot4D = t * 0.4 * speedMultiplier;
+      var cosW = Math.cos(rot4D), sinW = Math.sin(rot4D);
 
-      ctx.fillStyle = "rgba(4, 7, 12, 0.92)";
-      ctx.strokeStyle = "#00ff41";
+      ctx.strokeStyle = currentTheme.primary;
+      ctx.lineWidth = 1.1;
+      for (var u = 0; u < segU; u++) {
+        var theta = (u / segU) * Math.PI * 2;
+        ctx.beginPath();
+        var first = true;
+        for (var v = 0; v <= segV; v++) {
+          var phi = (v / segV) * Math.PI * 2;
+          var x0 = (r1 + r2 * Math.cos(phi)) * Math.cos(theta);
+          var y0 = (r1 + r2 * Math.cos(phi)) * Math.sin(theta);
+          var z0 = r2 * Math.sin(phi);
+          var w0 = 0.8 * Math.sin(theta * 2);
+
+          var x = x0 * cosW - w0 * sinW;
+          var w = x0 * sinW + w0 * cosW;
+          var stereoDiv = 4.8 - w;
+          var factor = 4.8 / (stereoDiv > 0.5 ? stereoDiv : 0.5);
+
+          var pt = project3D(x * factor, y0 * factor, z0 * factor);
+          if (first) { ctx.moveTo(pt.x, pt.y); first = false; }
+          else { ctx.lineTo(pt.x, pt.y); }
+        }
+        ctx.stroke();
+      }
+    }
+
+    function renderOrbitalReactor(t) {
+      var ringRadii = [4.5, 3.4, 2.3];
+      for (var rIdx = 0; rIdx < 3; rIdx++) {
+        var rad = ringRadii[rIdx];
+        var ang = t * (0.8 + rIdx * 0.4) * speedMultiplier * (rIdx % 2 === 0 ? 1 : -1);
+        ctx.strokeStyle = rIdx === 0 ? currentTheme.primary : (rIdx === 1 ? currentTheme.secondary : currentTheme.accent);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (var s = 0; s <= 36; s++) {
+          var a = (s / 36) * Math.PI * 2;
+          var x = Math.cos(a) * rad, y = Math.sin(a) * rad * Math.sin(ang), z = Math.sin(a) * rad * Math.cos(ang);
+          var pt = project3D(x, y, z);
+          if (s === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      }
+      var cPt = project3D(0, 0, 0);
+      if (cPt.visible) {
+        var pulse = 22 * (1 + Math.sin(t * 5 * pulseMultiplier) * 0.15);
+        ctx.fillStyle = currentTheme.primary;
+        ctx.beginPath();
+        ctx.arc(cPt.x, cPt.y, pulse * (cPt.scale / 22), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function renderSentinelRadar(t) {
+      var shieldRadius = 5.6;
+      ctx.strokeStyle = currentTheme.primary;
       ctx.lineWidth = 1.2;
-      ctx.shadowColor = "#00ff41";
-      ctx.shadowBlur = 8;
+      for (var la = -2; la <= 2; la++) {
+        var ly = la * 1.5;
+        var lr = Math.sqrt(Math.max(0, shieldRadius * shieldRadius - ly * ly));
+        ctx.beginPath();
+        for (var lo = 0; lo <= 24; lo++) {
+          var an = (lo / 24) * Math.PI * 2 + t * 0.2;
+          var pt = project3D(Math.cos(an) * lr, ly, Math.sin(an) * lr);
+          if (lo === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      }
+      var rAngle = t * 1.5 * speedMultiplier;
+      var pC = project3D(0, 0, 0);
+      var pT = project3D(Math.cos(rAngle) * 7.5, 0, Math.sin(rAngle) * 7.5);
+      ctx.strokeStyle = currentTheme.accent;
+      ctx.lineWidth = 2.0;
       ctx.beginPath();
-      ctx.roundRect(cBadgeX, cBadgeY, coreTextWidth + 20, 24, 4);
-      ctx.fill();
+      ctx.moveTo(pC.x, pC.y);
+      ctx.lineTo(pT.x, pT.y);
       ctx.stroke();
-
-      ctx.fillStyle = "#00ff41";
-      ctx.fillText(coreBadgeText, cBadgeX + 10, cBadgeY + 16);
-      ctx.restore();
     }
-  }
 
-  // Start animation loop immediately
-  requestAnimationFrame(render);
-})();
-</script>
+    function renderMechanicalStation(t) {
+      function draw3DGear(gx, gy, gz, radius, teeth, rotSpeed, color) {
+        var ang = t * rotSpeed * speedMultiplier;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        var totalPoints = teeth * 4;
+        for (var p = 0; p <= totalPoints; p++) {
+          var toothPhase = p % 4;
+          var curRad = radius + (toothPhase === 1 || toothPhase === 2 ? 0.45 : -0.2);
+          var a = (p / totalPoints) * Math.PI * 2 + ang;
+          var pt = project3D(gx + Math.cos(a) * curRad, gy, gz + Math.sin(a) * curRad);
+          if (p === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      }
+      draw3DGear(-2.5, 0, 0, 2.8, 16, 0.8, currentTheme.primary);
+      draw3DGear( 2.2, 0, 0, 2.0, 12, -1.066, currentTheme.secondary);
+      draw3DGear( 2.2, 0, 3.8, 1.8, 10, 1.28, currentTheme.accent);
+    }
 
+    // ── Main Animation Frame Loop ───────────────────────────────
+    var lastFpsTime = performance.now();
+    var frameCount = 0;
+
+    function animate(timeMs) {
+      requestAnimationFrame(animate);
+      var t = timeMs * 0.001;
+
+      frameCount++;
+      if (timeMs - lastFpsTime >= 1000) {
+        var fpsEl = document.getElementById("fpsVal");
+        if (fpsEl) fpsEl.textContent = frameCount;
+        frameCount = 0;
+        lastFpsTime = timeMs;
+      }
+
+      // Camera Easing & Turntable
+      if (autoRotate) {
+        targetRotY += 0.0035 * speedMultiplier;
+      }
+      cameraRotX += (targetRotX - cameraRotX) * 0.08;
+      cameraRotY += (targetRotY - cameraRotY) * 0.08;
+      cameraPanX += (targetPanX - cameraPanX) * 0.08;
+      cameraPanY += (targetPanY - cameraPanY) * 0.08;
+      currentZoom += (targetZoom - currentZoom) * 0.08;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Floor Grid
+      if (optGrid) {
+        ctx.strokeStyle = currentTheme.bgFloor;
+        ctx.lineWidth = 1;
+        var ext = 20, st = 3, fY = -5.0;
+        for (var gx = -ext; gx <= ext; gx += st) {
+          var pA = project3D(gx, fY, -ext);
+          var pB = project3D(gx, fY, ext);
+          ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
+        }
+        for (var gz = -ext; gz <= ext; gz += st) {
+          var p1 = project3D(-ext, fY, gz);
+          var p2 = project3D(ext, fY, gz);
+          ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        }
+      }
+
+      // Ambient Particle Matrix
+      ctx.fillStyle = currentTheme.primary;
+      for (var pi = 0; pi < particles.length; pi++) {
+        var pr = particles[pi];
+        var pt = project3D(pr.x, pr.y + Math.sin(t * pr.speed + pr.phase) * 0.5, pr.z);
+        if (pt.visible) {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, Math.max(0.5, pr.size * (pt.scale / 22)), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Active Model Dispatch
+      if (currentModel === "neural") {
+        renderFullInfrastructureHive(t);
+      } else if (currentModel === "quantum") {
+        renderQuantumTorus(t);
+      } else if (currentModel === "reactor") {
+        renderOrbitalReactor(t);
+      } else if (currentModel === "sentinel") {
+        renderSentinelRadar(t);
+      } else if (currentModel === "mech") {
+        renderMechanicalStation(t);
+      }
+    }
+
+    // Initialize Default State
+    selectNode(0); // Antigravity 2.0
+    requestAnimationFrame(animate);
+  })();
+  </script>
 </body>
 </html>
