@@ -10,6 +10,7 @@
     ./mcp
     ./nixos-maintenance
     ./packages
+    ./secrets
     ./shells
     ./virtualisation
     ./wsl

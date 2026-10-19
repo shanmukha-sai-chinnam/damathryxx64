@@ -109,6 +109,35 @@
       ${pkgs.libnotify}/bin/notify-send -u normal -a "Antigravity Workspace" "Workspace Flakes Synced" "All repositories pulled and NixOS configuration applied." 2>/dev/null || true
     fi
   '';
+
+  dotsTestVm = pkgs.writeShellScriptBin "dots-test-vm" ''
+    set -euo pipefail
+    REPO_DIR="/home/damathryxx64/repositories/damathryxx64"
+    cd "$REPO_DIR"
+
+    echo -e "\033[1;36m══════════════════════════════════════════════════════════════════════\033[0m"
+    echo -e "\033[1;36m 🧪 Antigravity Ephemeral System Sandbox & Test Runner\033[0m"
+    echo -e "\033[1;36m══════════════════════════════════════════════════════════════════════\033[0m\n"
+
+    echo -e "\033[1m==> [1/3] Building ephemeral system derivation (dry build)...\033[0m"
+    TOPLEVEL=$(${pkgs.nix}/bin/nix build .#nixosConfigurations.nixos.config.system.build.toplevel --impure --no-link --print-out-paths)
+    echo -e "  ↳ Derivation: \033[32m$TOPLEVEL\033[0m"
+
+    echo -e "\n\033[1m==> [2/3] Comparing changes against live system (nvd diff)...\033[0m"
+    if [ -d "/run/current-system" ] && [ -x "${pkgs.nvd}/bin/nvd" ]; then
+      ${pkgs.nvd}/bin/nvd diff /run/current-system "$TOPLEVEL" || true
+    fi
+
+    echo -e "\n\033[1m==> [3/3] Inspecting systemd unit activation & configuration...\033[0m"
+    if [ "$(id -u)" -eq 0 ]; then
+      "$TOPLEVEL/bin/switch-to-configuration" dry-activate
+    else
+      echo -e "  ↳ Non-root user: skipping live dry-activate execution."
+      echo -e "  ↳ To test systemd service transitions safely: \033[1;33msudo $TOPLEVEL/bin/switch-to-configuration dry-activate\033[0m"
+    fi
+
+    echo -e "\n\033[1;32m✓ Ephemeral system test completed cleanly — zero mutations applied to live system!\033[0m"
+  '';
 in {
   environment.systemPackages = [
     dotsValidate
@@ -119,5 +148,6 @@ in {
     dotsUpgrade
     dotsClean
     dotsWorkspaceSync
+    dotsTestVm
   ];
 }

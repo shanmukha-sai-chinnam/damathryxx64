@@ -23,6 +23,14 @@
       url = "github:shanmukha-sai-chinnam/clamav-scanner";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -33,6 +41,8 @@
     gemini-skills,
     nix-alien,
     clamav-scanner,
+    sops-nix,
+    git-hooks,
     ...
   }: let
     system = "x86_64-linux";
@@ -49,6 +59,15 @@
     cvEnv = import ./modules/shells/cv.nix {inherit pkgs;};
     hostName = "nixos";
     userName = "damathryxx64";
+
+    preCommitCheck = git-hooks.lib.${system}.run {
+      src = ./.;
+      hooks = {
+        alejandra.enable = true;
+        statix.enable = true;
+        deadnix.enable = true;
+      };
+    };
   in {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
@@ -67,13 +86,23 @@
           nix-index-database.nixosModules.nix-index
           antigravity-superpowers.nixosModules.default
           clamav-scanner.nixosModules.default
+          sops-nix.nixosModules.sops
           ./modules/configuration.nix
         ];
       };
     };
 
+    checks.${system} = {
+      pre-commit-check = preCommitCheck;
+    };
+
     devShells.${system} = {
-      default = dotsEnv.devShell;
+      default = dotsEnv.devShell.overrideAttrs (old: {
+        shellHook = ''
+          ${old.shellHook or ""}
+          ${preCommitCheck.shellHook}
+        '';
+      });
       python = pythonEnv.devShell;
       devops = devopsEnv.devShell;
       cv = cvEnv.devShell;

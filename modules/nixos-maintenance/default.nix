@@ -12,6 +12,27 @@
       builders-use-substitutes = true;
       max-jobs = "auto";
       cores = 0;
+      connect-timeout = 5;
+      fallback = true;
+
+      substituters = [
+        "https://cache.nixos.org"
+        "https://nix-community.cachix.org"
+        "https://nix-alien.cachix.org"
+        "https://numtide.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "nix-alien.cachix.org-1:LMYLmRPrnZEHTSWO7KwRy+ZF0qfn05AC/uJZW2noLE0="
+        "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
+      ];
+      extra-substituters = [
+        "https://cache.garnix.io"
+      ];
+      extra-trusted-public-keys = [
+        "cache.garnix.io:CTFbtTaGLecdtAuY_nHHhBKq5gTjYLQ1PdeNYcxpktU="
+      ];
     };
   };
 
@@ -43,6 +64,7 @@
       nix-tree
       nix-du
       nix-diff
+      nvd
       nix-inspect
       nix-melt
 
