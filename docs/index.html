@@ -4,678 +4,1597 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>damathryxx64 · NixOS Orchestration Engine</title>
-  <meta name="description" content="A strictly declarative NixOS-WSL development engine powering Antigravity 2.0 and autonomous AI agent skills.">
+  <meta name="description" content="Declarative NixOS-WSL system orchestrator powering Antigravity 2.0, autonomous AI agent skills, and multi-repo synchronization.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-/* ── Reset & Base ──────────────────────────────────────────────── */
-*{margin:0;padding:0;box-sizing:border-box}
+/* ── Reset & Theme ─────────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#050505;--green:#00ff41;--cyan:#00d4ff;--purple:#a855f7;
-  --pink:#f472b6;--amber:#fbbf24;--red:#ff6b6b;
-  --text:#b0b0b0;--text-bright:#e8e8e8;--text-muted:#555;
-  --card-bg:rgba(8,8,8,0.85);--card-border:rgba(0,255,65,0.08);
-  --mono:'JetBrains Mono','Fira Code',monospace;
-  --sans:'Inter',-apple-system,sans-serif;
+  --bg:#040507;
+  --green:#00ff41;
+  --cyan:#00d4ff;
+  --purple:#a855f7;
+  --pink:#f472b6;
+  --amber:#fbbf24;
+  --red:#ff5f57;
+  --text:#a0aec0;
+  --text-bright:#f1f5f9;
+  --text-dim:#4a5568;
+  --card-bg:rgba(7,10,15,0.85);
+  --card-border:rgba(0,255,65,0.12);
+  --card-border-hover:rgba(0,255,65,0.35);
+  --code-bg:rgba(0,255,65,0.06);
+  --mono:'JetBrains Mono','Fira Code',ui-monospace,monospace;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
 
-/* ── Fixed Canvas & Overlays ───────────────────────────────────── */
-#bg{position:fixed;inset:0;z-index:0;width:100%;height:100%}
-.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 3px)}
-.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.65) 100%)}
+/* ── Fixed WebGL Canvas & CRT Overlays ─────────────────────────── */
+#canvas3d{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  pointer-events:all;
+}
+.scanlines{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 3px);
+}
+.vignette{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(4,5,7,0.75) 100%);
+}
 
-/* ── Scrollable Content ────────────────────────────────────────── */
-.content{position:relative;z-index:2}
+/* ── Top Glass Navigation ──────────────────────────────────────── */
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 28px;
+  background:rgba(4,5,7,0.8);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--card-border);
+}
+.nav-brand{
+  font-size:13px;
+  font-weight:600;
+  color:var(--green);
+  text-shadow:0 0 10px rgba(0,255,65,0.35);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav-brand .nix-glyph{font-size:16px}
+.nav-links{display:flex;gap:22px}
+.nav-links a{
+  color:var(--text-dim);
+  text-decoration:none;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+  transition:color .2s,text-shadow .2s;
+}
+.nav-links a:hover{
+  color:var(--green);
+  text-shadow:0 0 8px rgba(0,255,65,0.4);
+}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.nav-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:var(--text);
+  text-decoration:none;
+  font-size:11px;
+  font-family:var(--mono);
+  padding:5px 14px;
+  border:1px solid var(--card-border);
+  border-radius:6px;
+  background:rgba(0,255,65,0.03);
+  transition:all .2s;
+}
+.nav-btn:hover{
+  border-color:var(--green);
+  color:var(--green);
+  box-shadow:0 0 14px rgba(0,255,65,0.2);
+}
 
-/* ── Navigation ────────────────────────────────────────────────── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:rgba(5,5,5,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--card-border)}
-.nav-brand{font-size:13px;font-weight:500;color:var(--green);text-shadow:0 0 10px rgba(0,255,65,0.3);display:flex;align-items:center;gap:8px}
-.nav-brand .nix{font-size:18px}
-.nav-links{display:flex;gap:20px}
-.nav-links a{color:var(--text-muted);text-decoration:none;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;transition:color .2s,text-shadow .2s}
-.nav-links a:hover{color:var(--green);text-shadow:0 0 8px rgba(0,255,65,0.4)}
-.nav-gh{display:inline-flex;align-items:center;gap:6px;color:var(--text);text-decoration:none;font-size:11px;padding:5px 14px;border:1px solid var(--card-border);border-radius:6px;transition:all .2s}
-.nav-gh:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 12px rgba(0,255,65,0.15)}
+/* ── Content Shell ─────────────────────────────────────────────── */
+.content{
+  position:relative;
+  z-index:2;
+  pointer-events:none;
+}
+.content section,
+.content footer,
+.content .hero{
+  pointer-events:auto;
+}
 
-/* ── Hero ──────────────────────────────────────────────────────── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;position:relative}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;background:rgba(0,255,65,0.05);border:1px solid rgba(0,255,65,0.12);border-radius:999px;font-size:10px;color:var(--green);margin-bottom:24px;letter-spacing:1.5px;text-transform:uppercase}
-.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease-in-out infinite}
-@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,65,0.4)}50%{opacity:.5;box-shadow:0 0 0 8px rgba(0,255,65,0)}}
+/* ── Hero Section ──────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 24px;
+  position:relative;
+}
+.hero-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 18px;
+  background:rgba(0,255,65,0.06);
+  border:1px solid rgba(0,255,65,0.2);
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+  color:var(--green);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:24px;
+}
+.hero-pill .pulse-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(0.85)}
+}
+.glitch-title{
+  font-family:var(--mono);
+  font-size:clamp(44px,8vw,92px);
+  font-weight:700;
+  color:var(--text-bright);
+  position:relative;
+  text-shadow:0 0 30px rgba(0,255,65,0.2);
+  margin-bottom:16px;
+  line-height:1.05;
+}
+.glitch-title::before,.glitch-title::after{
+  content:attr(data-text);
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+.glitch-title::before{
+  color:var(--cyan);
+  animation:glitch-anim-1 4s infinite linear alternate;
+  clip-path:inset(15% 0 65% 0);
+  transform:translate(-2px,-1px);
+  opacity:.7;
+}
+.glitch-title::after{
+  color:var(--pink);
+  animation:glitch-anim-2 3s infinite linear alternate-reverse;
+  clip-path:inset(65% 0 5% 0);
+  transform:translate(2px,1px);
+  opacity:.7;
+}
+@keyframes glitch-anim-1{
+  0%,88%{transform:translate(0)}
+  90%{transform:translate(-3px,-1px)}
+  93%{transform:translate(2px,1px)}
+  96%{transform:translate(-1px,2px)}
+  100%{transform:translate(0)}
+}
+@keyframes glitch-anim-2{
+  0%,88%{transform:translate(0)}
+  91%{transform:translate(2px,-1px)}
+  94%{transform:translate(-3px,1px)}
+  97%{transform:translate(1px,-2px)}
+  100%{transform:translate(0)}
+}
+.hero-desc{
+  font-family:var(--sans);
+  font-size:15px;
+  color:var(--text);
+  max-width:660px;
+  line-height:1.75;
+  margin-bottom:32px;
+  font-weight:300;
+}
+.hero-desc code{
+  color:var(--green);
+  background:var(--code-bg);
+  padding:2px 7px;
+  border-radius:4px;
+  font-size:13px;
+  font-family:var(--mono);
+}
+.hero-metrics{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+}
+.metric-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:8px;
+  font-size:12px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.metric-pill strong{
+  color:var(--green);
+  font-weight:600;
+}
+.scroll-indicator{
+  position:absolute;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:10px;
+  color:var(--text-dim);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  animation:float-bounce 2s ease-in-out infinite;
+}
+@keyframes float-bounce{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(7px)}
+}
 
-/* ── Glitch Title ──────────────────────────────────────────────── */
-.glitch{font-family:var(--mono);font-size:clamp(40px,8vw,88px);font-weight:700;color:var(--text-bright);position:relative;text-shadow:0 0 30px rgba(0,255,65,0.15);margin-bottom:16px;line-height:1.1}
-.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
-.glitch::before{color:var(--cyan);animation:gl1 4s infinite linear alternate;clip-path:inset(15% 0 65% 0);transform:translate(-2px,-1px);opacity:.6}
-.glitch::after{color:var(--pink);animation:gl2 3s infinite linear alternate-reverse;clip-path:inset(65% 0 5% 0);transform:translate(2px,1px);opacity:.6}
-@keyframes gl1{0%,85%{transform:translate(0)}88%{transform:translate(-3px,-1px)}92%{transform:translate(2px,1px)}96%{transform:translate(-1px,2px)}100%{transform:translate(0)}}
-@keyframes gl2{0%,85%{transform:translate(0)}87%{transform:translate(2px,-1px)}91%{transform:translate(-3px,1px)}95%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
+/* ── Section Shell ─────────────────────────────────────────────── */
+.sect{
+  padding:90px 24px;
+  max-width:1120px;
+  margin:0 auto;
+}
+.sect-header{margin-bottom:36px}
+.sect-tag{
+  font-size:11px;
+  color:var(--green);
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  text-shadow:0 0 10px rgba(0,255,65,0.3);
+}
+.sect-h{
+  font-size:clamp(24px,4vw,38px);
+  font-weight:700;
+  color:var(--text-bright);
+  margin-bottom:12px;
+  font-family:var(--sans);
+  letter-spacing:-0.5px;
+}
+.sect-p{
+  font-family:var(--sans);
+  font-size:14px;
+  color:var(--text);
+  max-width:680px;
+  line-height:1.75;
+  font-weight:300;
+}
 
-.hero-sub{font-family:var(--sans);font-size:15px;color:var(--text-muted);max-width:600px;line-height:1.7;margin-bottom:32px;font-weight:300}
-.hero-sub code{color:var(--green);background:rgba(0,255,65,0.07);padding:1px 6px;border-radius:3px;font-size:13px;font-family:var(--mono)}
-.hero-stats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.stat-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;font-size:11px;backdrop-filter:blur(12px)}
-.stat-pill strong{color:var(--green);font-weight:600}
-.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;animation:bounce 2s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+/* ── Cards Grid ────────────────────────────────────────────────── */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px;
+}
+.glass-box{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  padding:24px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  transition:all .25s ease;
+}
+.glass-box:hover{
+  border-color:var(--card-border-hover);
+  box-shadow:0 0 30px rgba(0,255,65,0.06);
+  transform:translateY(-2px);
+}
+.box-icon{
+  font-size:20px;
+  margin-bottom:14px;
+}
+.box-title{
+  font-size:14px;
+  font-weight:600;
+  color:var(--text-bright);
+  margin-bottom:8px;
+  font-family:var(--sans);
+}
+.box-desc{
+  font-size:12px;
+  color:var(--text);
+  line-height:1.65;
+  font-family:var(--sans);
+}
+.box-meta{
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  font-size:11px;
+  color:var(--text-dim);
+  font-family:var(--mono);
+}
 
-/* ── Sections ──────────────────────────────────────────────────── */
-.sect{padding:80px 24px;max-width:1100px;margin:0 auto}
-.sect-label{font-size:10px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 8px rgba(0,255,65,0.3)}
-.sect-title{font-size:clamp(22px,4vw,36px);font-weight:700;color:var(--text-bright);margin-bottom:12px;font-family:var(--sans)}
-.sect-desc{font-family:var(--sans);font-size:14px;color:var(--text-muted);max-width:560px;line-height:1.7;margin-bottom:40px;font-weight:300}
-
-/* ── Glass Cards ───────────────────────────────────────────────── */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.glass-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:all .3s ease}
-.glass-card:hover{border-color:rgba(0,255,65,0.18);box-shadow:0 0 30px rgba(0,255,65,0.04);transform:translateY(-2px)}
-.card-icon{font-size:18px;margin-bottom:12px}
-.card-h{font-size:14px;font-weight:600;color:var(--text-bright);margin-bottom:6px;font-family:var(--sans)}
-.card-p{font-size:12px;color:var(--text-muted);line-height:1.6;font-family:var(--sans)}
-
-/* ── Repo Cards ────────────────────────────────────────────────── */
-.repo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
-.repo-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:22px;backdrop-filter:blur(16px);text-decoration:none;color:inherit;transition:all .3s ease;cursor:pointer;position:relative;overflow:hidden;display:block}
-.repo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--rc);opacity:0;transition:opacity .3s}
+/* ── Repositories Grid ─────────────────────────────────────────── */
+.repo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:16px;
+}
+.repo-card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  padding:24px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  text-decoration:none;
+  color:inherit;
+  transition:all .3s ease;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.repo-card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--rc);
+  opacity:0;
+  transition:opacity .3s;
+}
 .repo-card:hover::before{opacity:1}
-.repo-card:hover{border-color:color-mix(in srgb,var(--rc) 30%,transparent);box-shadow:0 0 25px color-mix(in srgb,var(--rc) 10%,transparent);transform:translateY(-2px)}
-.rh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.rd{width:8px;height:8px;border-radius:50%;background:var(--rc);box-shadow:0 0 8px var(--rc)}
-.rn{font-size:14px;font-weight:600;color:var(--text-bright)}
-.rr{font-size:10px;color:var(--rc);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
-.rp{font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:14px;font-family:var(--sans)}
-.rm{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--text-muted);flex-wrap:wrap}
-.rb{display:flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(0,255,65,0.05);border-radius:4px;color:var(--green)}
-.ri{padding:2px 7px;background:rgba(0,212,255,0.05);border-radius:4px;color:var(--cyan)}
+.repo-card:hover{
+  border-color:color-mix(in srgb,var(--rc) 40%,transparent);
+  box-shadow:0 0 25px color-mix(in srgb,var(--rc) 15%,transparent);
+  transform:translateY(-3px);
+}
+.repo-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+.repo-name-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.repo-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--rc);
+  box-shadow:0 0 10px var(--rc);
+}
+.repo-name{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text-bright);
+}
+.repo-input-badge{
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:4px;
+  background:rgba(255,255,255,0.04);
+  color:var(--rc);
+  border:1px solid color-mix(in srgb,var(--rc) 30%,transparent);
+}
+.repo-role{
+  font-size:11px;
+  color:var(--rc);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  font-weight:600;
+}
+.repo-summary{
+  font-size:12px;
+  color:var(--text);
+  line-height:1.65;
+  margin-bottom:16px;
+  font-family:var(--sans);
+  flex-grow:1;
+}
+.repo-files{
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.03);
+  border-radius:6px;
+  padding:10px;
+  margin-bottom:16px;
+}
+.repo-files-title{
+  font-size:10px;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:6px;
+}
+.repo-files ul{
+  list-style:none;
+}
+.repo-files li{
+  font-size:11px;
+  color:var(--text);
+  font-family:var(--mono);
+  padding:1px 0;
+}
+.repo-files li::before{
+  content:'› ';
+  color:var(--rc);
+}
+.repo-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--text-dim);
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.repo-branch{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  color:var(--green);
+}
 
-/* ── Terminal ──────────────────────────────────────────────────── */
-.term-wrap{background:rgba(5,5,5,0.92);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;backdrop-filter:blur(16px)}
-.term-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:rgba(18,18,18,0.9);border-bottom:1px solid var(--card-border)}
-.term-dot{width:9px;height:9px;border-radius:50%}
-.term-title{font-size:10px;color:var(--text-muted);margin-left:8px;letter-spacing:.5px}
-.term-body{padding:16px;font-size:12px;line-height:1.8;min-height:250px;max-height:380px;overflow-y:auto}
-.term-body::-webkit-scrollbar{width:3px}
-.term-body::-webkit-scrollbar-thumb{background:rgba(0,255,65,0.2);border-radius:2px}
-.tl{white-space:pre-wrap;word-break:break-all}
-.tp{color:var(--cyan)}.tc{color:var(--text-bright)}.ts{color:var(--green)}.ti{color:var(--cyan)}.tw{color:var(--amber)}.td{color:var(--text-muted)}
-.term-cursor{animation:blink 1s step-end infinite;color:var(--green)}
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-.cmd-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-.cmd-btn{padding:7px 14px;background:rgba(0,255,65,0.05);border:1px solid rgba(0,255,65,0.12);border-radius:6px;color:var(--green);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .2s}
-.cmd-btn:hover{background:rgba(0,255,65,0.1);border-color:rgba(0,255,65,0.25);box-shadow:0 0 12px rgba(0,255,65,0.08)}
+/* ── MCP Servers Grid ──────────────────────────────────────────── */
+.mcp-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
+.mcp-item{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:8px;
+  padding:14px;
+  backdrop-filter:blur(16px);
+  transition:all .2s;
+}
+.mcp-item:hover{
+  border-color:var(--card-border-hover);
+  background:rgba(0,255,65,0.03);
+}
+.mcp-name{
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-bright);
+  margin-bottom:4px;
+}
+.mcp-cmd{
+  font-size:11px;
+  color:var(--green);
+  font-family:var(--mono);
+  margin-bottom:6px;
+}
+.mcp-desc{
+  font-size:11px;
+  color:var(--text-dim);
+  line-height:1.5;
+  font-family:var(--sans);
+}
 
-/* ── Command Table ─────────────────────────────────────────────── */
-.cmd-table{width:100%;border-collapse:collapse;font-size:12px}
-.cmd-table th{text-align:left;padding:10px 14px;color:var(--green);font-weight:500;font-size:10px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--card-border)}
-.cmd-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.02);font-family:var(--sans);font-size:12px}
-.cmd-table tr:hover td{background:rgba(0,255,65,0.02)}
-.cmd-table code{color:var(--green);background:rgba(0,255,65,0.07);padding:2px 7px;border-radius:3px;font-size:11px;font-family:var(--mono)}
+/* ── Terminal Simulator ────────────────────────────────────────── */
+.term-shell{
+  background:rgba(4,6,9,0.95);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+}
+.term-bar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 16px;
+  background:rgba(12,16,24,0.9);
+  border-bottom:1px solid var(--card-border);
+}
+.term-dots{display:flex;gap:6px}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-info{
+  font-size:11px;
+  color:var(--text-dim);
+  margin-left:12px;
+  letter-spacing:0.5px;
+}
+.term-output{
+  padding:20px;
+  font-size:12px;
+  line-height:1.8;
+  min-height:280px;
+  max-height:420px;
+  overflow-y:auto;
+}
+.term-output::-webkit-scrollbar{width:4px}
+.term-output::-webkit-scrollbar-thumb{background:rgba(0,255,65,0.25);border-radius:2px}
+.tline{white-space:pre-wrap;word-break:break-all}
+.tp{color:var(--cyan)}.tc{color:var(--text-bright)}.ts{color:var(--green)}.ti{color:var(--cyan)}.tw{color:var(--amber)}.td{color:var(--text-dim)}
+.term-cursor{animation:blink-cur 1s step-end infinite;color:var(--green)}
+@keyframes blink-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+.cmd-tray{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+.cmd-btn{
+  padding:8px 16px;
+  background:rgba(0,255,65,0.05);
+  border:1px solid rgba(0,255,65,0.18);
+  border-radius:6px;
+  color:var(--green);
+  font-family:var(--mono);
+  font-size:12px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.cmd-btn:hover{
+  background:rgba(0,255,65,0.12);
+  border-color:rgba(0,255,65,0.4);
+  box-shadow:0 0 14px rgba(0,255,65,0.15);
+}
 
-/* ── Node Labels (3D projected) ────────────────────────────────── */
-.node-labels{position:fixed;inset:0;z-index:3;pointer-events:none;transition:opacity .3s}
-.node-label{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(5,5,5,0.65);border:1px solid var(--lc);border-radius:5px;font-size:10px;color:var(--lc);white-space:nowrap;backdrop-filter:blur(6px);text-shadow:0 0 6px var(--lc);pointer-events:auto;cursor:default;transition:transform .15s}
-.node-label:hover{transform:translate(-50%,-50%) scale(1.12)}
-.label-dot{width:5px;height:5px;border-radius:50%;background:var(--lc);box-shadow:0 0 6px var(--lc)}
-.node-label.center{font-weight:600;font-size:11px;padding:4px 12px}
+/* ── Commands Reference Table ──────────────────────────────────── */
+.tbl-shell{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  overflow-x:auto;
+  backdrop-filter:blur(16px);
+}
+.cmd-tbl{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+.cmd-tbl th{
+  text-align:left;
+  padding:12px 18px;
+  color:var(--green);
+  font-weight:600;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--card-border);
+  background:rgba(0,255,65,0.02);
+}
+.cmd-tbl td{
+  padding:12px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  font-family:var(--sans);
+}
+.cmd-tbl tr:hover td{background:rgba(0,255,65,0.02)}
+.cmd-tbl code{
+  color:var(--green);
+  background:var(--code-bg);
+  padding:3px 8px;
+  border-radius:4px;
+  font-size:11px;
+  font-family:var(--mono);
+}
+
+/* ── 3D Node Labels (Projected into DOM) ────────────────────────── */
+.labels-overlay{
+  position:fixed;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  transition:opacity .3s;
+}
+.node-pill{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  background:rgba(4,6,9,0.75);
+  border:1px solid var(--lc);
+  border-radius:6px;
+  font-size:11px;
+  color:var(--lc);
+  white-space:nowrap;
+  backdrop-filter:blur(8px);
+  text-shadow:0 0 8px var(--lc);
+  pointer-events:auto;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.node-pill:hover{
+  transform:translate(-50%,-50%) scale(1.1);
+  box-shadow:0 0 16px var(--lc);
+}
+.node-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--lc);
+  box-shadow:0 0 8px var(--lc);
+}
+.node-pill.center-pill{
+  font-weight:700;
+  font-size:12px;
+  padding:5px 14px;
+}
 
 /* ── Scroll Reveal ─────────────────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .6s cubic-bezier(0.16,1,0.3,1),transform .6s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
 
 /* ── Footer ────────────────────────────────────────────────────── */
-footer{text-align:center;padding:36px 24px;border-top:1px solid var(--card-border);font-size:11px;color:var(--text-muted);font-family:var(--sans)}
-footer a{color:var(--green);text-decoration:none}
-footer a:hover{text-decoration:underline}
-footer p+p{margin-top:6px}
+footer{
+  text-align:center;
+  padding:48px 24px;
+  border-top:1px solid var(--card-border);
+  font-size:12px;
+  color:var(--text-dim);
+  font-family:var(--sans);
+  background:rgba(4,5,7,0.85);
+}
+.footer-links{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.footer-links a{
+  color:var(--text);
+  text-decoration:none;
+  font-family:var(--mono);
+  font-size:11px;
+}
+.footer-links a:hover{
+  color:var(--green);
+  text-decoration:underline;
+}
 
 /* ── Responsive ────────────────────────────────────────────────── */
 @media(max-width:768px){
   .nav-links{display:none}
-  .hero-stats{flex-direction:column;align-items:center}
+  .hero-metrics{flex-direction:column;align-items:center}
   .cards-grid,.repo-grid{grid-template-columns:1fr}
-  .scroll-hint{display:none}
+  .scroll-indicator{display:none}
 }
   </style>
 </head>
 <body>
 
-<canvas id="bg"></canvas>
+<canvas id="canvas3d"></canvas>
 <div class="scanlines"></div>
 <div class="vignette"></div>
 
-<!-- 3D Node Labels (positioned by JS) -->
-<div class="node-labels" id="nodeLabels"></div>
+<!-- Projected 3D Labels -->
+<div class="labels-overlay" id="labelsOverlay"></div>
 
-<!-- ── Scrollable Content ──────────────────────────────────────── -->
 <div class="content">
 
-  <!-- Navigation -->
+  <!-- Navigation Bar -->
   <nav>
-    <div class="nav-brand"><span class="nix">❄</span> damathryxx64</div>
+    <div class="nav-brand">
+      <span class="nix-glyph">❄</span>
+      <span>damathryxx64 <span style="color:var(--text-dim)">/</span> nixos-workspace</span>
+    </div>
     <div class="nav-links">
       <a href="#arch">Architecture</a>
-      <a href="#repos">Repos</a>
-      <a href="#bridge">Bridge</a>
-      <a href="#terminal">Terminal</a>
+      <a href="#repos">Repositories</a>
+      <a href="#mcp">MCP &amp; AI</a>
+      <a href="#bridge">Host Bridge</a>
+      <a href="#terminal">Console</a>
       <a href="#cmds">Commands</a>
     </div>
-    <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="nav-gh">GitHub ↗</a>
+    <div class="nav-actions">
+      <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="nav-btn">
+        <span>GitHub</span> ↗
+      </a>
+    </div>
   </nav>
 
-  <!-- Hero -->
+  <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      <span>PURE NIXOS-WSL · ZERO DRIFT · ANTIGRAVITY 2.0</span>
+    <div class="hero-pill">
+      <span class="pulse-dot"></span>
+      <span>STRICT NIXOS-WSL · ZERO DRIFT · ANTIGRAVITY 2.0</span>
     </div>
-    <h1 class="glitch" data-text="damathryxx64">damathryxx64</h1>
-    <p class="hero-sub">
-      A strictly declarative NixOS-WSL development engine orchestrated by a single <code>flake.nix</code>,
-      powering Google Antigravity 2.0 and an autonomous multi-upstream AI skills ecosystem.
+    <h1 class="glitch-title" data-text="damathryxx64">damathryxx64</h1>
+    <p class="hero-desc">
+      A purely declarative NixOS-WSL development engine orchestrated by a single <code>flake.nix</code>.
+      Directly drives Google Antigravity 2.0, 9 native MCP servers, and an autonomous multi-upstream AI skills runtime across 5 synchronized repositories.
     </p>
-    <div class="hero-stats">
-      <div class="stat-pill"><strong>5</strong>&nbsp;Synced Repos</div>
-      <div class="stat-pill"><strong>31+</strong>&nbsp;Agent Skills</div>
-      <div class="stat-pill"><strong>5&#8209;Stage</strong>&nbsp;Validation</div>
-      <div class="stat-pill"><strong>Headless</strong>&nbsp;WSL2 Bridge</div>
+    <div class="hero-metrics">
+      <div class="metric-pill">📦 <strong>5</strong> Repositories Pinned</div>
+      <div class="metric-pill">🔌 <strong>9</strong> Native MCP Servers</div>
+      <div class="metric-pill">🧠 <strong>31+</strong> Autonomous Agent Skills</div>
+      <div class="metric-pill">🛡️ <strong>4-Stage</strong> Zero-Drift Gates</div>
+      <div class="metric-pill">⚡ <strong>0.00%</strong> Drift Guarantee</div>
     </div>
-    <div class="scroll-hint">↓ SCROLL TO EXPLORE ↓</div>
+    <div class="scroll-indicator">↓ SCROLL TO EXPLORE ARCHITECTURE ↓</div>
   </section>
 
-  <!-- Architecture -->
+  <!-- Section 1: Architecture -->
   <section id="arch" class="sect reveal">
-    <div class="sect-label">// SYSTEM ARCHITECTURE</div>
-    <h2 class="sect-title">Zero Drift Declarative Engine</h2>
-    <p class="sect-desc">Every package, service, agent runtime, and skill is declared in Nix and pinned via flake.lock. No imperative state. No drift. Full reproducibility.</p>
+    <div class="sect-header">
+      <div class="sect-tag">// DECLARATIVE SYSTEM FOUNDATION</div>
+      <h2 class="sect-h">Zero Drift Architecture</h2>
+      <p class="sect-p">
+        Every package, compiler, agent skill, and daemon service is declared in NixOS modules and pinned in <code>flake.lock</code>. Imperative installations and local mutation are prohibited.
+      </p>
+    </div>
     <div class="cards-grid">
-      <div class="glass-card">
-        <div class="card-icon">⚡</div>
-        <div class="card-h">Strict NixOS-WSL Target</div>
-        <div class="card-p">All commands, builds, MCP servers, and tool executions run inside NixOS-WSL. Zero mutable host pollution. Windows only bridges the language server.</div>
+      <div class="glass-box">
+        <div class="box-icon">⚡</div>
+        <div class="box-title">Strict NixOS-WSL Target</div>
+        <div class="box-desc">All compilers, toolchains, git operations, and agent processes execute exclusively in the NixOS-WSL distribution (<code>/home/damathryxx64/</code>). No mutable Windows host pollution.</div>
+        <div class="box-meta">Target: NixOS-WSL x86_64-linux</div>
       </div>
-      <div class="glass-card">
-        <div class="card-icon">🎯</div>
-        <div class="card-h">Dots-Driven Truth</div>
-        <div class="card-p">The damathryxx64 flake is the single source of truth. Flake inputs pin reproducible commits for all agent runtimes, skills, and system packages.</div>
+      <div class="glass-box">
+        <div class="box-icon">🎯</div>
+        <div class="box-title">Dots-Driven Source of Truth</div>
+        <div class="box-desc">The <code>damathryxx64</code> flake is the single authoritative root. Flake inputs pin reproducible commits for all agent runtimes, skills, rules, and system packages.</div>
+        <div class="box-meta">Flake: nixosConfigurations.nixos</div>
       </div>
-      <div class="glass-card">
-        <div class="card-icon">🔄</div>
-        <div class="card-h">Autonomous Upstream Sync</div>
-        <div class="card-p">Daily automated pipeline tracks 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy), merges, rewrites for Antigravity, and audits compliance.</div>
+      <div class="glass-box">
+        <div class="box-icon">🔄</div>
+        <div class="box-title">Multi-Upstream Synchronization</div>
+        <div class="box-desc">Daily background pipeline tracks 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy), purges foreign providers, adapts to Gemini &amp; Antigravity, and validates frontmatter.</div>
+        <div class="box-meta">Pipeline: scripts/sync-upstreams.py</div>
       </div>
-      <div class="glass-card">
-        <div class="card-icon">🛡️</div>
-        <div class="card-h">5-Stage Validation Pipeline</div>
-        <div class="card-p">Alejandra formatting → Statix anti-patterns → Deadnix dead code → Nix flake eval → Closure dry-build. Every change passes all gates before commit.</div>
+      <div class="glass-box">
+        <div class="box-icon">🛡️</div>
+        <div class="box-title">4-Stage Quality Gate</div>
+        <div class="box-desc">Every change undergoes Alejandra code formatting, Statix anti-pattern analysis, Deadnix dead declaration removal, and pure Nix flake evaluation via <code>dots-validate</code>.</div>
+        <div class="box-meta">Script: modules/packages/task-runners.nix</div>
       </div>
     </div>
   </section>
 
-  <!-- Repositories -->
+  <!-- Section 2: Repositories -->
   <section id="repos" class="sect reveal">
-    <div class="sect-label">// WORKSPACE TOPOLOGY</div>
-    <h2 class="sect-title">Repository Network</h2>
-    <p class="sect-desc">Five modular repositories orchestrated by the central flake, each pinned as a flake input with locked commits.</p>
+    <div class="sect-header">
+      <div class="sect-tag">// WORKSPACE TOPOLOGY</div>
+      <h2 class="sect-h">Synchronized Repositories</h2>
+      <p class="sect-p">
+        Five modular repositories orchestrated by the central flake, each pinned as a locked flake input to prevent divergence.
+      </p>
+    </div>
     <div class="repo-grid">
+      <!-- Repo 1: damathryxx64 -->
       <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="repo-card" style="--rc:#00ff41">
-        <div class="rh"><div class="rd"></div><div class="rn">damathryxx64</div></div>
-        <div class="rr">CENTRAL FLAKE DRIVER</div>
-        <div class="rp">Primary NixOS-WSL system flake, devShells (python, devops, resume), and declarative agent skills synchronizer. Single source of truth.</div>
-        <div class="rm"><span class="rb">⎇ trunk</span><span class="ri">Primary Flake</span><span>18 Modules · 4 devShells</span></div>
+        <div class="repo-top">
+          <div class="repo-name-wrap">
+            <span class="repo-dot"></span>
+            <span class="repo-name">damathryxx64</span>
+          </div>
+          <span class="repo-input-badge">Primary Flake</span>
+        </div>
+        <div class="repo-role">Central Flake Driver &amp; System Engine</div>
+        <div class="repo-summary">
+          Single source of truth for NixOS-WSL system modules, devShells (Python 3.12, DevOps, Resume), declarative skills synchronizer, and task runners.
+        </div>
+        <div class="repo-files">
+          <div class="repo-files-title">Core Declarations</div>
+          <ul>
+            <li>flake.nix</li>
+            <li>modules/configuration.nix</li>
+            <li>modules/ai/skills.nix</li>
+            <li>modules/packages/task-runners.nix</li>
+          </ul>
+        </div>
+        <div class="repo-footer">
+          <span class="repo-branch">⎇ trunk</span>
+          <span>18 Modules · 4 devShells</span>
+        </div>
       </a>
+
+      <!-- Repo 2: skills -->
       <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener" class="repo-card" style="--rc:#34d399">
-        <div class="rh"><div class="rd"></div><div class="rn">skills</div></div>
-        <div class="rr">AI AGENT SKILLS HUB</div>
-        <div class="rp">Unified monorepo tracking 5 upstreams with automated daily fetch, merge, rewrite, and audit pipeline for 31+ active skills.</div>
-        <div class="rm"><span class="rb">⎇ main</span><span class="ri">gemini-skills</span><span>31 Skills · 5 Upstreams</span></div>
+        <div class="repo-top">
+          <div class="repo-name-wrap">
+            <span class="repo-dot"></span>
+            <span class="repo-name">skills</span>
+          </div>
+          <span class="repo-input-badge">gemini-skills</span>
+        </div>
+        <div class="repo-role">AI Agent Skills &amp; Rules Hub</div>
+        <div class="repo-summary">
+          Unified skills repository tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy). Automated daily fetch, merge, rewrite, and YAML frontmatter audit.
+        </div>
+        <div class="repo-files">
+          <div class="repo-files-title">Core Declarations</div>
+          <ul>
+            <li>scripts/sync-upstreams.py</li>
+            <li>skills/karpathy-guidelines/</li>
+            <li>skills/systematic-debugging/</li>
+            <li>.github/workflows/daily-upstream-sync.yml</li>
+          </ul>
+        </div>
+        <div class="repo-footer">
+          <span class="repo-branch">⎇ main</span>
+          <span>31+ Skills · 5 Upstreams</span>
+        </div>
       </a>
+
+      <!-- Repo 3: NixOS-WSL -->
       <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener" class="repo-card" style="--rc:#a855f7">
-        <div class="rh"><div class="rd"></div><div class="rn">NixOS-WSL</div></div>
-        <div class="rr">DISTRO BUILDER &amp; MODULES</div>
-        <div class="rp">Fork of nix-community/NixOS-WSL providing guest systemd activation, kernel modules, and Windows host interop.</div>
-        <div class="rm"><span class="rb">⎇ main</span><span class="ri">nixos-wsl</span><span>Linux 6.6+ · systemd</span></div>
+        <div class="repo-top">
+          <div class="repo-name-wrap">
+            <span class="repo-dot"></span>
+            <span class="repo-name">NixOS-WSL</span>
+          </div>
+          <span class="repo-input-badge">nixos-wsl</span>
+        </div>
+        <div class="repo-role">Distro Builder &amp; Guest Integration</div>
+        <div class="repo-summary">
+          Fork of nix-community/NixOS-WSL providing guest systemd activation, Linux 6.6+ kernel modules, mirrored networking, and Windows host bridge interoperability.
+        </div>
+        <div class="repo-files">
+          <div class="repo-files-title">Core Declarations</div>
+          <ul>
+            <li>modules/wsl-distro.nix</li>
+            <li>modules/docker-desktop.nix</li>
+            <li>flake.nix</li>
+            <li>system.build.tarball</li>
+          </ul>
+        </div>
+        <div class="repo-footer">
+          <span class="repo-branch">⎇ main</span>
+          <span>systemd Native · Kernel 6.6+</span>
+        </div>
       </a>
+
+      <!-- Repo 4: superpowers -->
       <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener" class="repo-card" style="--rc:#f472b6">
-        <div class="rh"><div class="rd"></div><div class="rn">superpowers</div></div>
-        <div class="rr">AGENT TOOLKIT &amp; WATCHER</div>
-        <div class="rp">Superpowers CLI for Antigravity with continuous file watcher, environment diagnostics, and auto-fix.</div>
-        <div class="rm"><span class="rb">⎇ main</span><span class="ri">antigravity-superpowers</span><span>Auto-Fix</span></div>
+        <div class="repo-top">
+          <div class="repo-name-wrap">
+            <span class="repo-dot"></span>
+            <span class="repo-name">superpowers</span>
+          </div>
+          <span class="repo-input-badge">antigravity-superpowers</span>
+        </div>
+        <div class="repo-role">Agent Tooling &amp; Auto-Fix Watcher</div>
+        <div class="repo-summary">
+          Superpowers CLI for Antigravity providing agent runtime diagnostics (<code>doctor</code>) and continuous background file watchers with automatic code formatting and lint repair.
+        </div>
+        <div class="repo-files">
+          <div class="repo-files-title">Core Declarations</div>
+          <ul>
+            <li>bin/antigravity-superpowers</li>
+            <li>templates/.agents/AGENTS.md</li>
+            <li>flake.nix</li>
+            <li>watch --fix engine</li>
+          </ul>
+        </div>
+        <div class="repo-footer">
+          <span class="repo-branch">⎇ main</span>
+          <span>Doctor · Auto-Fix Watcher</span>
+        </div>
       </a>
+
+      <!-- Repo 5: clamav-scanner -->
       <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener" class="repo-card" style="--rc:#fbbf24">
-        <div class="rh"><div class="rd"></div><div class="rn">clamav-scanner</div></div>
-        <div class="rr">SECURITY SENTINEL</div>
-        <div class="rp">Real-time inotify file creation sentinel and Docker ClamAV daemon guarding workspace files against unsafe payloads.</div>
-        <div class="rm"><span class="rb">⎇ trunk</span><span class="ri">clamav-scanner</span><span>inotify · Real-Time</span></div>
+        <div class="repo-top">
+          <div class="repo-name-wrap">
+            <span class="repo-dot"></span>
+            <span class="repo-name">clamav-scanner</span>
+          </div>
+          <span class="repo-input-badge">clamav-scanner</span>
+        </div>
+        <div class="repo-role">Real-Time Security Sentinel</div>
+        <div class="repo-summary">
+          Inotify kernel sentinel monitoring file drops across <code>/home/damathryxx64/repositories</code> with immediate real-time ClamAV daemon payload scanning.
+        </div>
+        <div class="repo-files">
+          <div class="repo-files-title">Core Declarations</div>
+          <ul>
+            <li>docker-compose.yml</li>
+            <li>scripts/sentinel.sh</li>
+            <li>flake.nix</li>
+            <li>clamd socket daemon</li>
+          </ul>
+        </div>
+        <div class="repo-footer">
+          <span class="repo-branch">⎇ trunk</span>
+          <span>inotify Hook · Real-Time</span>
+        </div>
       </a>
     </div>
   </section>
 
-  <!-- Host Bridge -->
+  <!-- Section 3: MCP & AI Runtimes -->
+  <section id="mcp" class="sect reveal">
+    <div class="sect-header">
+      <div class="sect-tag">// MODEL CONTEXT PROTOCOL</div>
+      <h2 class="sect-h">Native MCP Server Suite</h2>
+      <p class="sect-p">
+        Configured declaratively in <code>modules/mcp/default.nix</code>. Provides deep system awareness and tool access directly to Antigravity 2.0 and subagents.
+      </p>
+    </div>
+    <div class="mcp-grid">
+      <div class="mcp-item">
+        <div class="mcp-name">NixOS Inspector</div>
+        <div class="mcp-cmd">mcp-nixos</div>
+        <div class="mcp-desc">Queries NixOS/Home Manager options, package definitions, Nix store paths, and flake inputs.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">GitHub API Wrapped</div>
+        <div class="mcp-cmd">github-mcp-server-wrapped</div>
+        <div class="mcp-desc">Auto-resolves gh authentication tokens to manage PRs, issues, commits, and workflows.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">Git Workspace Engine</div>
+        <div class="mcp-cmd">mcp-server-git</div>
+        <div class="mcp-desc">Repository status, diffs, branch management, and commit operations on local git roots.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">Scoped Filesystem</div>
+        <div class="mcp-cmd">mcp-server-filesystem</div>
+        <div class="mcp-desc">Controlled read/write operations strictly within configured repository boundaries.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">TypeSafe Jev AI</div>
+        <div class="mcp-cmd">mcp-server-typesafe</div>
+        <div class="mcp-desc">System One advisory protocol for typed choices, scores, and surgical modification verification.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">Sequential Thinking</div>
+        <div class="mcp-cmd">mcp-server-sequential-thinking</div>
+        <div class="mcp-desc">Dynamic multi-step problem decomposition and structured planning loops.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">HTTP Content Fetcher</div>
+        <div class="mcp-cmd">mcp-server-fetch</div>
+        <div class="mcp-desc">Retrieves documentation, upstream API schemas, and external reference materials.</div>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-name">Persistent Memory</div>
+        <div class="mcp-cmd">mcp-server-memory</div>
+        <div class="mcp-desc">Knowledge item persistence and structured cross-session context retention.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Antigravity 2.0 Host Bridge -->
   <section id="bridge" class="sect reveal">
-    <div class="sect-label">// ANTIGRAVITY 2.0 HOST BRIDGE</div>
-    <h2 class="sect-title">Headless WSL2 Architecture</h2>
-    <p class="sect-desc">Antigravity 2.0 runs without the legacy IDE. The Windows host executable connects directly to the NixOS-WSL guest language server.</p>
-    <div class="term-wrap">
+    <div class="sect-header">
+      <div class="sect-tag">// HEADLESS WSL2 INTEGRATION</div>
+      <h2 class="sect-h">Antigravity 2.0 Bridge</h2>
+      <p class="sect-p">
+        Antigravity 2.0 operates directly without the legacy IDE shell. The Windows host client bridges via interop sockets to the guest NixOS language server daemon.
+      </p>
+    </div>
+    <div class="term-shell">
       <div class="term-bar">
-        <div class="term-dot" style="background:#ff5f57"></div>
-        <div class="term-dot" style="background:#febc2e"></div>
-        <div class="term-dot" style="background:#28c840"></div>
-        <span class="term-title">HOST BRIDGE PROTOCOL</span>
+        <div class="term-dots">
+          <div class="term-dot" style="background:#ff5f57"></div>
+          <div class="term-dot" style="background:#febc2e"></div>
+          <div class="term-dot" style="background:#28c840"></div>
+        </div>
+        <span class="term-info">HOST ↔ GUEST PROTOCOL SPECIFICATION</span>
       </div>
-      <div class="term-body">
-        <div class="tl"><span class="td"># Windows Host Launcher</span></div>
-        <div class="tl"><span class="tp">PS C:\&gt;</span> <span class="tc">Antigravity.exe --connect wsl://NixOS</span></div>
-        <div class="tl"><span class="td"># Resolves to:</span></div>
-        <div class="tl"><span class="ti">wsl.exe -d NixOS --exec ~/.antigravity-server/bin/language_server</span></div>
-        <div class="tl">&nbsp;</div>
-        <div class="tl"><span class="td"># Native Shell Launchers (inside NixOS-WSL)</span></div>
-        <div class="tl"><span class="tp">damathryxx64@nixos $</span> <span class="tc">agy2</span>       <span class="td"># Launch Antigravity 2.0</span></div>
-        <div class="tl"><span class="tp">damathryxx64@nixos $</span> <span class="tc">help-nix</span>   <span class="td"># Quick reference card</span></div>
+      <div class="term-output">
+        <div class="tline"><span class="td"># 1. Windows Host Process Invocation</span></div>
+        <div class="tline"><span class="tp">PS C:\&gt;</span> <span class="tc">Antigravity.exe --remote-wsl=NixOS</span></div>
+        <div class="tline"><span class="td"># Interop command executed over Windows WSL bridge:</span></div>
+        <div class="tline"><span class="ti">wsl.exe -d NixOS -u damathryxx64 -e bash -l -c "~/.antigravity-server/bin/language_server"</span></div>
+        <div class="tline">&nbsp;</div>
+        <div class="tline"><span class="td"># 2. Native NixOS Shell Launchers (modules/ai/default.nix)</span></div>
+        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">agy2</span>          <span class="td"># Launch Antigravity 2.0 on Windows connected to NixOS WSL</span></div>
+        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">antigravity2</span>  <span class="td"># Direct alias for agy2</span></div>
+        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">help-nix</span>      <span class="td"># System &amp; agent quick-reference card</span></div>
       </div>
     </div>
   </section>
 
-  <!-- Interactive Terminal -->
+  <!-- Section 5: Interactive Terminal Simulator -->
   <section id="terminal" class="sect reveal">
-    <div class="sect-label">// INTERACTIVE TERMINAL</div>
-    <h2 class="sect-title">System Console</h2>
-    <p class="sect-desc">Run simulated workspace commands. Click a button to see the validation pipeline, skills sync, and system diagnostics in action.</p>
-    <div class="term-wrap">
+    <div class="sect-header">
+      <div class="sect-tag">// LIVE CONSOLE SIMULATOR</div>
+      <h2 class="sect-h">System CLI Execution</h2>
+      <p class="sect-p">
+        Interact with the declarative task runners. Click a command below to simulate quality gates, upstream synchronization, and build evaluations.
+      </p>
+    </div>
+    <div class="term-shell">
       <div class="term-bar">
-        <div class="term-dot" style="background:#ff5f57"></div>
-        <div class="term-dot" style="background:#febc2e"></div>
-        <div class="term-dot" style="background:#28c840"></div>
-        <span class="term-title">damathryxx64@nixos ~/repositories/damathryxx64</span>
+        <div class="term-dots">
+          <div class="term-dot" style="background:#ff5f57"></div>
+          <div class="term-dot" style="background:#febc2e"></div>
+          <div class="term-dot" style="background:#28c840"></div>
+        </div>
+        <span class="term-info">damathryxx64@nixos: ~/repositories/damathryxx64 (trunk)</span>
       </div>
-      <div class="term-body" id="termOut">
-        <div class="tl"><span class="tp">$ </span><span class="term-cursor">▌</span></div>
+      <div class="term-output" id="termOutput">
+        <div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>
       </div>
     </div>
-    <div class="cmd-btns">
-      <button class="cmd-btn" onclick="runCmd('validate')">dots-validate</button>
-      <button class="cmd-btn" onclick="runCmd('sync')">dots-sync-skills status</button>
-      <button class="cmd-btn" onclick="runCmd('agy2')">agy2</button>
-      <button class="cmd-btn" onclick="runCmd('build')">dots-build</button>
-      <button class="cmd-btn" onclick="runCmd('clear')">clear</button>
+    <div class="cmd-tray">
+      <button class="cmd-btn" onclick="execCmd('validate')">dots-validate</button>
+      <button class="cmd-btn" onclick="execCmd('sync')">dots-sync-skills status</button>
+      <button class="cmd-btn" onclick="execCmd('doctor')">antigravity-superpowers doctor</button>
+      <button class="cmd-btn" onclick="execCmd('agy2')">agy2</button>
+      <button class="cmd-btn" onclick="execCmd('build')">dots-build</button>
+      <button class="cmd-btn" onclick="execCmd('clear')">clear</button>
     </div>
   </section>
 
-  <!-- Commands -->
+  <!-- Section 6: Commands Reference -->
   <section id="cmds" class="sect reveal">
-    <div class="sect-label">// COMMAND REFERENCE</div>
-    <h2 class="sect-title">Workspace Cheat Sheet</h2>
-    <div class="glass-card" style="overflow-x:auto;padding:0">
-      <table class="cmd-table">
-        <thead><tr><th>Command</th><th>Category</th><th>Action</th></tr></thead>
+    <div class="sect-header">
+      <div class="sect-tag">// DECLARATIVE TASK RUNNERS</div>
+      <h2 class="sect-h">Command Reference</h2>
+      <p class="sect-p">
+        All task runners are declared in <code>modules/packages/task-runners.nix</code> and <code>modules/ai/skills.nix</code>, accessible system-wide.
+      </p>
+    </div>
+    <div class="tbl-shell">
+      <table class="cmd-tbl">
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Type</th>
+            <th>Declared Behavior</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td><code>dots-validate</code></td><td>Quality Gate</td><td>Alejandra + Statix + Deadnix + Nix flake check</td></tr>
-          <tr><td><code>dots-build</code></td><td>Dry-Run</td><td>Dry-build system derivation with closure diff (no switch)</td></tr>
-          <tr><td><code>dots-upgrade</code></td><td>System</td><td>Validate → update all flake inputs → switch system</td></tr>
-          <tr><td><code>dots-workspace-pull</code></td><td>Git</td><td>Pull all 5 workspace repos (runs on login via systemd)</td></tr>
-          <tr><td><code>dots-workspace-sync</code></td><td>Pipeline</td><td>Pull all repos + validate + switch live system</td></tr>
-          <tr><td><code>dots-sync-skills status</code></td><td>Anti-Drift</td><td>Inspect divergence against origin/upstream &amp; flake pins</td></tr>
-          <tr><td><code>refresh-skills</code></td><td>Skills</td><td>Fetch → sync → rewrite → audit → sync ~/.gemini/config</td></tr>
-          <tr><td><code>agy2</code></td><td>AI</td><td>Launch Antigravity 2.0 connected to NixOS-WSL</td></tr>
-          <tr><td><code>antigravity-superpowers doctor</code></td><td>Diagnostic</td><td>Environment readiness check for agent runtimes</td></tr>
-          <tr><td><code>nix develop .#python</code></td><td>devShell</td><td>Python 3.12 development environment</td></tr>
+          <tr>
+            <td><code>dots-validate</code></td>
+            <td>Quality Gate</td>
+            <td>Executes 4-stage validation: Alejandra format, Statix anti-patterns, Deadnix dead code, and Nix flake check impure.</td>
+          </tr>
+          <tr>
+            <td><code>dots-build</code></td>
+            <td>Dry-Run</td>
+            <td>Dry-builds live system derivation via <code>nh os build</code> with visual closure diff (no switch applied).</td>
+          </tr>
+          <tr>
+            <td><code>dots-upgrade</code></td>
+            <td>System Upgrade</td>
+            <td>Runs <code>dots-validate</code>, updates all flake inputs, and switches the live NixOS system in a single step.</td>
+          </tr>
+          <tr>
+            <td><code>dots-workspace-pull</code></td>
+            <td>Git Sentinel</td>
+            <td>Pulls all 5 repositories from origin automatically on user login via systemd user service.</td>
+          </tr>
+          <tr>
+            <td><code>dots-workspace-sync</code></td>
+            <td>Full Pipeline</td>
+            <td>Manual pipeline: pulls all repos + runs <code>dots-validate</code> + executes <code>nh os switch</code>.</td>
+          </tr>
+          <tr>
+            <td><code>dots-sync-skills status</code></td>
+            <td>Anti-Drift</td>
+            <td>Inspects git divergence across origin and upstreams and compares against <code>flake.lock</code> pins.</td>
+          </tr>
+          <tr>
+            <td><code>refresh-skills</code></td>
+            <td>Skills Pipeline</td>
+            <td>Automated pipeline: fetch → sync → rewrite foreign providers → audit frontmatter → sync to <code>~/.gemini/config</code>.</td>
+          </tr>
+          <tr>
+            <td><code>agy2</code></td>
+            <td>AI Launcher</td>
+            <td>Launches Antigravity 2.0 on the Windows host, connected to the NixOS-WSL language server.</td>
+          </tr>
+          <tr>
+            <td><code>antigravity-superpowers doctor</code></td>
+            <td>Diagnostic</td>
+            <td>Verifies agent runtime environments, tool dependencies, and MCP server health.</td>
+          </tr>
+          <tr>
+            <td><code>nix develop .#python</code></td>
+            <td>devShell</td>
+            <td>Enters isolated Python 3.12 development environment with required language tooling.</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- Clean Footer -->
   <footer>
-    <p>Built on <strong>NixOS-WSL</strong> · Orchestrated by <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank">shanmukha-sai-chinnam/damathryxx64</a></p>
-    <p>Powered by Three.js · Deployed via GitHub Pages</p>
+    <div class="footer-links">
+      <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener">damathryxx64</a>
+      <span>·</span>
+      <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener">skills</a>
+      <span>·</span>
+      <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener">NixOS-WSL</a>
+      <span>·</span>
+      <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener">superpowers</a>
+      <span>·</span>
+      <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener">clamav-scanner</a>
+    </div>
+    <p>Declarative NixOS-WSL System Foundation · Single Source of Truth</p>
   </footer>
 
-</div><!-- .content -->
+</div>
 
-<!-- ── Three.js ────────────────────────────────────────────────── -->
+<!-- ── Three.js Engine ─────────────────────────────────────────── -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
 <script>
 (function(){
 "use strict";
 
-/* ── Constants ─────────────────────────────────────────────────── */
-const ORBIT_R = 10;
-const SAT = [
-  { name:"skills",      color:0x34d399, hex:"#34d399", angle:0,              y: 0.8 },
-  { name:"NixOS-WSL",   color:0xa855f7, hex:"#a855f7", angle:Math.PI*0.5,    y:-0.4 },
-  { name:"superpowers",  color:0xf472b6, hex:"#f472b6", angle:Math.PI,        y: 0.5 },
-  { name:"clamav-scanner",color:0xfbbf24,hex:"#fbbf24", angle:Math.PI*1.5,    y:-0.6 },
+/* ── Repository Satellites Specification ────────────────────────── */
+const ORBIT_RADIUS = 10;
+const REPO_NODES = [
+  { id:"skills",       name:"skills",       color:0x34d399, hex:"#34d399", angle:0,             y:0.8,  geo:"dodeca" },
+  { id:"nixos-wsl",    name:"NixOS-WSL",    color:0xa855f7, hex:"#a855f7", angle:Math.PI*0.5,   y:-0.5, geo:"torus" },
+  { id:"superpowers",  name:"superpowers",  color:0xf472b6, hex:"#f472b6", angle:Math.PI,       y:0.6,  geo:"octa" },
+  { id:"clamav",       name:"clamav-scanner",color:0xfbbf24,hex:"#fbbf24",angle:Math.PI*1.5,   y:-0.7, geo:"icosa" },
 ];
 
-/* ── Scene ─────────────────────────────────────────────────────── */
+/* ── Three.js Scene Setup ──────────────────────────────────────── */
+const canvas = document.getElementById("canvas3d");
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x050505, 0.012);
+scene.fog = new THREE.FogExp2(0x040507, 0.012);
 
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 500);
+const camera = new THREE.PerspectiveCamera(58, window.innerWidth/window.innerHeight, 0.1, 500);
 camera.position.set(0, 8, 20);
 
-const renderer = new THREE.WebGLRenderer({ canvas:document.getElementById("bg"), antialias:true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.setClearColor(0x050505);
+const renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x040507);
 
-/* ── Lighting ──────────────────────────────────────────────────── */
-scene.add(new THREE.AmbientLight(0x111111));
-const coreLight = new THREE.PointLight(0x00ff41, 3, 40);
+/* ── Ambient & Core Lighting ───────────────────────────────────── */
+scene.add(new THREE.AmbientLight(0x081015));
+const coreLight = new THREE.PointLight(0x00ff41, 3.5, 45);
 scene.add(coreLight);
 
-/* ── Grid Floor ────────────────────────────────────────────────── */
-const grid = new THREE.GridHelper(80, 40, 0x0a2a0a, 0x0a150a);
+/* ── Phosphor Grid Floor ───────────────────────────────────────── */
+const grid = new THREE.GridHelper(80, 40, 0x0a2a0a, 0x08150a);
 grid.position.y = -5;
 grid.material.transparent = true;
-grid.material.opacity = 0.25;
+grid.material.opacity = 0.22;
 scene.add(grid);
 
-/* ── Central Node (damathryxx64) ───────────────────────────────── */
+/* ── Central Engine: damathryxx64 Flake Core ───────────────────── */
 const centerWire = new THREE.Mesh(
   new THREE.IcosahedronGeometry(2.5, 1),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, wireframe:true, transparent:true, opacity:0.55 })
+  new THREE.MeshBasicMaterial({ color:0x00ff41, wireframe:true, transparent:true, opacity:0.6 })
 );
 scene.add(centerWire);
 
 const centerCore = new THREE.Mesh(
   new THREE.IcosahedronGeometry(1.5, 2),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.06 })
+  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.07 })
 );
 scene.add(centerCore);
 
 /* ── Gyroscope Rings ───────────────────────────────────────────── */
 const gyro1 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.5, 0.018, 8, 100),
+  new THREE.TorusGeometry(3.5, 0.02, 8, 120),
   new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.25 })
 );
 gyro1.rotation.x = Math.PI/2;
 scene.add(gyro1);
 
 const gyro2 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.8, 0.014, 8, 100),
-  new THREE.MeshBasicMaterial({ color:0x00d4ff, transparent:true, opacity:0.15 })
+  new THREE.TorusGeometry(3.85, 0.016, 8, 120),
+  new THREE.MeshBasicMaterial({ color:0x00d4ff, transparent:true, opacity:0.18 })
 );
-gyro2.rotation.x = Math.PI/3; gyro2.rotation.z = Math.PI/4;
+gyro2.rotation.x = Math.PI/3;
+gyro2.rotation.z = Math.PI/4;
 scene.add(gyro2);
 
-/* ── Orbital Ring ──────────────────────────────────────────────── */
+/* ── Orbit Conduit Ring ────────────────────────────────────────── */
 const orbitRing = new THREE.Mesh(
-  new THREE.TorusGeometry(ORBIT_R, 0.025, 8, 140),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.1 })
+  new THREE.TorusGeometry(ORBIT_RADIUS, 0.025, 8, 160),
+  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.12 })
 );
 orbitRing.rotation.x = Math.PI/2;
 scene.add(orbitRing);
 
-/* ── Satellite Nodes ───────────────────────────────────────────── */
-const geos = [
-  new THREE.DodecahedronGeometry(1.3, 0),
-  new THREE.TorusGeometry(0.9, 0.32, 8, 18),
-  new THREE.OctahedronGeometry(1.3, 0),
-  new THREE.IcosahedronGeometry(1.15, 0),
-];
+/* ── Satellite Geometry Generators ─────────────────────────────── */
+function makeSatelliteGeometry(type){
+  switch(type){
+    case "dodeca": return new THREE.DodecahedronGeometry(1.3, 0);
+    case "torus":  return new THREE.TorusGeometry(0.9, 0.35, 8, 20);
+    case "octa":   return new THREE.OctahedronGeometry(1.3, 0);
+    case "icosa":  return new THREE.IcosahedronGeometry(1.2, 0);
+    default:       return new THREE.BoxGeometry(1.2, 1.2, 1.2);
+  }
+}
 
 const satellites = [];
-const connLines = [];
+const conduitLines = [];
 
-SAT.forEach((d,i) => {
-  const mat = new THREE.MeshBasicMaterial({ color:d.color, wireframe:true, transparent:true, opacity:0.65 });
-  const mesh = new THREE.Mesh(geos[i], mat);
-  const x = Math.cos(d.angle)*ORBIT_R, z = Math.sin(d.angle)*ORBIT_R;
-  mesh.position.set(x, d.y, z);
+REPO_NODES.forEach((node, i) => {
+  const geo = makeSatelliteGeometry(node.geo);
+  const mat = new THREE.MeshBasicMaterial({ color:node.color, wireframe:true, transparent:true, opacity:0.7 });
+  const mesh = new THREE.Mesh(geo, mat);
+
+  const x = Math.cos(node.angle)*ORBIT_RADIUS;
+  const z = Math.sin(node.angle)*ORBIT_RADIUS;
+  mesh.position.set(x, node.y, z);
   scene.add(mesh);
 
-  const inner = new THREE.Mesh(
+  const innerSphere = new THREE.Mesh(
     new THREE.SphereGeometry(0.45, 8, 8),
-    new THREE.MeshBasicMaterial({ color:d.color, transparent:true, opacity:0.08 })
+    new THREE.MeshBasicMaterial({ color:node.color, transparent:true, opacity:0.1 })
   );
-  inner.position.copy(mesh.position);
-  scene.add(inner);
+  innerSphere.position.copy(mesh.position);
+  scene.add(innerSphere);
 
-  // Connection line
-  const lg = new THREE.BufferGeometry();
-  lg.setAttribute("position", new THREE.Float32BufferAttribute([0,0,0, x,d.y,z], 3));
-  const line = new THREE.Line(lg, new THREE.LineBasicMaterial({ color:d.color, transparent:true, opacity:0.18 }));
+  // Connection conduit line to center
+  const lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute("position", new THREE.Float32BufferAttribute([0,0,0, x,node.y,z], 3));
+  const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color:node.color, transparent:true, opacity:0.2 }));
   scene.add(line);
 
-  satellites.push({ mesh, inner, baseAngle:d.angle, baseY:d.y });
-  connLines.push(lg);
+  satellites.push({
+    mesh,
+    innerSphere,
+    baseAngle: node.angle,
+    baseY: node.y,
+    color: node.color
+  });
+  conduitLines.push(lineGeo);
 });
 
-/* ── Ambient Particles ─────────────────────────────────────────── */
-const P_COUNT = 700;
-const pPos = new Float32Array(P_COUNT*3);
-for(let i=0;i<P_COUNT;i++){
-  pPos[i*3]   = (Math.random()-0.5)*100;
-  pPos[i*3+1] = (Math.random()-0.5)*100;
-  pPos[i*3+2] = (Math.random()-0.5)*100;
+/* ── Ambient Particle Lattice ──────────────────────────────────── */
+const AMBIENT_COUNT = 750;
+const ambPositions = new Float32Array(AMBIENT_COUNT*3);
+for(let i=0; i<AMBIENT_COUNT; i++){
+  ambPositions[i*3]   = (Math.random()-0.5)*100;
+  ambPositions[i*3+1] = (Math.random()-0.5)*100;
+  ambPositions[i*3+2] = (Math.random()-0.5)*100;
 }
-const pGeo = new THREE.BufferGeometry();
-pGeo.setAttribute("position", new THREE.Float32BufferAttribute(pPos, 3));
-scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({
-  color:0x00ff41, size:0.07, transparent:true, opacity:0.35,
-  blending:THREE.AdditiveBlending, depthWrite:false
+const ambGeo = new THREE.BufferGeometry();
+ambGeo.setAttribute("position", new THREE.Float32BufferAttribute(ambPositions, 3));
+scene.add(new THREE.Points(ambGeo, new THREE.PointsMaterial({
+  color:0x00ff41,
+  size:0.07,
+  transparent:true,
+  opacity:0.35,
+  blending:THREE.AdditiveBlending,
+  depthWrite:false
 })));
 
-/* ── Flow Particles ────────────────────────────────────────────── */
-const FPL = 30, fCount = SAT.length*FPL;
-const fPos = new Float32Array(fCount*3);
-const fCol = new Float32Array(fCount*3);
-const fT = new Float32Array(fCount);
-const fSpd = new Float32Array(fCount);
-const fLink = new Uint8Array(fCount);
+/* ── Flow Conduit Particles ────────────────────────────────────── */
+const PARTICLES_PER_NODE = 32;
+const totalFlowCount = REPO_NODES.length * PARTICLES_PER_NODE;
+const flowPositions = new Float32Array(totalFlowCount*3);
+const flowColors = new Float32Array(totalFlowCount*3);
+const flowProgress = new Float32Array(totalFlowCount);
+const flowSpeed = new Float32Array(totalFlowCount);
+const flowTargetIndex = new Uint8Array(totalFlowCount);
 
-for(let i=0;i<SAT.length;i++){
-  const c = new THREE.Color(SAT[i].color);
-  for(let j=0;j<FPL;j++){
-    const idx = i*FPL+j;
-    fT[idx] = Math.random();
-    fSpd[idx] = 0.001 + Math.random()*0.004;
-    fLink[idx] = i;
-    fCol[idx*3]=c.r; fCol[idx*3+1]=c.g; fCol[idx*3+2]=c.b;
+for(let i=0; i<REPO_NODES.length; i++){
+  const c = new THREE.Color(REPO_NODES[i].color);
+  for(let j=0; j<PARTICLES_PER_NODE; j++){
+    const idx = i*PARTICLES_PER_NODE + j;
+    flowProgress[idx] = Math.random();
+    flowSpeed[idx] = 0.0012 + Math.random()*0.0035;
+    flowTargetIndex[idx] = i;
+    flowColors[idx*3]   = c.r;
+    flowColors[idx*3+1] = c.g;
+    flowColors[idx*3+2] = c.b;
   }
 }
-const fGeo = new THREE.BufferGeometry();
-fGeo.setAttribute("position", new THREE.Float32BufferAttribute(fPos, 3));
-fGeo.setAttribute("color", new THREE.Float32BufferAttribute(fCol, 3));
-scene.add(new THREE.Points(fGeo, new THREE.PointsMaterial({
-  size:0.12, transparent:true, opacity:0.85,
-  blending:THREE.AdditiveBlending, depthWrite:false, vertexColors:true
+const flowGeo = new THREE.BufferGeometry();
+flowGeo.setAttribute("position", new THREE.Float32BufferAttribute(flowPositions, 3));
+flowGeo.setAttribute("color", new THREE.Float32BufferAttribute(flowColors, 3));
+scene.add(new THREE.Points(flowGeo, new THREE.PointsMaterial({
+  size:0.12,
+  transparent:true,
+  opacity:0.85,
+  blending:THREE.AdditiveBlending,
+  depthWrite:false,
+  vertexColors:true
 })));
 
-/* ── Mouse & Scroll ────────────────────────────────────────────── */
-let mx=0, my=0, scrollY=0;
-addEventListener("mousemove", e => { mx=(e.clientX/innerWidth-0.5)*2; my=(e.clientY/innerHeight-0.5)*2; });
-addEventListener("scroll", () => { scrollY = window.scrollY; }, {passive:true});
+/* ── Mouse & Scroll Listeners ──────────────────────────────────── */
+let mouseX = 0, mouseY = 0, scrollY = 0;
+window.addEventListener("mousemove", (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+window.addEventListener("scroll", () => {
+  scrollY = window.scrollY;
+}, { passive:true });
 
-/* ── Node Labels ───────────────────────────────────────────────── */
-const labelBox = document.getElementById("nodeLabels");
-const LABELS = [
-  { name:"damathryxx64", hex:"#00ff41", getPos:()=>new THREE.Vector3(0,3.5,0), center:true },
-  ...SAT.map((d,i) => ({ name:d.name, hex:d.hex, getPos:()=>{ const p=satellites[i].mesh.position.clone(); p.y+=2.2; return p; }, center:false }))
+/* ── Dynamic 3D DOM Labels ─────────────────────────────────────── */
+const labelsOverlay = document.getElementById("labelsOverlay");
+const LABEL_SPECS = [
+  { name:"damathryxx64 (trunk)", hex:"#00ff41", isCenter:true, getPos:() => new THREE.Vector3(0, 3.4, 0) },
+  ...REPO_NODES.map((n, i) => ({
+    name: n.name,
+    hex: n.hex,
+    isCenter: false,
+    getPos: () => {
+      const p = satellites[i].mesh.position.clone();
+      p.y += 2.2;
+      return p;
+    }
+  }))
 ];
-const labelEls = LABELS.map(d => {
-  const el = document.createElement("div");
-  el.className = "node-label" + (d.center?" center":"");
-  el.style.setProperty("--lc", d.hex);
-  el.innerHTML = '<span class="label-dot"></span><span>'+d.name+"</span>";
-  labelBox.appendChild(el);
-  return el;
+
+const labelElements = LABEL_SPECS.map(spec => {
+  const pill = document.createElement("div");
+  pill.className = "node-pill" + (spec.isCenter ? " center-pill" : "");
+  pill.style.setProperty("--lc", spec.hex);
+  pill.innerHTML = '<span class="node-dot"></span><span>' + spec.name + "</span>";
+  labelsOverlay.appendChild(pill);
+  return pill;
 });
 
-function updateLabels(){
-  const op = Math.max(0, 1 - scrollY/(innerHeight*0.6));
-  labelBox.style.opacity = op;
-  if(op<0.03) return;
-  LABELS.forEach((d,i) => {
-    const p = d.getPos().project(camera);
-    if(p.z>1){ labelEls[i].style.display="none"; return; }
-    labelEls[i].style.display="flex";
-    labelEls[i].style.left = ((p.x*0.5+0.5)*innerWidth)+"px";
-    labelEls[i].style.top  = ((-p.y*0.5+0.5)*innerHeight)+"px";
+function updateProjectedLabels(){
+  const opacityFactor = Math.max(0, 1 - scrollY / (window.innerHeight * 0.7));
+  labelsOverlay.style.opacity = opacityFactor;
+  if(opacityFactor < 0.03) return;
+
+  LABEL_SPECS.forEach((spec, i) => {
+    const worldPos = spec.getPos();
+    const screenPos = worldPos.project(camera);
+    if(screenPos.z > 1){
+      labelElements[i].style.display = "none";
+      return;
+    }
+    labelElements[i].style.display = "flex";
+    labelElements[i].style.left = ((screenPos.x * 0.5 + 0.5) * window.innerWidth) + "px";
+    labelElements[i].style.top  = ((-screenPos.y * 0.5 + 0.5) * window.innerHeight) + "px";
   });
 }
 
-/* ── Animation Loop ────────────────────────────────────────────── */
-function animate(){
-  requestAnimationFrame(animate);
-  const t = performance.now()*0.001;
-  const sf = scrollY/innerHeight;
+/* ── Animation Render Loop ─────────────────────────────────────── */
+function renderLoop(){
+  requestAnimationFrame(renderLoop);
+  const time = performance.now() * 0.001;
+  const scrollRatio = scrollY / window.innerHeight;
 
-  // Camera orbit
-  const cr = 20 + sf*4;
-  const cs = 0.08;
-  camera.position.x = Math.sin(t*cs)*cr + mx*3;
-  camera.position.z = Math.cos(t*cs)*cr;
-  camera.position.y = 8 + my*-2.5 + sf*2.5;
+  // Camera Orbit & Dynamics
+  const orbitDist = 20 + scrollRatio * 4;
+  const orbitSpeed = 0.07;
+  camera.position.x = Math.sin(time * orbitSpeed) * orbitDist + mouseX * 2.8;
+  camera.position.z = Math.cos(time * orbitSpeed) * orbitDist;
+  camera.position.y = 8 + mouseY * -2.4 + scrollRatio * 2.5;
   camera.lookAt(0, 0, 0);
 
-  // Center spin + pulse
-  centerWire.rotation.y = t*0.3;
-  centerWire.rotation.x = t*0.15;
-  centerCore.rotation.y = -t*0.2;
-  const pulse = 1 + Math.sin(t*2)*0.04;
-  centerWire.scale.setScalar(pulse);
-  coreLight.intensity = 2.5 + Math.sin(t*3)*0.8;
+  // Central Flake Pulse & Spin
+  centerWire.rotation.y = time * 0.28;
+  centerWire.rotation.x = time * 0.14;
+  centerCore.rotation.y = -time * 0.18;
+  const pulseFactor = 1 + Math.sin(time * 2) * 0.04;
+  centerWire.scale.setScalar(pulseFactor);
+  coreLight.intensity = 2.8 + Math.sin(time * 3) * 0.8;
 
-  // Gyroscope rings
-  gyro1.rotation.z = t*0.4;
-  gyro2.rotation.y = t*0.3;
-  gyro2.rotation.z = Math.PI/4 + t*0.15;
+  // Gyroscope Precession
+  gyro1.rotation.z = time * 0.35;
+  gyro2.rotation.y = time * 0.28;
+  gyro2.rotation.z = Math.PI / 4 + time * 0.12;
 
-  // Orbit ring
-  orbitRing.rotation.z = t*0.02;
+  // Orbit Ring
+  orbitRing.rotation.z = time * 0.015;
 
-  // Satellites orbit
-  satellites.forEach((s,i) => {
-    const a = s.baseAngle + t*0.12;
-    const x = Math.cos(a)*ORBIT_R;
-    const z = Math.sin(a)*ORBIT_R;
-    const y = s.baseY + Math.sin(t+i*1.5)*0.5;
-    s.mesh.position.set(x, y, z);
-    s.inner.position.copy(s.mesh.position);
-    s.mesh.rotation.x = t*(0.4+i*0.06);
-    s.mesh.rotation.y = t*(0.25+i*0.04);
+  // Orbiting Satellites
+  satellites.forEach((sat, i) => {
+    const angle = sat.baseAngle + time * 0.11;
+    const x = Math.cos(angle) * ORBIT_RADIUS;
+    const z = Math.sin(angle) * ORBIT_RADIUS;
+    const y = sat.baseY + Math.sin(time + i * 1.6) * 0.45;
 
-    // Update connection line endpoint
-    const lp = connLines[i].attributes.position;
-    lp.setXYZ(1, x, y, z);
-    lp.needsUpdate = true;
+    sat.mesh.position.set(x, y, z);
+    sat.innerSphere.position.copy(sat.mesh.position);
+    sat.mesh.rotation.x = time * (0.35 + i * 0.05);
+    sat.mesh.rotation.y = time * (0.22 + i * 0.04);
+
+    // Update conduit line geometry
+    const linePosAttr = conduitLines[i].attributes.position;
+    linePosAttr.setXYZ(1, x, y, z);
+    linePosAttr.needsUpdate = true;
   });
 
-  // Flow particles
-  const fp = fGeo.attributes.position;
-  for(let i=0;i<fCount;i++){
-    fT[i] += fSpd[i];
-    if(fT[i]>1) fT[i]=0;
-    const tgt = satellites[fLink[i]].mesh.position;
-    const u = fT[i];
-    fp.setXYZ(i, tgt.x*u, tgt.y*u + Math.sin(u*Math.PI)*2, tgt.z*u);
+  // Flow Conduit Particles
+  const flowPosAttr = flowGeo.attributes.position;
+  for(let i=0; i<totalFlowCount; i++){
+    flowProgress[i] += flowSpeed[i];
+    if(flowProgress[i] > 1) flowProgress[i] = 0;
+    const targetSatPos = satellites[flowTargetIndex[i]].mesh.position;
+    const prog = flowProgress[i];
+    const arcHeight = Math.sin(prog * Math.PI) * 1.8;
+    flowPosAttr.setXYZ(
+      i,
+      targetSatPos.x * prog,
+      targetSatPos.y * prog + arcHeight,
+      targetSatPos.z * prog
+    );
   }
-  fp.needsUpdate = true;
+  flowPosAttr.needsUpdate = true;
 
-  updateLabels();
+  updateProjectedLabels();
   renderer.render(scene, camera);
 }
-animate();
+renderLoop();
 
-/* ── Resize ────────────────────────────────────────────────────── */
-addEventListener("resize", () => {
-  camera.aspect = innerWidth/innerHeight;
+/* ── Window Resize ─────────────────────────────────────────────── */
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-/* ── Scroll Reveal ─────────────────────────────────────────────── */
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add("visible"); });
+/* ── Intersection Observer for Scroll Reveal ───────────────────── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add("visible");
+  });
 }, { threshold:0.08 });
-document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
-/* ── Terminal Simulator ────────────────────────────────────────── */
-const CMDS = {
-  validate: { cmd:"dots-validate", lines:[
-    {t:"==> [1/4] Checking Nix formatting (Alejandra)...",c:"ti",d:300},
-    {t:"    Checking style in 18 files using 4 threads.",c:"td",d:180},
-    {t:"    ✓ Compliant with Alejandra style.",c:"ts",d:180},
-    {t:"==> [2/4] Checking anti-patterns (Statix)...",c:"ti",d:280},
-    {t:"    ✓ No anti-patterns detected",c:"ts",d:160},
-    {t:"==> [3/4] Checking dead code (Deadnix)...",c:"ti",d:280},
-    {t:"    ✓ No dead code found",c:"ts",d:160},
-    {t:"==> [4/4] Verifying Nix flake evaluation...",c:"ti",d:400},
-    {t:"    all checks passed!",c:"ts",d:180},
-    {t:"✓ All Nix dots quality gates passed!",c:"ts",d:0},
-  ]},
-  sync: { cmd:"dots-sync-skills status", lines:[
-    {t:"==> Repository Status:",c:"ti",d:200},
-    {t:"  skills             origin/main   ✓ up-to-date  ahead:0 behind:0",c:"ts",d:120},
-    {t:"  antigravity-super  origin/main   ✓ up-to-date  ahead:0 behind:0",c:"ts",d:120},
-    {t:"  NixOS-WSL          origin/main   ✓ up-to-date  ahead:0 behind:0",c:"ts",d:120},
-    {t:"  clamav-scanner     origin/trunk  ✓ up-to-date  ahead:0 behind:0",c:"ts",d:120},
-    {t:"",c:"",d:80},
-    {t:"==> Flake Lock Sync:",c:"ti",d:180},
-    {t:"  gemini-skills            ✓ pinned at latest",c:"ts",d:100},
-    {t:"  antigravity-superpowers  ✓ pinned at latest",c:"ts",d:100},
-    {t:"  nixos-wsl                ✓ pinned at latest",c:"ts",d:100},
-    {t:"  clamav-scanner           ✓ pinned at latest",c:"ts",d:100},
-    {t:"✓ All repositories 100% synced — zero drift",c:"ts",d:0},
-  ]},
-  agy2: { cmd:"agy2", lines:[
-    {t:"→ Detecting WSL distribution: NixOS",c:"ti",d:260},
-    {t:"→ Resolving: ~/.antigravity-server/bin/language_server",c:"ti",d:200},
-    {t:"→ Spawning: wsl.exe -d NixOS --exec language_server",c:"ti",d:300},
-    {t:"→ JSON-RPC 2.0 handshake... ✓",c:"ts",d:350},
-    {t:"→ Loading workspace: /home/damathryxx64/repositories",c:"ti",d:180},
-    {t:"→ Skills discovered: 31 active skills loaded",c:"ts",d:180},
-    {t:"→ MCP servers: 7 servers initialized",c:"ts",d:180},
-    {t:"✓ Antigravity 2.0 ready — connected to NixOS-WSL",c:"ts",d:0},
-  ]},
-  build: { cmd:"dots-build", lines:[
-    {t:"→ Building system derivation (dry-run)...",c:"ti",d:400},
-    {t:"  evaluating nixosConfigurations.nixos...",c:"td",d:300},
-    {t:"  /nix/store/…-nixos-system-nixos-25.05pre.drv",c:"td",d:250},
-    {t:"",c:"",d:80},
-    {t:"  Closure size: 1,264 paths",c:"ti",d:180},
-    {t:"  Closure disk: 4.2 GiB",c:"ti",d:180},
-    {t:"  Changes:      0 added, 0 removed",c:"ts",d:180},
-    {t:"✓ Dry-build completed — no switch applied",c:"ts",d:0},
-  ]},
+/* ── Interactive Terminal Engine ───────────────────────────────── */
+const CLI_SCRIPTS = {
+  validate: {
+    cmd: "dots-validate",
+    steps: [
+      { t: "==> [1/4] Checking Nix code formatting (Alejandra)...", c: "ti", d: 250 },
+      { t: "    Checking style in 18 files using 4 threads.", c: "td", d: 150 },
+      { t: "    ✓ Congratulations! Your code complies with the Alejandra style.", c: "ts", d: 150 },
+      { t: "==> [2/4] Checking Nix anti-patterns (Statix)...", c: "ti", d: 240 },
+      { t: "    ✓ Statix check clean (0 anti-patterns)", c: "ts", d: 140 },
+      { t: "==> [3/4] Checking dead code (Deadnix)...", c: "ti", d: 240 },
+      { t: "    ✓ Deadnix clean (0 unused declarations)", c: "ts", d: 140 },
+      { t: "==> [4/4] Verifying Nix flake evaluations & checks...", c: "ti", d: 350 },
+      { t: "    evaluating flake outputs (nixosConfigurations, devShells)...", c: "td", d: 200 },
+      { t: "    all checks passed!", c: "ts", d: 150 },
+      { t: "✓ All Nix dots quality gates passed cleanly!", c: "ts", d: 0 }
+    ]
+  },
+  sync: {
+    cmd: "dots-sync-skills status",
+    steps: [
+      { t: "==> Workspace Repositories Divergence:", c: "ti", d: 200 },
+      { t: "  skills             origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+      { t: "  antigravity-super  origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+      { t: "  NixOS-WSL          origin/main   ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+      { t: "  clamav-scanner     origin/trunk  ✓ up-to-date  [ahead: 0, behind: 0]", c: "ts", d: 120 },
+      { t: "", c: "", d: 60 },
+      { t: "==> Flake Lock Synchronization:", c: "ti", d: 180 },
+      { t: "  gemini-skills            ✓ pinned at latest commit", c: "ts", d: 100 },
+      { t: "  antigravity-superpowers  ✓ pinned at latest commit", c: "ts", d: 100 },
+      { t: "  nixos-wsl                ✓ pinned at latest commit", c: "ts", d: 100 },
+      { t: "  clamav-scanner           ✓ pinned at latest commit", c: "ts", d: 100 },
+      { t: "✓ Zero drift detected across all managed repositories.", c: "ts", d: 0 }
+    ]
+  },
+  doctor: {
+    cmd: "antigravity-superpowers doctor",
+    steps: [
+      { t: "==> Antigravity Superpowers Diagnostics:", c: "ti", d: 220 },
+      { t: "  [✓] Operating System: NixOS-WSL (x86_64-linux)", c: "ts", d: 120 },
+      { t: "  [✓] Antigravity 2.0 Host Bridge: Ready", c: "ts", d: 120 },
+      { t: "  [✓] Alejandra Formatter: Installed (/nix/store/...)", c: "ts", d: 120 },
+      { t: "  [✓] Statix Anti-pattern Linter: Ready", c: "ts", d: 120 },
+      { t: "  [✓] Deadnix Unused Variable Scanner: Ready", c: "ts", d: 120 },
+      { t: "  [✓] ShellCheck Linter: Ready", c: "ts", d: 120 },
+      { t: "  [✓] Active Agent Skills: 31 loaded in ~/.gemini/config/skills", c: "ts", d: 140 },
+      { t: "  [✓] Background Sentinel: clamav daemon active", c: "ts", d: 120 },
+      { t: "✓ All agent runtime subsystems fully operational.", c: "ts", d: 0 }
+    ]
+  },
+  agy2: {
+    cmd: "agy2",
+    steps: [
+      { t: "→ Detecting host environment: Windows 11 WSL2", c: "ti", d: 220 },
+      { t: "→ Target distribution: NixOS (/home/damathryxx64)", c: "ti", d: 180 },
+      { t: "→ Resolving language server binary: ~/.antigravity-server/bin/language_server", c: "ti", d: 240 },
+      { t: "→ Invoking: wsl.exe -d NixOS -u damathryxx64 -e bash -l -c language_server", c: "ti", d: 280 },
+      { t: "→ Handshake: JSON-RPC 2.0 protocol initialized", c: "ts", d: 300 },
+      { t: "→ Workspace root: /home/damathryxx64/repositories", c: "ti", d: 150 },
+      { t: "→ Registered MCP Servers: 9 native servers active", c: "ti", d: 150 },
+      { t: "✓ Antigravity 2.0 bridge active — headless execution ready.", c: "ts", d: 0 }
+    ]
+  },
+  build: {
+    cmd: "dots-build",
+    steps: [
+      { t: "→ Dry-building system derivation (nh os build)...", c: "ti", d: 350 },
+      { t: "  evaluating nixosConfigurations.nixos in /home/damathryxx64/repositories/damathryxx64...", c: "td", d: 250 },
+      { t: "  derivation: /nix/store/znpxgl...-nixos-system-nixos-25.05pre.drv", c: "td", d: 200 },
+      { t: "", c: "", d: 60 },
+      { t: "  Closure size: 1,264 store paths", c: "ti", d: 140 },
+      { t: "  Closure disk: 4.2 GiB", c: "ti", d: 140 },
+      { t: "  Closure diff: 0 paths added, 0 paths removed", c: "ts", d: 140 },
+      { t: "✓ System dry-build complete — no live switch performed.", c: "ts", d: 0 }
+    ]
+  }
 };
 
-let termBusy = false;
-window.runCmd = function(key){
-  if(termBusy) return;
-  const el = document.getElementById("termOut");
-  if(key==="clear"){ el.innerHTML='<div class="tl"><span class="tp">$ </span><span class="term-cursor">▌</span></div>'; return; }
-  const cmd = CMDS[key]; if(!cmd) return;
-  termBusy = true;
+let isExecuting = false;
+window.execCmd = function(commandKey){
+  if(isExecuting) return;
+  const terminalOut = document.getElementById("termOutput");
+  if(commandKey === "clear"){
+    terminalOut.innerHTML = '<div class="tline"><span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span></div>';
+    return;
+  }
+  const script = CLI_SCRIPTS[commandKey];
+  if(!script) return;
+  isExecuting = true;
 
   // Remove existing cursor
-  el.querySelectorAll(".term-cursor").forEach(c=>c.remove());
+  terminalOut.querySelectorAll(".term-cursor").forEach(cursor => cursor.remove());
 
-  // Print command
-  const cl = document.createElement("div"); cl.className="tl";
-  cl.innerHTML='<span class="tp">$ </span><span class="tc">'+cmd.cmd+"</span>";
-  el.appendChild(cl);
+  // Print command line
+  const cmdLine = document.createElement("div");
+  cmdLine.className = "tline";
+  cmdLine.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="tc">' + script.cmd + "</span>";
+  terminalOut.appendChild(cmdLine);
 
-  let delay=180;
-  cmd.lines.forEach((ln,i) => {
-    delay += ln.d;
+  let accumulatedDelay = 150;
+  script.steps.forEach((step, idx) => {
+    accumulatedDelay += step.d;
     setTimeout(() => {
-      const row = document.createElement("div"); row.className="tl";
-      row.innerHTML = '<span class="'+ln.c+'">'+ln.t+"</span>";
-      el.appendChild(row);
-      el.scrollTop = el.scrollHeight;
-      if(i===cmd.lines.length-1){
+      const line = document.createElement("div");
+      line.className = "tline";
+      line.innerHTML = '<span class="' + step.c + '">' + step.t + "</span>";
+      terminalOut.appendChild(line);
+      terminalOut.scrollTop = terminalOut.scrollHeight;
+
+      if(idx === script.steps.length - 1){
         setTimeout(() => {
-          const pr = document.createElement("div"); pr.className="tl";
-          pr.innerHTML='<span class="tp">$ </span><span class="term-cursor">▌</span>';
-          el.appendChild(pr); el.scrollTop=el.scrollHeight; termBusy=false;
-        }, 250);
+          const promptLine = document.createElement("div");
+          promptLine.className = "tline";
+          promptLine.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="term-cursor">▌</span>';
+          terminalOut.appendChild(promptLine);
+          terminalOut.scrollTop = terminalOut.scrollHeight;
+          isExecuting = false;
+        }, 200);
       }
-    }, delay);
+    }, accumulatedDelay);
   });
 };
 
