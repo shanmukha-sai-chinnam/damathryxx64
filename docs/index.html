@@ -9,60 +9,67 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-/* ── Reset & Theme ─────────────────────────────────────────────── */
+/* ── Reset & Color System ──────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#040507;
+  --bg:#030508;
+  --bg-card:rgba(6,10,16,0.92);
+  --bg-card-hover:rgba(10,16,26,0.96);
   --green:#00ff41;
-  --cyan:#00d4ff;
-  --purple:#a855f7;
-  --pink:#f472b6;
-  --amber:#fbbf24;
-  --red:#ff5f57;
-  --text:#a0aec0;
-  --text-bright:#f1f5f9;
-  --text-dim:#4a5568;
-  --card-bg:rgba(7,10,15,0.85);
-  --card-border:rgba(0,255,65,0.12);
-  --card-border-hover:rgba(0,255,65,0.35);
-  --code-bg:rgba(0,255,65,0.06);
+  --green-glow:rgba(0,255,65,0.35);
+  --cyan:#00e5ff;
+  --cyan-glow:rgba(0,229,255,0.35);
+  --purple:#b055ff;
+  --purple-glow:rgba(176,85,255,0.35);
+  --pink:#ff55b0;
+  --pink-glow:rgba(255,85,176,0.35);
+  --amber:#ffb800;
+  --amber-glow:rgba(255,184,0,0.35);
+  --red:#ff4d4d;
+  --text-main:#a2b1c6;
+  --text-bright:#f0f4f9;
+  --text-dim:#4a5970;
+  --border-subtle:rgba(0,255,65,0.14);
+  --border-bright:rgba(0,255,65,0.4);
   --mono:'JetBrains Mono','Fira Code',ui-monospace,monospace;
   --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);
-  color:var(--text);
+  color:var(--text-main);
   font-family:var(--mono);
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
 
-/* ── Fixed WebGL Canvas & CRT Overlays ─────────────────────────── */
-#canvas3d{
+/* ── Cyber Background & CRT Grid ───────────────────────────────── */
+.bg-grid{
   position:fixed;
   inset:0;
   z-index:0;
-  width:100%;
-  height:100%;
-  pointer-events:all;
+  pointer-events:none;
+  background-size:40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(0,255,65,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,255,65,0.03) 1px, transparent 1px);
 }
 .scanlines{
   position:fixed;
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 3px);
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.05) 0px,rgba(0,0,0,0.05) 1px,transparent 1px,transparent 3px);
 }
 .vignette{
   position:fixed;
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:radial-gradient(ellipse at center,transparent 50%,rgba(4,5,7,0.75) 100%);
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(3,5,8,0.85) 100%);
 }
 
-/* ── Top Glass Navigation ──────────────────────────────────────── */
+/* ── Top Navigation Bar ────────────────────────────────────────── */
 nav{
   position:fixed;
   top:0;
@@ -73,78 +80,67 @@ nav{
   align-items:center;
   justify-content:space-between;
   padding:12px 28px;
-  background:rgba(4,5,7,0.8);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--card-border);
+  background:rgba(3,5,8,0.85);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border-subtle);
 }
 .nav-brand{
   font-size:13px;
-  font-weight:600;
+  font-weight:700;
   color:var(--green);
-  text-shadow:0 0 10px rgba(0,255,65,0.35);
+  text-shadow:0 0 10px var(--green-glow);
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
-.nav-brand .nix-glyph{font-size:16px}
-.nav-links{display:flex;gap:22px}
+.nav-links{display:flex;gap:20px}
 .nav-links a{
   color:var(--text-dim);
   text-decoration:none;
   font-size:11px;
-  font-weight:500;
+  font-weight:600;
   letter-spacing:0.8px;
   text-transform:uppercase;
   transition:color .2s,text-shadow .2s;
 }
 .nav-links a:hover{
   color:var(--green);
-  text-shadow:0 0 8px rgba(0,255,65,0.4);
+  text-shadow:0 0 8px var(--green-glow);
 }
 .nav-actions{display:flex;align-items:center;gap:12px}
-.nav-btn{
+.gh-btn{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  color:var(--text);
+  color:var(--text-bright);
   text-decoration:none;
   font-size:11px;
-  font-family:var(--mono);
   padding:5px 14px;
-  border:1px solid var(--card-border);
+  border:1px solid var(--border-subtle);
   border-radius:6px;
-  background:rgba(0,255,65,0.03);
+  background:rgba(0,255,65,0.04);
   transition:all .2s;
 }
-.nav-btn:hover{
+.gh-btn:hover{
   border-color:var(--green);
   color:var(--green);
-  box-shadow:0 0 14px rgba(0,255,65,0.2);
+  box-shadow:0 0 14px var(--green-glow);
 }
 
-/* ── Content Shell ─────────────────────────────────────────────── */
-.content{
+/* ── Layout & Container ────────────────────────────────────────── */
+.container{
   position:relative;
   z-index:2;
-  pointer-events:none;
-}
-.content section,
-.content footer,
-.content .hero{
-  pointer-events:auto;
+  max-width:1160px;
+  margin:0 auto;
+  padding:80px 24px 60px;
 }
 
-/* ── Hero Section ──────────────────────────────────────────────── */
+/* ── Hero Header ───────────────────────────────────────────────── */
 .hero{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
   text-align:center;
-  padding:0 24px;
-  position:relative;
+  padding:40px 0 32px;
 }
 .hero-pill{
   display:inline-flex;
@@ -152,159 +148,254 @@ nav{
   gap:8px;
   padding:6px 18px;
   background:rgba(0,255,65,0.06);
-  border:1px solid rgba(0,255,65,0.2);
+  border:1px solid rgba(0,255,65,0.22);
   border-radius:999px;
   font-size:11px;
   font-weight:600;
   color:var(--green);
   letter-spacing:1.5px;
   text-transform:uppercase;
-  margin-bottom:24px;
+  margin-bottom:20px;
 }
-.hero-pill .pulse-dot{
+.pulse-dot{
   width:7px;
   height:7px;
   border-radius:50%;
   background:var(--green);
   box-shadow:0 0 8px var(--green);
-  animation:pulse-glow 2s ease-in-out infinite;
+  animation:p-glow 2s ease-in-out infinite;
 }
-@keyframes pulse-glow{
-  0%,100%{opacity:1;transform:scale(1)}
-  50%{opacity:.4;transform:scale(0.85)}
-}
+@keyframes p-glow{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.85)}}
 .glitch-title{
   font-family:var(--mono);
-  font-size:clamp(44px,8vw,92px);
+  font-size:clamp(38px,7vw,72px);
   font-weight:700;
   color:var(--text-bright);
   position:relative;
-  text-shadow:0 0 30px rgba(0,255,65,0.2);
-  margin-bottom:16px;
-  line-height:1.05;
-}
-.glitch-title::before,.glitch-title::after{
-  content:attr(data-text);
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-}
-.glitch-title::before{
-  color:var(--cyan);
-  animation:glitch-anim-1 4s infinite linear alternate;
-  clip-path:inset(15% 0 65% 0);
-  transform:translate(-2px,-1px);
-  opacity:.7;
-}
-.glitch-title::after{
-  color:var(--pink);
-  animation:glitch-anim-2 3s infinite linear alternate-reverse;
-  clip-path:inset(65% 0 5% 0);
-  transform:translate(2px,1px);
-  opacity:.7;
-}
-@keyframes glitch-anim-1{
-  0%,88%{transform:translate(0)}
-  90%{transform:translate(-3px,-1px)}
-  93%{transform:translate(2px,1px)}
-  96%{transform:translate(-1px,2px)}
-  100%{transform:translate(0)}
-}
-@keyframes glitch-anim-2{
-  0%,88%{transform:translate(0)}
-  91%{transform:translate(2px,-1px)}
-  94%{transform:translate(-3px,1px)}
-  97%{transform:translate(1px,-2px)}
-  100%{transform:translate(0)}
+  text-shadow:0 0 25px rgba(0,255,65,0.25);
+  margin-bottom:14px;
+  line-height:1.1;
 }
 .hero-desc{
   font-family:var(--sans);
   font-size:15px;
-  color:var(--text);
-  max-width:660px;
+  color:var(--text-main);
+  max-width:700px;
+  margin:0 auto 28px;
   line-height:1.75;
-  margin-bottom:32px;
   font-weight:300;
 }
 .hero-desc code{
   color:var(--green);
-  background:var(--code-bg);
+  background:rgba(0,255,65,0.08);
   padding:2px 7px;
   border-radius:4px;
   font-size:13px;
   font-family:var(--mono);
 }
-.hero-metrics{
+.hero-stats-row{
   display:flex;
   flex-wrap:wrap;
   gap:12px;
   justify-content:center;
+  margin-bottom:12px;
 }
-.metric-pill{
+.hero-stat{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:8px 16px;
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
+  padding:7px 16px;
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
   border-radius:8px;
-  font-size:12px;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  font-size:11px;
 }
-.metric-pill strong{
-  color:var(--green);
-  font-weight:600;
+.hero-stat strong{color:var(--green);font-weight:700}
+
+/* ── 3D Architectural Stage (Interactive Centerpiece) ──────────── */
+.stage-section{
+  margin:20px 0 60px;
 }
-.scroll-indicator{
-  position:absolute;
-  bottom:24px;
-  left:50%;
-  transform:translateX(-50%);
+.stage-container{
+  background:var(--bg-card);
+  border:1px solid var(--border-bright);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(0,255,65,0.08), 0 20px 50px rgba(0,0,0,0.6);
+  position:relative;
+}
+.stage-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 20px;
+  background:rgba(8,12,18,0.95);
+  border-bottom:1px solid var(--border-subtle);
+  flex-wrap:wrap;
+  gap:10px;
+}
+.stage-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.stage-live-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
   font-size:10px;
-  color:var(--text-dim);
-  letter-spacing:2px;
+  color:var(--green);
+  font-weight:700;
+  letter-spacing:1px;
   text-transform:uppercase;
-  animation:float-bounce 2s ease-in-out infinite;
+  background:rgba(0,255,65,0.08);
+  padding:3px 8px;
+  border-radius:4px;
 }
-@keyframes float-bounce{
-  0%,100%{transform:translateX(-50%) translateY(0)}
-  50%{transform:translateX(-50%) translateY(7px)}
+.stage-title{
+  font-size:13px;
+  font-weight:700;
+  color:var(--text-bright);
+  letter-spacing:0.5px;
+}
+.stage-controls{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.stage-btn{
+  background:rgba(0,255,65,0.05);
+  border:1px solid var(--border-subtle);
+  border-radius:6px;
+  color:var(--text-main);
+  font-family:var(--mono);
+  font-size:11px;
+  padding:5px 12px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.stage-btn:hover,
+.stage-btn.active{
+  background:rgba(0,255,65,0.15);
+  border-color:var(--green);
+  color:var(--green);
+  box-shadow:0 0 10px var(--green-glow);
 }
 
-/* ── Section Shell ─────────────────────────────────────────────── */
-.sect{
-  padding:90px 24px;
-  max-width:1120px;
-  margin:0 auto;
+/* ── WebGL Canvas Stage Area ───────────────────────────────────── */
+.viewport-3d-wrap{
+  position:relative;
+  width:100%;
+  height:540px;
+  background:radial-gradient(ellipse at center, rgba(0,255,65,0.04) 0%, rgba(3,5,8,0.95) 75%);
+  overflow:hidden;
 }
-.sect-header{margin-bottom:36px}
-.sect-tag{
+#threeCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  cursor:grab;
+}
+#threeCanvas:active{
+  cursor:grabbing;
+}
+
+/* ── HUD Telemetry Card inside Stage ───────────────────────────── */
+.stage-hud{
+  position:absolute;
+  bottom:16px;
+  left:16px;
+  background:rgba(5,9,14,0.85);
+  border:1px solid var(--border-subtle);
+  border-radius:8px;
+  padding:12px 16px;
   font-size:11px;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  pointer-events:none;
+  max-width:320px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  transition:border-color .2s;
+}
+.hud-title{
+  color:var(--green);
+  font-weight:700;
+  font-size:12px;
+  margin-bottom:4px;
+}
+.hud-desc{
+  font-family:var(--sans);
+  color:var(--text-main);
+  font-size:11px;
+  line-height:1.5;
+  margin-bottom:6px;
+}
+.hud-meta{
+  color:var(--text-dim);
+  font-size:10px;
+  font-family:var(--mono);
+}
+.stage-hint{
+  position:absolute;
+  top:16px;
+  right:16px;
+  background:rgba(5,9,14,0.7);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;
+  padding:6px 12px;
+  font-size:10px;
+  color:var(--text-dim);
+  pointer-events:none;
+  backdrop-filter:blur(8px);
+}
+
+/* ── Section Structure ─────────────────────────────────────────── */
+.sect{
+  margin-bottom:64px;
+}
+.sect-header{
+  margin-bottom:28px;
+}
+.sect-tag{
+  font-size:10px;
   color:var(--green);
   letter-spacing:2.5px;
   text-transform:uppercase;
   margin-bottom:8px;
-  text-shadow:0 0 10px rgba(0,255,65,0.3);
+  text-shadow:0 0 10px var(--green-glow);
 }
 .sect-h{
-  font-size:clamp(24px,4vw,38px);
+  font-size:clamp(22px,3.5vw,34px);
   font-weight:700;
   color:var(--text-bright);
-  margin-bottom:12px;
+  margin-bottom:10px;
   font-family:var(--sans);
   letter-spacing:-0.5px;
 }
 .sect-p{
   font-family:var(--sans);
   font-size:14px;
-  color:var(--text);
-  max-width:680px;
+  color:var(--text-main);
+  max-width:700px;
   line-height:1.75;
   font-weight:300;
+}
+
+/* ── 2D Architecture Schematic Diagram (Visual Clarity) ────────── */
+.schematic-box{
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  border-radius:12px;
+  padding:28px;
+  backdrop-filter:blur(16px);
+  margin-bottom:28px;
+  overflow-x:auto;
+}
+.schematic-svg{
+  width:100%;
+  min-width:760px;
+  height:auto;
+  display:block;
 }
 
 /* ── Cards Grid ────────────────────────────────────────────────── */
@@ -314,41 +405,37 @@ nav{
   gap:16px;
 }
 .glass-box{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
-  border-radius:12px;
-  padding:24px;
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
+  border-radius:10px;
+  padding:22px;
   backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
   transition:all .25s ease;
 }
 .glass-box:hover{
-  border-color:var(--card-border-hover);
+  border-color:var(--border-bright);
   box-shadow:0 0 30px rgba(0,255,65,0.06);
   transform:translateY(-2px);
 }
-.box-icon{
-  font-size:20px;
-  margin-bottom:14px;
-}
+.box-icon{font-size:22px;margin-bottom:12px}
 .box-title{
   font-size:14px;
-  font-weight:600;
+  font-weight:700;
   color:var(--text-bright);
   margin-bottom:8px;
   font-family:var(--sans);
 }
 .box-desc{
   font-size:12px;
-  color:var(--text);
+  color:var(--text-main);
   line-height:1.65;
   font-family:var(--sans);
 }
 .box-meta{
   margin-top:14px;
   padding-top:10px;
-  border-top:1px solid rgba(255,255,255,0.04);
-  font-size:11px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  font-size:10px;
   color:var(--text-dim);
   font-family:var(--mono);
 }
@@ -360,19 +447,18 @@ nav{
   gap:16px;
 }
 .repo-card{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
   border-radius:12px;
   padding:24px;
   backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
   text-decoration:none;
   color:inherit;
-  transition:all .3s ease;
+  transition:all .25s ease;
   position:relative;
-  overflow:hidden;
   display:flex;
   flex-direction:column;
+  overflow:hidden;
 }
 .repo-card::before{
   content:'';
@@ -383,11 +469,11 @@ nav{
   height:2px;
   background:var(--rc);
   opacity:0;
-  transition:opacity .3s;
+  transition:opacity .25s;
 }
 .repo-card:hover::before{opacity:1}
 .repo-card:hover{
-  border-color:color-mix(in srgb,var(--rc) 40%,transparent);
+  border-color:color-mix(in srgb,var(--rc) 45%,transparent);
   box-shadow:0 0 25px color-mix(in srgb,var(--rc) 15%,transparent);
   transform:translateY(-3px);
 }
@@ -414,7 +500,7 @@ nav{
   font-weight:700;
   color:var(--text-bright);
 }
-.repo-input-badge{
+.repo-badge{
   font-size:10px;
   padding:2px 8px;
   border-radius:4px;
@@ -432,7 +518,7 @@ nav{
 }
 .repo-summary{
   font-size:12px;
-  color:var(--text);
+  color:var(--text-main);
   line-height:1.65;
   margin-bottom:16px;
   font-family:var(--sans);
@@ -440,9 +526,9 @@ nav{
 }
 .repo-files{
   background:rgba(0,0,0,0.3);
-  border:1px solid rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.04);
   border-radius:6px;
-  padding:10px;
+  padding:10px 12px;
   margin-bottom:16px;
 }
 .repo-files-title{
@@ -452,12 +538,10 @@ nav{
   letter-spacing:0.5px;
   margin-bottom:6px;
 }
-.repo-files ul{
-  list-style:none;
-}
+.repo-files ul{list-style:none}
 .repo-files li{
   font-size:11px;
-  color:var(--text);
+  color:var(--text-main);
   font-family:var(--mono);
   padding:1px 0;
 }
@@ -484,24 +568,24 @@ nav{
 /* ── MCP Servers Grid ──────────────────────────────────────────── */
 .mcp-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
   gap:12px;
 }
 .mcp-item{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
   border-radius:8px;
-  padding:14px;
+  padding:16px;
   backdrop-filter:blur(16px);
   transition:all .2s;
 }
 .mcp-item:hover{
-  border-color:var(--card-border-hover);
+  border-color:var(--border-bright);
   background:rgba(0,255,65,0.03);
 }
 .mcp-name{
-  font-size:12px;
-  font-weight:600;
+  font-size:13px;
+  font-weight:700;
   color:var(--text-bright);
   margin-bottom:4px;
 }
@@ -514,25 +598,26 @@ nav{
 .mcp-desc{
   font-size:11px;
   color:var(--text-dim);
-  line-height:1.5;
+  line-height:1.55;
   font-family:var(--sans);
 }
 
 /* ── Terminal Simulator ────────────────────────────────────────── */
 .term-shell{
-  background:rgba(4,6,9,0.95);
-  border:1px solid var(--card-border);
+  background:rgba(4,6,9,0.96);
+  border:1px solid var(--border-bright);
   border-radius:12px;
   overflow:hidden;
   backdrop-filter:blur(20px);
+  box-shadow:0 0 35px rgba(0,255,65,0.06);
 }
 .term-bar{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:12px 16px;
-  background:rgba(12,16,24,0.9);
-  border-bottom:1px solid var(--card-border);
+  padding:12px 18px;
+  background:rgba(10,14,20,0.95);
+  border-bottom:1px solid var(--border-subtle);
 }
 .term-dots{display:flex;gap:6px}
 .term-dot{width:10px;height:10px;border-radius:50%}
@@ -546,8 +631,8 @@ nav{
   padding:20px;
   font-size:12px;
   line-height:1.8;
-  min-height:280px;
-  max-height:420px;
+  min-height:260px;
+  max-height:400px;
   overflow-y:auto;
 }
 .term-output::-webkit-scrollbar{width:4px}
@@ -560,12 +645,12 @@ nav{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
-  margin-top:20px;
+  margin-top:18px;
 }
 .cmd-btn{
   padding:8px 16px;
-  background:rgba(0,255,65,0.05);
-  border:1px solid rgba(0,255,65,0.18);
+  background:rgba(0,255,65,0.06);
+  border:1px solid rgba(0,255,65,0.22);
   border-radius:6px;
   color:var(--green);
   font-family:var(--mono);
@@ -574,15 +659,15 @@ nav{
   transition:all .2s;
 }
 .cmd-btn:hover{
-  background:rgba(0,255,65,0.12);
-  border-color:rgba(0,255,65,0.4);
-  box-shadow:0 0 14px rgba(0,255,65,0.15);
+  background:rgba(0,255,65,0.14);
+  border-color:var(--green);
+  box-shadow:0 0 12px var(--green-glow);
 }
 
 /* ── Commands Reference Table ──────────────────────────────────── */
 .tbl-shell{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
+  background:var(--bg-card);
+  border:1px solid var(--border-subtle);
   border-radius:12px;
   overflow-x:auto;
   backdrop-filter:blur(16px);
@@ -600,8 +685,8 @@ nav{
   font-size:11px;
   letter-spacing:1px;
   text-transform:uppercase;
-  border-bottom:1px solid var(--card-border);
-  background:rgba(0,255,65,0.02);
+  border-bottom:1px solid var(--border-subtle);
+  background:rgba(0,255,65,0.03);
 }
 .cmd-tbl td{
   padding:12px 18px;
@@ -611,87 +696,31 @@ nav{
 .cmd-tbl tr:hover td{background:rgba(0,255,65,0.02)}
 .cmd-tbl code{
   color:var(--green);
-  background:var(--code-bg);
+  background:rgba(0,255,65,0.08);
   padding:3px 8px;
   border-radius:4px;
   font-size:11px;
   font-family:var(--mono);
 }
 
-/* ── 3D Node Labels (Projected into DOM) ────────────────────────── */
-.labels-overlay{
-  position:fixed;
-  inset:0;
-  z-index:3;
-  pointer-events:none;
-  transition:opacity .3s;
-}
-.node-pill{
-  position:absolute;
-  transform:translate(-50%,-50%);
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:4px 12px;
-  background:rgba(4,6,9,0.75);
-  border:1px solid var(--lc);
-  border-radius:6px;
-  font-size:11px;
-  color:var(--lc);
-  white-space:nowrap;
-  backdrop-filter:blur(8px);
-  text-shadow:0 0 8px var(--lc);
-  pointer-events:auto;
-  cursor:pointer;
-  transition:transform .15s,box-shadow .15s;
-}
-.node-pill:hover{
-  transform:translate(-50%,-50%) scale(1.1);
-  box-shadow:0 0 16px var(--lc);
-}
-.node-dot{
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--lc);
-  box-shadow:0 0 8px var(--lc);
-}
-.node-pill.center-pill{
-  font-weight:700;
-  font-size:12px;
-  padding:5px 14px;
-}
-
-/* ── Scroll Reveal ─────────────────────────────────────────────── */
-.reveal{
-  opacity:0;
-  transform:translateY(24px);
-  transition:opacity .6s cubic-bezier(0.16,1,0.3,1),transform .6s cubic-bezier(0.16,1,0.3,1);
-}
-.reveal.visible{
-  opacity:1;
-  transform:translateY(0);
-}
-
 /* ── Footer ────────────────────────────────────────────────────── */
 footer{
   text-align:center;
-  padding:48px 24px;
-  border-top:1px solid var(--card-border);
+  padding:48px 24px 24px;
+  border-top:1px solid var(--border-subtle);
   font-size:12px;
   color:var(--text-dim);
   font-family:var(--sans);
-  background:rgba(4,5,7,0.85);
 }
 .footer-links{
   display:flex;
   gap:20px;
   justify-content:center;
-  margin-bottom:12px;
+  margin-bottom:14px;
   flex-wrap:wrap;
 }
 .footer-links a{
-  color:var(--text);
+  color:var(--text-main);
   text-decoration:none;
   font-family:var(--mono);
   font-size:11px;
@@ -704,120 +733,203 @@ footer{
 /* ── Responsive ────────────────────────────────────────────────── */
 @media(max-width:768px){
   .nav-links{display:none}
-  .hero-metrics{flex-direction:column;align-items:center}
+  .viewport-3d-wrap{height:420px}
   .cards-grid,.repo-grid{grid-template-columns:1fr}
-  .scroll-indicator{display:none}
 }
   </style>
 </head>
 <body>
 
-<canvas id="canvas3d"></canvas>
+<div class="bg-grid"></div>
 <div class="scanlines"></div>
 <div class="vignette"></div>
 
-<!-- Projected 3D Labels -->
-<div class="labels-overlay" id="labelsOverlay"></div>
+<!-- Top Navigation -->
+<nav>
+  <div class="nav-brand">
+    <span>❄</span>
+    <span>damathryxx64 <span style="color:var(--text-dim)">/</span> nixos-workspace</span>
+  </div>
+  <div class="nav-links">
+    <a href="#stage">3D Architecture</a>
+    <a href="#schematic">Schematic</a>
+    <a href="#repos">Repositories</a>
+    <a href="#mcp">MCP Servers</a>
+    <a href="#terminal">CLI Console</a>
+    <a href="#cmds">Commands</a>
+  </div>
+  <div class="nav-actions">
+    <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="gh-btn">
+      <span>GitHub</span> ↗
+    </a>
+  </div>
+</nav>
 
-<div class="content">
+<div class="container">
 
-  <!-- Navigation Bar -->
-  <nav>
-    <div class="nav-brand">
-      <span class="nix-glyph">❄</span>
-      <span>damathryxx64 <span style="color:var(--text-dim)">/</span> nixos-workspace</span>
-    </div>
-    <div class="nav-links">
-      <a href="#arch">Architecture</a>
-      <a href="#repos">Repositories</a>
-      <a href="#mcp">MCP &amp; AI</a>
-      <a href="#bridge">Host Bridge</a>
-      <a href="#terminal">Console</a>
-      <a href="#cmds">Commands</a>
-    </div>
-    <div class="nav-actions">
-      <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="nav-btn">
-        <span>GitHub</span> ↗
-      </a>
-    </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="hero">
+  <!-- Hero Header -->
+  <header class="hero">
     <div class="hero-pill">
       <span class="pulse-dot"></span>
-      <span>STRICT NIXOS-WSL · ZERO DRIFT · ANTIGRAVITY 2.0</span>
+      <span>NIXOS-WSL PURE RUNTIME · ZERO DRIFT · ANTIGRAVITY 2.0</span>
     </div>
-    <h1 class="glitch-title" data-text="damathryxx64">damathryxx64</h1>
+    <h1 class="glitch-title">damathryxx64</h1>
     <p class="hero-desc">
-      A purely declarative NixOS-WSL development engine orchestrated by a single <code>flake.nix</code>.
+      A declarative NixOS-WSL development engine orchestrated by a single <code>flake.nix</code>.
       Directly drives Google Antigravity 2.0, 9 native MCP servers, and an autonomous multi-upstream AI skills runtime across 5 synchronized repositories.
     </p>
-    <div class="hero-metrics">
-      <div class="metric-pill">📦 <strong>5</strong> Repositories Pinned</div>
-      <div class="metric-pill">🔌 <strong>9</strong> Native MCP Servers</div>
-      <div class="metric-pill">🧠 <strong>31+</strong> Autonomous Agent Skills</div>
-      <div class="metric-pill">🛡️ <strong>4-Stage</strong> Zero-Drift Gates</div>
-      <div class="metric-pill">⚡ <strong>0.00%</strong> Drift Guarantee</div>
+    <div class="hero-stats-row">
+      <div class="hero-stat">📦 <strong>5</strong> Repositories Pinned</div>
+      <div class="hero-stat">🔌 <strong>9</strong> Native MCP Servers</div>
+      <div class="hero-stat">🧠 <strong>31+</strong> Active Skills</div>
+      <div class="hero-stat">🛡️ <strong>4-Stage</strong> Quality Gates</div>
+      <div class="hero-stat">⚡ <strong>0.00%</strong> Drift</div>
     </div>
-    <div class="scroll-indicator">↓ SCROLL TO EXPLORE ARCHITECTURE ↓</div>
-  </section>
+  </header>
 
-  <!-- Section 1: Architecture -->
-  <section id="arch" class="sect reveal">
-    <div class="sect-header">
-      <div class="sect-tag">// DECLARATIVE SYSTEM FOUNDATION</div>
-      <h2 class="sect-h">Zero Drift Architecture</h2>
-      <p class="sect-p">
-        Every package, compiler, agent skill, and daemon service is declared in NixOS modules and pinned in <code>flake.lock</code>. Imperative installations and local mutation are prohibited.
-      </p>
-    </div>
-    <div class="cards-grid">
-      <div class="glass-box">
-        <div class="box-icon">⚡</div>
-        <div class="box-title">Strict NixOS-WSL Target</div>
-        <div class="box-desc">All compilers, toolchains, git operations, and agent processes execute exclusively in the NixOS-WSL distribution (<code>/home/damathryxx64/</code>). No mutable Windows host pollution.</div>
-        <div class="box-meta">Target: NixOS-WSL x86_64-linux</div>
+  <!-- ── 3D Architectural Stage (Interactive Centerpiece) ────────── -->
+  <section id="stage" class="stage-section">
+    <div class="stage-container">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-live-indicator"><span class="pulse-dot"></span> 3D LIVE ENGINE</span>
+          <span class="stage-title">System Topology &amp; Conduit Harmony</span>
+        </div>
+        <div class="stage-controls">
+          <button class="stage-btn active" id="btn-core" onclick="focusNode('core')">Flake Core</button>
+          <button class="stage-btn" id="btn-skills" onclick="focusNode('skills')">skills</button>
+          <button class="stage-btn" id="btn-nixos-wsl" onclick="focusNode('nixos-wsl')">NixOS-WSL</button>
+          <button class="stage-btn" id="btn-superpowers" onclick="focusNode('superpowers')">superpowers</button>
+          <button class="stage-btn" id="btn-clamav" onclick="focusNode('clamav')">clamav-scanner</button>
+          <button class="stage-btn" onclick="resetCameraView()">Reset View</button>
+        </div>
       </div>
-      <div class="glass-box">
-        <div class="box-icon">🎯</div>
-        <div class="box-title">Dots-Driven Source of Truth</div>
-        <div class="box-desc">The <code>damathryxx64</code> flake is the single authoritative root. Flake inputs pin reproducible commits for all agent runtimes, skills, rules, and system packages.</div>
-        <div class="box-meta">Flake: nixosConfigurations.nixos</div>
-      </div>
-      <div class="glass-box">
-        <div class="box-icon">🔄</div>
-        <div class="box-title">Multi-Upstream Synchronization</div>
-        <div class="box-desc">Daily background pipeline tracks 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy), purges foreign providers, adapts to Gemini &amp; Antigravity, and validates frontmatter.</div>
-        <div class="box-meta">Pipeline: scripts/sync-upstreams.py</div>
-      </div>
-      <div class="glass-box">
-        <div class="box-icon">🛡️</div>
-        <div class="box-title">4-Stage Quality Gate</div>
-        <div class="box-desc">Every change undergoes Alejandra code formatting, Statix anti-pattern analysis, Deadnix dead declaration removal, and pure Nix flake evaluation via <code>dots-validate</code>.</div>
-        <div class="box-meta">Script: modules/packages/task-runners.nix</div>
+
+      <div class="viewport-3d-wrap">
+        <canvas id="threeCanvas"></canvas>
+
+        <div class="stage-hint">DRAG TO ORBIT · SCROLL TO ZOOM · CLICK NODE TO INSPECT</div>
+
+        <div class="stage-hud" id="stageHud">
+          <div class="hud-title" id="hudTitle">damathryxx64 (Primary Flake)</div>
+          <div class="hud-desc" id="hudDesc">Central NixOS-WSL flake driver orchestrating modules, devShells, and skills synchronizer.</div>
+          <div class="hud-meta" id="hudMeta">Branch: trunk · 18 Modules · Zero Mutable State</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Section 2: Repositories -->
-  <section id="repos" class="sect reveal">
+  <!-- ── 2D Architecture Schematic (Guaranteed Visual Reference) ──── -->
+  <section id="schematic" class="sect">
     <div class="sect-header">
-      <div class="sect-tag">// WORKSPACE TOPOLOGY</div>
-      <h2 class="sect-h">Synchronized Repositories</h2>
+      <div class="sect-tag">// ARCHITECTURAL TOPOLOGY SCHEMATIC</div>
+      <h2 class="sect-h">System Conduit &amp; Data-Flow Map</h2>
       <p class="sect-p">
-        Five modular repositories orchestrated by the central flake, each pinned as a locked flake input to prevent divergence.
+        How the Windows host, WSL2 microVM, declarative Nix store, MCP servers, and autonomous agent skill trees interconnect without host pollution.
       </p>
     </div>
+
+    <div class="schematic-box">
+      <svg class="schematic-svg" viewBox="0 0 940 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gradCore" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00ff41" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#00ff41" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="gradLineG" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00ff41"/>
+            <stop offset="100%" stop-color="#00e5ff"/>
+          </linearGradient>
+          <filter id="glowGreen" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+
+        <!-- Windows Host Boundary -->
+        <rect x="20" y="20" width="220" height="340" rx="10" fill="#080e16" stroke="rgba(0,229,255,0.25)" stroke-dasharray="4 4"/>
+        <text x="35" y="48" fill="#00e5ff" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">WINDOWS 11 HOST</text>
+        <text x="35" y="68" fill="#4a5970" font-family="'Inter',sans-serif" font-size="10">External Host Environment</text>
+
+        <rect x="35" y="90" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(0,229,255,0.4)"/>
+        <text x="47" y="115" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Antigravity 2.0</text>
+        <text x="47" y="133" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">Headless GUI / Protocol Client</text>
+
+        <rect x="35" y="170" width="190" height="60" rx="6" fill="#0c1622" stroke="rgba(255,255,255,0.08)"/>
+        <text x="47" y="195" fill="#f0f4f9" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700">Windows Terminal</text>
+        <text x="47" y="213" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">agy2 launcher interop</text>
+
+        <!-- Bridge Arrow -->
+        <path d="M 240 120 L 310 120" stroke="url(#gradLineG)" stroke-width="2" marker-end="url(#arrow)" filter="url(#glowGreen)"/>
+        <text x="248" y="112" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="9">WSL Bridge</text>
+
+        <!-- NixOS-WSL Container Boundary -->
+        <rect x="310" y="20" width="610" height="340" rx="10" fill="#060a10" stroke="rgba(0,255,65,0.3)"/>
+        <text x="330" y="48" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NIXOS-WSL x86_64 PURE GUEST (/home/damathryxx64/)</text>
+
+        <!-- Central Flake Box -->
+        <rect x="330" y="80" width="240" height="150" rx="8" fill="url(#gradCore)" stroke="#00ff41" stroke-width="1.5"/>
+        <text x="345" y="108" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700">damathryxx64 (Primary Flake)</text>
+        <text x="345" y="128" fill="#f0f4f9" font-family="'Inter',sans-serif" font-size="11">Single Source of Truth</text>
+        <text x="345" y="152" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/configuration.nix</text>
+        <text x="345" y="170" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/ai/skills.nix</text>
+        <text x="345" y="188" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">├── modules/mcp/default.nix</text>
+        <text x="345" y="206" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">└── task-runners: dots-validate</text>
+
+        <!-- Conduits to Satellites -->
+        <path d="M 570 110 L 640 90" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M 570 135 L 640 150" stroke="#b055ff" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M 570 165 L 640 210" stroke="#ff55b0" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M 570 195 L 640 270" stroke="#ffb800" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+        <!-- Satellite 1: skills -->
+        <rect x="640" y="70" width="260" height="50" rx="6" fill="#081410" stroke="#34d399" stroke-width="1.2"/>
+        <text x="655" y="92" fill="#34d399" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">skills (gemini-skills)</text>
+        <text x="655" y="108" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">31+ Skills · 5 Upstreams Auto-Sync &amp; Audit</text>
+
+        <!-- Satellite 2: NixOS-WSL -->
+        <rect x="640" y="130" width="260" height="50" rx="6" fill="#120a1c" stroke="#b055ff" stroke-width="1.2"/>
+        <text x="655" y="152" fill="#b055ff" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">NixOS-WSL (nixos-wsl)</text>
+        <text x="655" y="168" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">systemd Native · Kernel 6.6+ · Mirrored Net</text>
+
+        <!-- Satellite 3: superpowers -->
+        <rect x="640" y="190" width="260" height="50" rx="6" fill="#180a14" stroke="#ff55b0" stroke-width="1.2"/>
+        <text x="655" y="212" fill="#ff55b0" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">superpowers (antigravity-super)</text>
+        <text x="655" y="228" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">Doctor Diagnostics · Watcher Auto-Fix</text>
+
+        <!-- Satellite 4: clamav-scanner -->
+        <rect x="640" y="250" width="260" height="50" rx="6" fill="#1a1406" stroke="#ffb800" stroke-width="1.2"/>
+        <text x="655" y="272" fill="#ffb800" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700">clamav-scanner (clamav-scanner)</text>
+        <text x="655" y="288" fill="#a2b1c6" font-family="'Inter',sans-serif" font-size="10">inotify Kernel Sentinel · Real-Time Scan</text>
+
+        <!-- Bottom Pipeline Bar -->
+        <rect x="330" y="260" width="240" height="70" rx="6" fill="#080e14" stroke="rgba(0,255,65,0.2)"/>
+        <text x="345" y="284" fill="#00ff41" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700">4-STAGE ZERO-DRIFT QUALITY GATES</text>
+        <text x="345" y="304" fill="#a2b1c6" font-family="'JetBrains Mono',monospace" font-size="10">Alejandra → Statix → Deadnix → Flake Check</text>
+        <text x="345" y="320" fill="#4a5970" font-family="'Inter',sans-serif" font-size="10">Run before any commit or system rebuild</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ── Repositories Detail Grid ─────────────────────────────────── -->
+  <section id="repos" class="sect">
+    <div class="sect-header">
+      <div class="sect-tag">// WORKSPACE REPOSITORY TOPOLOGY</div>
+      <h2 class="sect-h">The Five Managed Repositories</h2>
+      <p class="sect-p">
+        Modular, immutable repositories pinned in <code>damathryxx64/flake.lock</code> with zero unmanaged state.
+      </p>
+    </div>
+
     <div class="repo-grid">
-      <!-- Repo 1: damathryxx64 -->
+      <!-- Repo 1 -->
       <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noopener" class="repo-card" style="--rc:#00ff41">
         <div class="repo-top">
           <div class="repo-name-wrap">
             <span class="repo-dot"></span>
             <span class="repo-name">damathryxx64</span>
           </div>
-          <span class="repo-input-badge">Primary Flake</span>
+          <span class="repo-badge">Primary Flake</span>
         </div>
         <div class="repo-role">Central Flake Driver &amp; System Engine</div>
         <div class="repo-summary">
@@ -838,14 +950,14 @@ footer{
         </div>
       </a>
 
-      <!-- Repo 2: skills -->
+      <!-- Repo 2 -->
       <a href="https://github.com/shanmukha-sai-chinnam/skills" target="_blank" rel="noopener" class="repo-card" style="--rc:#34d399">
         <div class="repo-top">
           <div class="repo-name-wrap">
             <span class="repo-dot"></span>
             <span class="repo-name">skills</span>
           </div>
-          <span class="repo-input-badge">gemini-skills</span>
+          <span class="repo-badge">gemini-skills</span>
         </div>
         <div class="repo-role">AI Agent Skills &amp; Rules Hub</div>
         <div class="repo-summary">
@@ -866,14 +978,14 @@ footer{
         </div>
       </a>
 
-      <!-- Repo 3: NixOS-WSL -->
-      <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener" class="repo-card" style="--rc:#a855f7">
+      <!-- Repo 3 -->
+      <a href="https://github.com/shanmukha-sai-chinnam/NixOS-WSL" target="_blank" rel="noopener" class="repo-card" style="--rc:#b055ff">
         <div class="repo-top">
           <div class="repo-name-wrap">
             <span class="repo-dot"></span>
             <span class="repo-name">NixOS-WSL</span>
           </div>
-          <span class="repo-input-badge">nixos-wsl</span>
+          <span class="repo-badge">nixos-wsl</span>
         </div>
         <div class="repo-role">Distro Builder &amp; Guest Integration</div>
         <div class="repo-summary">
@@ -894,14 +1006,14 @@ footer{
         </div>
       </a>
 
-      <!-- Repo 4: superpowers -->
-      <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener" class="repo-card" style="--rc:#f472b6">
+      <!-- Repo 4 -->
+      <a href="https://github.com/shanmukha-sai-chinnam/antigravity-superpowers" target="_blank" rel="noopener" class="repo-card" style="--rc:#ff55b0">
         <div class="repo-top">
           <div class="repo-name-wrap">
             <span class="repo-dot"></span>
             <span class="repo-name">superpowers</span>
           </div>
-          <span class="repo-input-badge">antigravity-superpowers</span>
+          <span class="repo-badge">antigravity-superpowers</span>
         </div>
         <div class="repo-role">Agent Tooling &amp; Auto-Fix Watcher</div>
         <div class="repo-summary">
@@ -922,14 +1034,14 @@ footer{
         </div>
       </a>
 
-      <!-- Repo 5: clamav-scanner -->
-      <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener" class="repo-card" style="--rc:#fbbf24">
+      <!-- Repo 5 -->
+      <a href="https://github.com/shanmukha-sai-chinnam/clamav-scanner" target="_blank" rel="noopener" class="repo-card" style="--rc:#ffb800">
         <div class="repo-top">
           <div class="repo-name-wrap">
             <span class="repo-dot"></span>
             <span class="repo-name">clamav-scanner</span>
           </div>
-          <span class="repo-input-badge">clamav-scanner</span>
+          <span class="repo-badge">clamav-scanner</span>
         </div>
         <div class="repo-role">Real-Time Security Sentinel</div>
         <div class="repo-summary">
@@ -952,8 +1064,8 @@ footer{
     </div>
   </section>
 
-  <!-- Section 3: MCP & AI Runtimes -->
-  <section id="mcp" class="sect reveal">
+  <!-- ── MCP Servers Suite ───────────────────────────────────────── -->
+  <section id="mcp" class="sect">
     <div class="sect-header">
       <div class="sect-tag">// MODEL CONTEXT PROTOCOL</div>
       <h2 class="sect-h">Native MCP Server Suite</h2>
@@ -1005,40 +1117,8 @@ footer{
     </div>
   </section>
 
-  <!-- Section 4: Antigravity 2.0 Host Bridge -->
-  <section id="bridge" class="sect reveal">
-    <div class="sect-header">
-      <div class="sect-tag">// HEADLESS WSL2 INTEGRATION</div>
-      <h2 class="sect-h">Antigravity 2.0 Bridge</h2>
-      <p class="sect-p">
-        Antigravity 2.0 operates directly without the legacy IDE shell. The Windows host client bridges via interop sockets to the guest NixOS language server daemon.
-      </p>
-    </div>
-    <div class="term-shell">
-      <div class="term-bar">
-        <div class="term-dots">
-          <div class="term-dot" style="background:#ff5f57"></div>
-          <div class="term-dot" style="background:#febc2e"></div>
-          <div class="term-dot" style="background:#28c840"></div>
-        </div>
-        <span class="term-info">HOST ↔ GUEST PROTOCOL SPECIFICATION</span>
-      </div>
-      <div class="term-output">
-        <div class="tline"><span class="td"># 1. Windows Host Process Invocation</span></div>
-        <div class="tline"><span class="tp">PS C:\&gt;</span> <span class="tc">Antigravity.exe --remote-wsl=NixOS</span></div>
-        <div class="tline"><span class="td"># Interop command executed over Windows WSL bridge:</span></div>
-        <div class="tline"><span class="ti">wsl.exe -d NixOS -u damathryxx64 -e bash -l -c "~/.antigravity-server/bin/language_server"</span></div>
-        <div class="tline">&nbsp;</div>
-        <div class="tline"><span class="td"># 2. Native NixOS Shell Launchers (modules/ai/default.nix)</span></div>
-        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">agy2</span>          <span class="td"># Launch Antigravity 2.0 on Windows connected to NixOS WSL</span></div>
-        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">antigravity2</span>  <span class="td"># Direct alias for agy2</span></div>
-        <div class="tline"><span class="tp">damathryxx64@nixos $</span> <span class="tc">help-nix</span>      <span class="td"># System &amp; agent quick-reference card</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 5: Interactive Terminal Simulator -->
-  <section id="terminal" class="sect reveal">
+  <!-- ── Interactive Terminal Simulator ──────────────────────────── -->
+  <section id="terminal" class="sect">
     <div class="sect-header">
       <div class="sect-tag">// LIVE CONSOLE SIMULATOR</div>
       <h2 class="sect-h">System CLI Execution</h2>
@@ -1049,9 +1129,9 @@ footer{
     <div class="term-shell">
       <div class="term-bar">
         <div class="term-dots">
-          <div class="term-dot" style="background:#ff5f57"></div>
-          <div class="term-dot" style="background:#febc2e"></div>
-          <div class="term-dot" style="background:#28c840"></div>
+          <div class="term-dot" style="background:#ff4d4d"></div>
+          <div class="term-dot" style="background:#ffb800"></div>
+          <div class="term-dot" style="background:#00ff41"></div>
         </div>
         <span class="term-info">damathryxx64@nixos: ~/repositories/damathryxx64 (trunk)</span>
       </div>
@@ -1069,8 +1149,8 @@ footer{
     </div>
   </section>
 
-  <!-- Section 6: Commands Reference -->
-  <section id="cmds" class="sect reveal">
+  <!-- ── Commands Reference ──────────────────────────────────────── -->
+  <section id="cmds" class="sect">
     <div class="sect-header">
       <div class="sect-tag">// DECLARATIVE TASK RUNNERS</div>
       <h2 class="sect-h">Command Reference</h2>
@@ -1161,321 +1241,445 @@ footer{
 
 </div>
 
-<!-- ── Three.js Engine ─────────────────────────────────────────── -->
+<!-- ── Three.js WebGL Script ───────────────────────────────────── -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
 <script>
 (function(){
 "use strict";
 
-/* ── Repository Satellites Specification ────────────────────────── */
-const ORBIT_RADIUS = 10;
-const REPO_NODES = [
-  { id:"skills",       name:"skills",       color:0x34d399, hex:"#34d399", angle:0,             y:0.8,  geo:"dodeca" },
-  { id:"nixos-wsl",    name:"NixOS-WSL",    color:0xa855f7, hex:"#a855f7", angle:Math.PI*0.5,   y:-0.5, geo:"torus" },
-  { id:"superpowers",  name:"superpowers",  color:0xf472b6, hex:"#f472b6", angle:Math.PI,       y:0.6,  geo:"octa" },
-  { id:"clamav",       name:"clamav-scanner",color:0xfbbf24,hex:"#fbbf24",angle:Math.PI*1.5,   y:-0.7, geo:"icosa" },
-];
+const canvas = document.getElementById("threeCanvas");
+if (!canvas) return;
 
-/* ── Three.js Scene Setup ──────────────────────────────────────── */
-const canvas = document.getElementById("canvas3d");
+/* ── Repository Data Specifications ────────────────────────────── */
+const NODES_DATA = {
+  core: {
+    id: "core",
+    name: "damathryxx64 (Primary Flake)",
+    desc: "Single source of truth for NixOS-WSL modules, devShells, and skills synchronizer.",
+    meta: "Branch: trunk · 18 Modules · Zero Mutable State",
+    color: 0x00ff41,
+    hex: "#00ff41",
+    camPos: [0, 6, 16],
+    targetPos: [0, 0, 0]
+  },
+  skills: {
+    id: "skills",
+    name: "skills (gemini-skills)",
+    desc: "Unified agent skills hub tracking 5 upstreams (Google, Superpowers, Karpathy, ADHD, Anatomy).",
+    meta: "Branch: main · 31+ Skills · Daily Upstream Sync",
+    color: 0x34d399,
+    hex: "#34d399",
+    camPos: [8, 4, 6],
+    targetPos: [7.5, 0.8, 0]
+  },
+  "nixos-wsl": {
+    id: "nixos-wsl",
+    name: "NixOS-WSL (nixos-wsl)",
+    desc: "Distro builder providing guest systemd activation, kernel modules & Windows host bridge.",
+    meta: "Branch: main · Linux Kernel 6.6+ · Mirrored Net",
+    color: 0xb055ff,
+    hex: "#b055ff",
+    camPos: [4, 3, 11],
+    targetPos: [0, -0.5, 7.5]
+  },
+  superpowers: {
+    id: "superpowers",
+    name: "superpowers (antigravity-superpowers)",
+    desc: "Superpowers CLI for Antigravity with doctor diagnostics & background auto-fix file watcher.",
+    meta: "Branch: main · Doctor Ready · Continuous Watcher",
+    color: 0xff55b0,
+    hex: "#ff55b0",
+    camPos: [-8, 4, 6],
+    targetPos: [-7.5, 0.6, 0]
+  },
+  clamav: {
+    id: "clamav",
+    name: "clamav-scanner (clamav-scanner)",
+    desc: "Real-time inotify file creation sentinel and Docker ClamAV daemon guarding workspace files.",
+    meta: "Branch: trunk · inotify Kernel Sentinel · Real-Time",
+    color: 0xffb800,
+    hex: "#ffb800",
+    camPos: [-4, 3, -11],
+    targetPos: [0, -0.6, -7.5]
+  }
+};
+
+/* ── Scene Setup ───────────────────────────────────────────────── */
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x040507, 0.012);
+scene.fog = new THREE.FogExp2(0x030508, 0.018);
 
-const camera = new THREE.PerspectiveCamera(58, window.innerWidth/window.innerHeight, 0.1, 500);
-camera.position.set(0, 8, 20);
+const width = canvas.parentElement.clientWidth || 800;
+const height = canvas.parentElement.clientHeight || 540;
 
-const renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true });
+const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 500);
+camera.position.set(0, 6, 17);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x040507);
+renderer.setSize(width, height);
+renderer.setClearColor(0x030508, 0);
 
-/* ── Ambient & Core Lighting ───────────────────────────────────── */
-scene.add(new THREE.AmbientLight(0x081015));
-const coreLight = new THREE.PointLight(0x00ff41, 3.5, 45);
-scene.add(coreLight);
+/* ── Lights ────────────────────────────────────────────────────── */
+scene.add(new THREE.AmbientLight(0x0d1520));
+const corePointLight = new THREE.PointLight(0x00ff41, 4, 35);
+corePointLight.position.set(0, 0, 0);
+scene.add(corePointLight);
 
-/* ── Phosphor Grid Floor ───────────────────────────────────────── */
-const grid = new THREE.GridHelper(80, 40, 0x0a2a0a, 0x08150a);
-grid.position.y = -5;
-grid.material.transparent = true;
-grid.material.opacity = 0.22;
-scene.add(grid);
+/* ── Grid Platform ─────────────────────────────────────────────── */
+const gridHelper = new THREE.GridHelper(40, 24, 0x00ff41, 0x082012);
+gridHelper.position.y = -4.5;
+gridHelper.material.transparent = true;
+gridHelper.material.opacity = 0.28;
+scene.add(gridHelper);
 
-/* ── Central Engine: damathryxx64 Flake Core ───────────────────── */
-const centerWire = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(2.5, 1),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, wireframe:true, transparent:true, opacity:0.6 })
+/* ── Center Node: damathryxx64 Flake Core ───────────────────────── */
+const centerGroup = new THREE.Group();
+scene.add(centerGroup);
+
+// Outer wireframe cage
+const coreCage = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(2.2, 1),
+  new THREE.MeshBasicMaterial({ color: 0x00ff41, wireframe: true, transparent: true, opacity: 0.85 })
 );
-scene.add(centerWire);
+centerGroup.add(coreCage);
 
-const centerCore = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(1.5, 2),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.07 })
+// Inner solid glow core
+const coreInner = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(1.4, 2),
+  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.25 })
 );
-scene.add(centerCore);
+centerGroup.add(coreInner);
 
-/* ── Gyroscope Rings ───────────────────────────────────────────── */
-const gyro1 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.5, 0.02, 8, 120),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.25 })
+// Pulsing nucleus
+const coreNucleus = new THREE.Mesh(
+  new THREE.SphereGeometry(0.7, 16, 16),
+  new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.8 })
 );
-gyro1.rotation.x = Math.PI/2;
-scene.add(gyro1);
+centerGroup.add(coreNucleus);
 
-const gyro2 = new THREE.Mesh(
-  new THREE.TorusGeometry(3.85, 0.016, 8, 120),
-  new THREE.MeshBasicMaterial({ color:0x00d4ff, transparent:true, opacity:0.18 })
+// Rotating gyroscope rings around center
+const ring1 = new THREE.Mesh(
+  new THREE.TorusGeometry(3.0, 0.03, 8, 80),
+  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.4 })
 );
-gyro2.rotation.x = Math.PI/3;
-gyro2.rotation.z = Math.PI/4;
-scene.add(gyro2);
+ring1.rotation.x = Math.PI / 2;
+centerGroup.add(ring1);
 
-/* ── Orbit Conduit Ring ────────────────────────────────────────── */
+const ring2 = new THREE.Mesh(
+  new THREE.TorusGeometry(3.3, 0.025, 8, 80),
+  new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.35 })
+);
+ring2.rotation.x = Math.PI / 3;
+ring2.rotation.z = Math.PI / 4;
+centerGroup.add(ring2);
+
+/* ── Pinned Orbit Ring ─────────────────────────────────────────── */
+const ORBIT_R = 7.5;
 const orbitRing = new THREE.Mesh(
-  new THREE.TorusGeometry(ORBIT_RADIUS, 0.025, 8, 160),
-  new THREE.MeshBasicMaterial({ color:0x00ff41, transparent:true, opacity:0.12 })
+  new THREE.TorusGeometry(ORBIT_R, 0.02, 8, 120),
+  new THREE.MeshBasicMaterial({ color: 0x00ff41, transparent: true, opacity: 0.2 })
 );
-orbitRing.rotation.x = Math.PI/2;
+orbitRing.rotation.x = Math.PI / 2;
 scene.add(orbitRing);
 
-/* ── Satellite Geometry Generators ─────────────────────────────── */
-function makeSatelliteGeometry(type){
-  switch(type){
-    case "dodeca": return new THREE.DodecahedronGeometry(1.3, 0);
-    case "torus":  return new THREE.TorusGeometry(0.9, 0.35, 8, 20);
-    case "octa":   return new THREE.OctahedronGeometry(1.3, 0);
-    case "icosa":  return new THREE.IcosahedronGeometry(1.2, 0);
-    default:       return new THREE.BoxGeometry(1.2, 1.2, 1.2);
-  }
-}
-
-const satellites = [];
-const conduitLines = [];
-
-REPO_NODES.forEach((node, i) => {
-  const geo = makeSatelliteGeometry(node.geo);
-  const mat = new THREE.MeshBasicMaterial({ color:node.color, wireframe:true, transparent:true, opacity:0.7 });
-  const mesh = new THREE.Mesh(geo, mat);
-
-  const x = Math.cos(node.angle)*ORBIT_RADIUS;
-  const z = Math.sin(node.angle)*ORBIT_RADIUS;
-  mesh.position.set(x, node.y, z);
-  scene.add(mesh);
-
-  const innerSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.45, 8, 8),
-    new THREE.MeshBasicMaterial({ color:node.color, transparent:true, opacity:0.1 })
-  );
-  innerSphere.position.copy(mesh.position);
-  scene.add(innerSphere);
-
-  // Connection conduit line to center
-  const lineGeo = new THREE.BufferGeometry();
-  lineGeo.setAttribute("position", new THREE.Float32BufferAttribute([0,0,0, x,node.y,z], 3));
-  const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color:node.color, transparent:true, opacity:0.2 }));
-  scene.add(line);
-
-  satellites.push({
-    mesh,
-    innerSphere,
-    baseAngle: node.angle,
-    baseY: node.y,
-    color: node.color
-  });
-  conduitLines.push(lineGeo);
-});
-
-/* ── Ambient Particle Lattice ──────────────────────────────────── */
-const AMBIENT_COUNT = 750;
-const ambPositions = new Float32Array(AMBIENT_COUNT*3);
-for(let i=0; i<AMBIENT_COUNT; i++){
-  ambPositions[i*3]   = (Math.random()-0.5)*100;
-  ambPositions[i*3+1] = (Math.random()-0.5)*100;
-  ambPositions[i*3+2] = (Math.random()-0.5)*100;
-}
-const ambGeo = new THREE.BufferGeometry();
-ambGeo.setAttribute("position", new THREE.Float32BufferAttribute(ambPositions, 3));
-scene.add(new THREE.Points(ambGeo, new THREE.PointsMaterial({
-  color:0x00ff41,
-  size:0.07,
-  transparent:true,
-  opacity:0.35,
-  blending:THREE.AdditiveBlending,
-  depthWrite:false
-})));
-
-/* ── Flow Conduit Particles ────────────────────────────────────── */
-const PARTICLES_PER_NODE = 32;
-const totalFlowCount = REPO_NODES.length * PARTICLES_PER_NODE;
-const flowPositions = new Float32Array(totalFlowCount*3);
-const flowColors = new Float32Array(totalFlowCount*3);
-const flowProgress = new Float32Array(totalFlowCount);
-const flowSpeed = new Float32Array(totalFlowCount);
-const flowTargetIndex = new Uint8Array(totalFlowCount);
-
-for(let i=0; i<REPO_NODES.length; i++){
-  const c = new THREE.Color(REPO_NODES[i].color);
-  for(let j=0; j<PARTICLES_PER_NODE; j++){
-    const idx = i*PARTICLES_PER_NODE + j;
-    flowProgress[idx] = Math.random();
-    flowSpeed[idx] = 0.0012 + Math.random()*0.0035;
-    flowTargetIndex[idx] = i;
-    flowColors[idx*3]   = c.r;
-    flowColors[idx*3+1] = c.g;
-    flowColors[idx*3+2] = c.b;
-  }
-}
-const flowGeo = new THREE.BufferGeometry();
-flowGeo.setAttribute("position", new THREE.Float32BufferAttribute(flowPositions, 3));
-flowGeo.setAttribute("color", new THREE.Float32BufferAttribute(flowColors, 3));
-scene.add(new THREE.Points(flowGeo, new THREE.PointsMaterial({
-  size:0.12,
-  transparent:true,
-  opacity:0.85,
-  blending:THREE.AdditiveBlending,
-  depthWrite:false,
-  vertexColors:true
-})));
-
-/* ── Mouse & Scroll Listeners ──────────────────────────────────── */
-let mouseX = 0, mouseY = 0, scrollY = 0;
-window.addEventListener("mousemove", (e) => {
-  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
-window.addEventListener("scroll", () => {
-  scrollY = window.scrollY;
-}, { passive:true });
-
-/* ── Dynamic 3D DOM Labels ─────────────────────────────────────── */
-const labelsOverlay = document.getElementById("labelsOverlay");
-const LABEL_SPECS = [
-  { name:"damathryxx64 (trunk)", hex:"#00ff41", isCenter:true, getPos:() => new THREE.Vector3(0, 3.4, 0) },
-  ...REPO_NODES.map((n, i) => ({
-    name: n.name,
-    hex: n.hex,
-    isCenter: false,
-    getPos: () => {
-      const p = satellites[i].mesh.position.clone();
-      p.y += 2.2;
-      return p;
-    }
-  }))
+/* ── Satellites ────────────────────────────────────────────────── */
+const SATELLITE_CONFIGS = [
+  { id: "skills",       angle: 0,             y:  0.8, color: 0x34d399, geo: "dodeca" },
+  { id: "nixos-wsl",    angle: Math.PI * 0.5, y: -0.5, color: 0xb055ff, geo: "torus"  },
+  { id: "superpowers",  angle: Math.PI,       y:  0.6, color: 0xff55b0, geo: "octa"   },
+  { id: "clamav",       angle: Math.PI * 1.5, y: -0.6, color: 0xffb800, geo: "icosa"  }
 ];
 
-const labelElements = LABEL_SPECS.map(spec => {
-  const pill = document.createElement("div");
-  pill.className = "node-pill" + (spec.isCenter ? " center-pill" : "");
-  pill.style.setProperty("--lc", spec.hex);
-  pill.innerHTML = '<span class="node-dot"></span><span>' + spec.name + "</span>";
-  labelsOverlay.appendChild(pill);
-  return pill;
+const satellitesMap = {};
+const conduitLines = [];
+
+SATELLITE_CONFIGS.forEach((cfg) => {
+  const satGroup = new THREE.Group();
+
+  let meshGeo;
+  switch (cfg.geo) {
+    case "dodeca": meshGeo = new THREE.DodecahedronGeometry(1.15, 0); break;
+    case "torus":  meshGeo = new THREE.TorusGeometry(0.85, 0.3, 8, 20); break;
+    case "octa":   meshGeo = new THREE.OctahedronGeometry(1.2, 0); break;
+    case "icosa":  meshGeo = new THREE.IcosahedronGeometry(1.1, 0); break;
+  }
+
+  const wireMesh = new THREE.Mesh(
+    meshGeo,
+    new THREE.MeshBasicMaterial({ color: cfg.color, wireframe: true, transparent: true, opacity: 0.9 })
+  );
+  satGroup.add(wireMesh);
+
+  const solidCore = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5, 12, 12),
+    new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35 })
+  );
+  satGroup.add(solidCore);
+
+  const haloRing = new THREE.Mesh(
+    new THREE.TorusGeometry(1.5, 0.015, 6, 40),
+    new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.3 })
+  );
+  haloRing.rotation.x = Math.PI / 2;
+  satGroup.add(haloRing);
+
+  const x = Math.cos(cfg.angle) * ORBIT_R;
+  const z = Math.sin(cfg.angle) * ORBIT_R;
+  satGroup.position.set(x, cfg.y, z);
+  scene.add(satGroup);
+
+  // Line conduit connecting to center
+  const lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, x, cfg.y, z], 3));
+  const lineMat = new THREE.LineBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35 });
+  const conduitLine = new THREE.Line(lineGeo, lineMat);
+  scene.add(conduitLine);
+
+  satellitesMap[cfg.id] = {
+    group: satGroup,
+    wire: wireMesh,
+    baseAngle: cfg.angle,
+    baseY: cfg.y,
+    color: cfg.color,
+    id: cfg.id
+  };
+  conduitLines.push({ geo: lineGeo, id: cfg.id });
 });
 
-function updateProjectedLabels(){
-  const opacityFactor = Math.max(0, 1 - scrollY / (window.innerHeight * 0.7));
-  labelsOverlay.style.opacity = opacityFactor;
-  if(opacityFactor < 0.03) return;
+/* ── Conduit Energy Packets (Flow Particles) ───────────────────── */
+const PACKETS_PER_CONDUIT = 24;
+const totalPackets = SATELLITE_CONFIGS.length * PACKETS_PER_CONDUIT;
+const packetPositions = new Float32Array(totalPackets * 3);
+const packetColors = new Float32Array(totalPackets * 3);
+const packetProgress = new Float32Array(totalPackets);
+const packetSpeed = new Float32Array(totalPackets);
+const packetTarget = new Uint8Array(totalPackets);
 
-  LABEL_SPECS.forEach((spec, i) => {
-    const worldPos = spec.getPos();
-    const screenPos = worldPos.project(camera);
-    if(screenPos.z > 1){
-      labelElements[i].style.display = "none";
-      return;
-    }
-    labelElements[i].style.display = "flex";
-    labelElements[i].style.left = ((screenPos.x * 0.5 + 0.5) * window.innerWidth) + "px";
-    labelElements[i].style.top  = ((-screenPos.y * 0.5 + 0.5) * window.innerHeight) + "px";
-  });
+for (let i = 0; i < SATELLITE_CONFIGS.length; i++) {
+  const c = new THREE.Color(SATELLITE_CONFIGS[i].color);
+  for (let j = 0; j < PACKETS_PER_CONDUIT; j++) {
+    const idx = i * PACKETS_PER_CONDUIT + j;
+    packetProgress[idx] = Math.random();
+    packetSpeed[idx] = 0.003 + Math.random() * 0.004;
+    packetTarget[idx] = i;
+    packetColors[idx * 3]     = c.r;
+    packetColors[idx * 3 + 1] = c.g;
+    packetColors[idx * 3 + 2] = c.b;
+  }
 }
+const packetGeo = new THREE.BufferGeometry();
+packetGeo.setAttribute("position", new THREE.Float32BufferAttribute(packetPositions, 3));
+packetGeo.setAttribute("color", new THREE.Float32BufferAttribute(packetColors, 3));
+const packetPoints = new THREE.Points(
+  packetGeo,
+  new THREE.PointsMaterial({
+    size: 0.16,
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    vertexColors: true
+  })
+);
+scene.add(packetPoints);
+
+/* ── Ambient Particle Atmosphere ───────────────────────────────── */
+const AMBIENT_P_COUNT = 300;
+const ambPos = new Float32Array(AMBIENT_P_COUNT * 3);
+for (let i = 0; i < AMBIENT_P_COUNT; i++) {
+  ambPos[i * 3]     = (Math.random() - 0.5) * 50;
+  ambPos[i * 3 + 1] = (Math.random() - 0.5) * 30;
+  ambPos[i * 3 + 2] = (Math.random() - 0.5) * 50;
+}
+const ambGeo = new THREE.BufferGeometry();
+ambGeo.setAttribute("position", new THREE.Float32BufferAttribute(ambPos, 3));
+const ambPoints = new THREE.Points(
+  ambGeo,
+  new THREE.PointsMaterial({
+    color: 0x00ff41,
+    size: 0.06,
+    transparent: true,
+    opacity: 0.35,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  })
+);
+scene.add(ambPoints);
+
+/* ── Orbit Drag & Smooth Camera Controller ─────────────────────── */
+let isDragging = false;
+let prevMouseX = 0, prevMouseY = 0;
+let spherical = { radius: 17, theta: 0, phi: Math.PI / 2.7 };
+let targetLookAt = new THREE.Vector3(0, 0, 0);
+let currentLookAt = new THREE.Vector3(0, 0, 0);
+let autoRotate = true;
+
+canvas.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  autoRotate = false;
+  prevMouseX = e.clientX;
+  prevMouseY = e.clientY;
+});
+window.addEventListener("mouseup", () => { isDragging = false; });
+canvas.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  const deltaX = e.clientX - prevMouseX;
+  const deltaY = e.clientY - prevMouseY;
+  prevMouseX = e.clientX;
+  prevMouseY = e.clientY;
+
+  spherical.theta -= deltaX * 0.007;
+  spherical.phi = Math.max(0.2, Math.min(Math.PI - 0.2, spherical.phi - deltaY * 0.007));
+});
+
+canvas.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  spherical.radius = Math.max(6, Math.min(32, spherical.radius + e.deltaY * 0.02));
+}, { passive: false });
+
+/* Touch support */
+canvas.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    autoRotate = false;
+    prevMouseX = e.touches[0].clientX;
+    prevMouseY = e.touches[0].clientY;
+  }
+}, { passive: true });
+window.addEventListener("touchend", () => { isDragging = false; });
+canvas.addEventListener("touchmove", (e) => {
+  if (!isDragging || e.touches.length !== 1) return;
+  const deltaX = e.touches[0].clientX - prevMouseX;
+  const deltaY = e.touches[0].clientY - prevMouseY;
+  prevMouseX = e.touches[0].clientX;
+  prevMouseY = e.touches[0].clientY;
+  spherical.theta -= deltaX * 0.008;
+  spherical.phi = Math.max(0.2, Math.min(Math.PI - 0.2, spherical.phi - deltaY * 0.008));
+}, { passive: true });
+
+/* ── Interactive Focus / Inspector ─────────────────────────────── */
+window.focusNode = function(nodeKey) {
+  const data = NODES_DATA[nodeKey];
+  if (!data) return;
+
+  autoRotate = false;
+  document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("active"));
+  const btn = document.getElementById("btn-" + nodeKey);
+  if (btn) btn.classList.add("active");
+
+  const hudTitle = document.getElementById("hudTitle");
+  const hudDesc = document.getElementById("hudDesc");
+  const hudMeta = document.getElementById("hudMeta");
+  const hudCard = document.getElementById("stageHud");
+
+  if (hudTitle) hudTitle.textContent = data.name;
+  if (hudDesc) hudDesc.textContent = data.desc;
+  if (hudMeta) hudMeta.textContent = data.meta;
+  if (hudCard) hudCard.style.borderColor = data.hex;
+
+  targetLookAt.set(data.targetPos[0], data.targetPos[1], data.targetPos[2]);
+
+  if (nodeKey === "core") {
+    spherical.radius = 16;
+    spherical.phi = Math.PI / 2.7;
+  } else {
+    spherical.radius = 11;
+  }
+};
+
+window.resetCameraView = function() {
+  autoRotate = true;
+  document.querySelectorAll(".stage-btn").forEach(b => b.classList.remove("active"));
+  const btnCore = document.getElementById("btn-core");
+  if (btnCore) btnCore.classList.add("active");
+  focusNode("core");
+};
 
 /* ── Animation Render Loop ─────────────────────────────────────── */
-function renderLoop(){
-  requestAnimationFrame(renderLoop);
+function animate() {
+  requestAnimationFrame(animate);
   const time = performance.now() * 0.001;
-  const scrollRatio = scrollY / window.innerHeight;
 
-  // Camera Orbit & Dynamics
-  const orbitDist = 20 + scrollRatio * 4;
-  const orbitSpeed = 0.07;
-  camera.position.x = Math.sin(time * orbitSpeed) * orbitDist + mouseX * 2.8;
-  camera.position.z = Math.cos(time * orbitSpeed) * orbitDist;
-  camera.position.y = 8 + mouseY * -2.4 + scrollRatio * 2.5;
-  camera.lookAt(0, 0, 0);
+  if (autoRotate) {
+    spherical.theta += 0.004;
+  }
 
-  // Central Flake Pulse & Spin
-  centerWire.rotation.y = time * 0.28;
-  centerWire.rotation.x = time * 0.14;
-  centerCore.rotation.y = -time * 0.18;
-  const pulseFactor = 1 + Math.sin(time * 2) * 0.04;
-  centerWire.scale.setScalar(pulseFactor);
-  coreLight.intensity = 2.8 + Math.sin(time * 3) * 0.8;
+  // Smooth camera position interpolation
+  currentLookAt.lerp(targetLookAt, 0.05);
 
-  // Gyroscope Precession
-  gyro1.rotation.z = time * 0.35;
-  gyro2.rotation.y = time * 0.28;
-  gyro2.rotation.z = Math.PI / 4 + time * 0.12;
+  const cx = currentLookAt.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+  const cy = currentLookAt.y + spherical.radius * Math.cos(spherical.phi);
+  const cz = currentLookAt.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+  camera.position.set(cx, cy, cz);
+  camera.lookAt(currentLookAt);
 
-  // Orbit Ring
-  orbitRing.rotation.z = time * 0.015;
+  // Central Core Dynamics
+  coreCage.rotation.y = time * 0.3;
+  coreCage.rotation.x = time * 0.15;
+  coreInner.rotation.y = -time * 0.25;
+  const pulseScale = 1 + Math.sin(time * 2.5) * 0.06;
+  coreCage.scale.setScalar(pulseScale);
+  coreNucleus.scale.setScalar(1 + Math.sin(time * 5) * 0.12);
+  corePointLight.intensity = 3.5 + Math.sin(time * 4) * 0.8;
 
-  // Orbiting Satellites
-  satellites.forEach((sat, i) => {
-    const angle = sat.baseAngle + time * 0.11;
-    const x = Math.cos(angle) * ORBIT_RADIUS;
-    const z = Math.sin(angle) * ORBIT_RADIUS;
-    const y = sat.baseY + Math.sin(time + i * 1.6) * 0.45;
+  // Center Gyroscope Rings
+  ring1.rotation.z = time * 0.4;
+  ring2.rotation.y = time * 0.3;
+  ring2.rotation.z = Math.PI / 4 + time * 0.15;
 
-    sat.mesh.position.set(x, y, z);
-    sat.innerSphere.position.copy(sat.mesh.position);
-    sat.mesh.rotation.x = time * (0.35 + i * 0.05);
-    sat.mesh.rotation.y = time * (0.22 + i * 0.04);
+  // Orbit ring slight precession
+  orbitRing.rotation.z = time * 0.02;
 
-    // Update conduit line geometry
-    const linePosAttr = conduitLines[i].attributes.position;
-    linePosAttr.setXYZ(1, x, y, z);
+  // Satellites orbiting & spinning
+  SATELLITE_CONFIGS.forEach((cfg, idx) => {
+    const sat = satellitesMap[cfg.id];
+    if (!sat) return;
+
+    const angle = sat.baseAngle + time * 0.08;
+    const sx = Math.cos(angle) * ORBIT_R;
+    const sz = Math.sin(angle) * ORBIT_R;
+    const sy = sat.baseY + Math.sin(time * 1.5 + idx * 1.6) * 0.35;
+
+    sat.group.position.set(sx, sy, sz);
+    sat.wire.rotation.x = time * (0.4 + idx * 0.05);
+    sat.wire.rotation.y = time * (0.25 + idx * 0.04);
+
+    // Update conduit line geometry endpoint
+    const linePosAttr = conduitLines[idx].geo.attributes.position;
+    linePosAttr.setXYZ(1, sx, sy, sz);
     linePosAttr.needsUpdate = true;
   });
 
-  // Flow Conduit Particles
-  const flowPosAttr = flowGeo.attributes.position;
-  for(let i=0; i<totalFlowCount; i++){
-    flowProgress[i] += flowSpeed[i];
-    if(flowProgress[i] > 1) flowProgress[i] = 0;
-    const targetSatPos = satellites[flowTargetIndex[i]].mesh.position;
-    const prog = flowProgress[i];
-    const arcHeight = Math.sin(prog * Math.PI) * 1.8;
-    flowPosAttr.setXYZ(
-      i,
-      targetSatPos.x * prog,
-      targetSatPos.y * prog + arcHeight,
-      targetSatPos.z * prog
-    );
-  }
-  flowPosAttr.needsUpdate = true;
+  // Conduit energy packets moving along pipelines
+  const posAttr = packetGeo.attributes.position;
+  for (let i = 0; i < totalPackets; i++) {
+    packetProgress[i] += packetSpeed[i];
+    if (packetProgress[i] > 1) packetProgress[i] = 0;
 
-  updateProjectedLabels();
+    const targetSat = satellitesMap[SATELLITE_CONFIGS[packetTarget[i]].id];
+    const u = packetProgress[i];
+    const tx = targetSat.group.position.x * u;
+    const ty = targetSat.group.position.y * u + Math.sin(u * Math.PI) * 1.2;
+    const tz = targetSat.group.position.z * u;
+    posAttr.setXYZ(i, tx, ty, tz);
+  }
+  posAttr.needsUpdate = true;
+
   renderer.render(scene, camera);
 }
-renderLoop();
+animate();
 
-/* ── Window Resize ─────────────────────────────────────────────── */
+/* ── Stage Resize Handler ──────────────────────────────────────── */
 window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  const newWidth = canvas.parentElement.clientWidth;
+  const newHeight = canvas.parentElement.clientHeight;
+  camera.aspect = newWidth / newHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(newWidth, newHeight);
 });
 
-/* ── Intersection Observer for Scroll Reveal ───────────────────── */
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting) entry.target.classList.add("visible");
-  });
-}, { threshold:0.08 });
-document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
-
-/* ── Interactive Terminal Engine ───────────────────────────────── */
+/* ── Terminal Simulator Engine ─────────────────────────────────── */
 const CLI_SCRIPTS = {
   validate: {
     cmd: "dots-validate",
@@ -1565,10 +1769,8 @@ window.execCmd = function(commandKey){
   if(!script) return;
   isExecuting = true;
 
-  // Remove existing cursor
   terminalOut.querySelectorAll(".term-cursor").forEach(cursor => cursor.remove());
 
-  // Print command line
   const cmdLine = document.createElement("div");
   cmdLine.className = "tline";
   cmdLine.innerHTML = '<span class="tp">damathryxx64@nixos $ </span><span class="tc">' + script.cmd + "</span>";
