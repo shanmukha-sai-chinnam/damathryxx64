@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Autonomous Agent Hive · Full Infrastructure 3D Engine</title>
+  <title>damathryxx64 · Autonomous Agent Hive & NixOS Orchestrator</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -94,17 +94,20 @@
   <div class="relative z-20 flex flex-col min-h-screen p-3 md:p-6 max-w-7xl mx-auto w-full">
 
     <!-- Top Bar Header -->
-    <header class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-cyan-500/20 mb-3">
-      <div class="flex items-center gap-3">
-        <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#00ffcc] animate-pulse"></div>
-        <div>
-          <h1 class="text-cyan-300 font-bold text-sm md:text-base tracking-wider uppercase glow-text flex items-center gap-2">
-            <span>❄</span> Autonomous Agent Hive · 3D Infrastructure Hologram
-            <span class="text-[11px] font-normal text-emerald-400 border border-emerald-500/40 bg-emerald-950/40 px-2 py-0.5 rounded">Local Preview · Port 8088</span>
-          </h1>
-          <p class="text-xs text-slate-400 font-sans">Interactive 3D Neural Constellation Mapping NixOS-WSL, 9 MCP Servers, 6 Autonomous Agents, 4 Upstreams & 31+ Skills</p>
+    <header class="pb-3 border-b border-cyan-500/20 mb-3">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#00ffcc] animate-pulse"></div>
+          <div>
+            <h1 class="text-cyan-300 font-bold text-base md:text-lg tracking-wider uppercase glow-text flex items-center gap-2.5">
+              <span>❄</span> damathryxx64
+              <span class="text-[11px] font-normal text-emerald-400 border border-emerald-500/40 bg-emerald-950/40 px-2.5 py-0.5 rounded font-mono">PRODUCTION · NIXOS-WSL RUNTIME · ZERO DRIFT</span>
+            </h1>
+            <p class="text-xs text-slate-400 font-sans mt-0.5">
+              Declarative NixOS-WSL development engine powering Antigravity 2.0, 9 native MCP servers, and an autonomous multi-upstream AI skills runtime.
+            </p>
+          </div>
         </div>
-      </div>
 
       <!-- Quick Telemetry Chips -->
       <div class="flex items-center gap-2 md:gap-3 text-xs">
@@ -122,55 +125,14 @@
           Packets: <span id="packetCountVal" class="font-bold text-white">48</span>
         </div>
       </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs pt-2 border-t border-slate-800/60 text-slate-400">
+        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 font-mono">📦 5 Managed Repos</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 font-mono">🔌 9 MCP Servers</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 font-mono">🧠 31+ Active Skills</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-300 font-mono">🛡️ 4 Quality Gates</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-emerald-400 font-mono">⚡ 0.00% Drift</span>
+      </div>
     </header>
-
-    <!-- Model Switcher Ribbon -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
-      <button onclick="switchModel('neural')" id="tab-neural" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-cyan-500/60 bg-cyan-950/40 text-cyan-200 shadow-[0_0_15px_rgba(0,255,204,0.25)]">
-        <span class="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
-          <span>MODEL 03 ★</span>
-          <span>FULL INFRA</span>
-        </span>
-        <span class="font-bold tracking-wide text-white text-xs">Autonomous Agent Hive</span>
-        <span class="text-[11px] font-sans text-cyan-300/80 truncate">Entire 51-Node Infrastructure</span>
-      </button>
-
-      <button onclick="switchModel('quantum')" id="tab-quantum" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-emerald-500/40 hover:text-emerald-300">
-        <span class="flex items-center justify-between text-[11px] text-emerald-400 font-mono">
-          <span>MODEL 01</span>
-          <span>4D TORUS</span>
-        </span>
-        <span class="font-bold tracking-wide text-slate-200 text-xs">Quantum Singularity</span>
-        <span class="text-[11px] font-sans text-slate-400 truncate">Hopf Fibration & Pure Nix Store</span>
-      </button>
-
-      <button onclick="switchModel('reactor')" id="tab-reactor" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300">
-        <span class="flex items-center justify-between text-[11px] text-cyan-400 font-mono">
-          <span>MODEL 02</span>
-          <span>REACTOR</span>
-        </span>
-        <span class="font-bold tracking-wide text-slate-200 text-xs">Orbital Star Engine</span>
-        <span class="text-[11px] font-sans text-slate-400 truncate">NixOS Confinement Rings</span>
-      </button>
-
-      <button onclick="switchModel('sentinel')" id="tab-sentinel" class="model-tab px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-amber-500/40 hover:text-amber-300">
-        <span class="flex items-center justify-between text-[11px] text-amber-400 font-mono">
-          <span>MODEL 04</span>
-          <span>RADAR SHIELD</span>
-        </span>
-        <span class="font-bold tracking-wide text-slate-200 text-xs">Kinetic Security Dome</span>
-        <span class="text-[11px] font-sans text-slate-400 truncate">ClamAV inotify Sentinel Sweep</span>
-      </button>
-
-      <button onclick="switchModel('mech')" id="tab-mech" class="model-tab col-span-2 md:col-span-1 px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold flex flex-col gap-1 border-slate-800 bg-slate-950/60 text-slate-400 hover:border-pink-500/40 hover:text-pink-300">
-        <span class="flex items-center justify-between text-[11px] text-pink-400 font-mono">
-          <span>MODEL 05</span>
-          <span>INSTRUMENT</span>
-        </span>
-        <span class="font-bold tracking-wide text-slate-200 text-xs">Sci-Fi Chronometer</span>
-        <span class="text-[11px] font-sans text-slate-400 truncate">Gear Ratios, Dials & Pistons</span>
-      </button>
-    </div>
 
     <!-- Cluster Subsystem Filter Strip (Active for Model 03) -->
     <div id="clusterFilterBar" class="glass-card rounded-lg p-2 mb-3 flex items-center gap-1.5 overflow-x-auto text-xs">
@@ -391,37 +353,6 @@
       </div>
 
     </div>
-
-    <!-- Architectural Real-World Mapping Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-      <div class="glass-card rounded-lg p-3 text-xs border border-emerald-500/20">
-        <div class="text-emerald-400 font-bold flex items-center gap-1.5 mb-1">
-          <span>❄️</span> Zero-Drift Flake Core
-        </div>
-        <p class="text-slate-400 font-sans text-xs leading-relaxed">
-          The models demonstrate spatial representations of <code class="text-emerald-300 bg-emerald-950/60 px-1 py-0.5 rounded">damathryxx64/flake.nix</code>, ensuring every derivation is an immutable geometric invariant.
-        </p>
-      </div>
-
-      <div class="glass-card rounded-lg p-3 text-xs border border-cyan-500/20">
-        <div class="text-cyan-400 font-bold flex items-center gap-1.5 mb-1">
-          <span>🧠</span> Autonomous Agent Hive
-        </div>
-        <p class="text-slate-400 font-sans text-xs leading-relaxed">
-          Dynamic synaptic lightning and flowing particles visualize real-time message routing between Antigravity 2.0, Jev System One, and 31+ Gemini skills.
-        </p>
-      </div>
-
-      <div class="glass-card rounded-lg p-3 text-xs border border-amber-500/20">
-        <div class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
-          <span>🛡️</span> Inotify Kernel Sentinel
-        </div>
-        <p class="text-slate-400 font-sans text-xs leading-relaxed">
-          Radar sweeping domes simulate the active ClamAV sentinel continuously scanning file drop events across the workspace repository topology.
-        </p>
-      </div>
-    </div>
-
 
     <!-- ── 2D Architectural Schematic (Visual Reference) ────────────── -->
     <section id="schematic" class="mb-6">
