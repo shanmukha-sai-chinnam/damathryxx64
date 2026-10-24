@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792287676,
-        "narHash": "sha256-posXVM7XJuNSdLGYBRa8Yrpac3tggNu6xyoCQZxcRWo=",
+        "lastModified": 1792548570,
+        "narHash": "sha256-bYe0KlXtIORRd8bxKP33l7gymG786EBVwrHixrJvkD8=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "0909250787661337136d54db3a842815f962de4d",
+        "rev": "10ce075d9c39ec29c25bea46292a58558fc67b3d",
         "type": "github"
       },
       "original": {
@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792292672,
-        "narHash": "sha256-yvZPMJpEKQxhdvOfMy9xN5FMFnRBzG58Dm1Rg0Jngbw=",
+        "lastModified": 1792552892,
+        "narHash": "sha256-+7+RPYdNF0+kZgKP8CG1Cjm3KoUxIISDU4ifDsXjBEQ=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "clamav-scanner",
-        "rev": "e4b4f067afc701e275b198a6d058c69cd3246706",
+        "rev": "878de9a2bd7bff320aa7bc405efb22ff603105b9",
         "type": "github"
       },
       "original": {
@@ -128,11 +128,11 @@
     "gemini-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1792381070,
-        "narHash": "sha256-gEaLQAykYr41hO613nbvktZ5NMoo1sOu1k15EMjmTkY=",
+        "lastModified": 1792846820,
+        "narHash": "sha256-kDBuqAJy9watA2PC3KyNO7NbvYPmDA4M1VzsUywRD5Q=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "f72e52703b1b707421d4ee1c5538e956668d07b5",
+        "rev": "fb15c7d0b4304d035f5b7328c866dea59ed8a745",
         "type": "github"
       },
       "original": {
