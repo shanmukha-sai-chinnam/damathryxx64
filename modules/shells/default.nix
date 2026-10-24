@@ -21,6 +21,35 @@ in {
       syntaxHighlighting.enable = true;
       vteIntegration = true;
 
+      shellAliases = {
+        # Navigation & System CLI Ergonomics
+        cat = "bat";
+        find = "fd";
+        grep = "rg";
+        top = "btop";
+        df = "duf";
+        du = "dust";
+        ls = "eza --icons";
+        ll = "eza -l --icons --git";
+        la = "eza -la --icons --git";
+        tree = "eza --tree --icons";
+
+        # Dots & System Lifecycle Shortcuts
+        validate = "dots-validate";
+        build = "dots-build";
+        switch = "dots-switch";
+        upgrade = "dots-upgrade";
+        clean = "dots-clean";
+        test-vm = "dots-test-vm";
+        dots-sync = "dots-workspace-sync";
+        dots-status = "dots-sync-skills status";
+        dots-pull = "dots-workspace-pull";
+
+        # AI & Antigravity Ergonomics
+        doctor = "antigravity-superpowers doctor";
+        sync-skills = "refresh-skills";
+      };
+
       setOptions = [
         "AUTO_CD"
         "AUTO_PUSHD"

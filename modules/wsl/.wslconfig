@@ -23,3 +23,9 @@ autoMemoryReclaim=gradual
 
 # Automatically shrink disk image space when files are deleted
 sparseVhd=true
+
+# Mirror host proxy settings automatically into WSL
+autoProxy=true
+
+# Resolve split-DNS and VPN hostnames gracefully
+bestEffortDnsParsing=true

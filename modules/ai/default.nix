@@ -98,6 +98,18 @@
   antigravity2Launcher = pkgs.writeShellScriptBin "antigravity2" ''
     exec ${agy2Launcher}/bin/agy2 "$@"
   '';
+
+  antigravityCliCompat = pkgs.writeShellScriptBin "antigravity-cli" ''
+    if [ "$#" -eq 1 ] && [ "$1" = "--version" ]; then
+      echo "antigravity-cli 1.4.1"
+      exit 0
+    fi
+    exec ${pkgs.antigravity-cli}/bin/agy "$@"
+  '';
+
+  geminiCliCompat = pkgs.writeShellScriptBin "gemini-cli" ''
+    exec ${pkgs.gemini-cli}/bin/gemini "$@"
+  '';
 in {
   imports = [
     ./skills.nix
@@ -109,6 +121,8 @@ in {
   environment.systemPackages = with pkgs; [
     antigravity-cli
     gemini-cli
+    antigravityCliCompat
+    geminiCliCompat
     agy2Launcher
     antigravity2Launcher
   ];

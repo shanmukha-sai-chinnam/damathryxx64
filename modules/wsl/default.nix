@@ -9,6 +9,7 @@
     docker-desktop.enable = true;
     interop.includePath = true;
     ssh-agent.enable = true;
+    usbip.enable = true;
     extraBin = with pkgs; [
       {src = "${coreutils}/bin/id";}
       {src = "${coreutils}/bin/mkdir";}

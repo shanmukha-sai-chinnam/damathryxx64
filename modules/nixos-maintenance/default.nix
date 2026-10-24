@@ -9,6 +9,13 @@
   nix = {
     settings = {
       experimental-features = ["nix-command" "flakes" "pipe-operators"];
+      warn-dirty = false;
+      eval-cache = true;
+      http-connections = 50;
+      log-lines = 30;
+      min-free = 1073741824; # 1 GiB
+      max-free = 4294967296; # 4 GiB
+      trusted-users = ["root" "@wheel" "damathryxx64"];
       auto-optimise-store = true;
       builders-use-substitutes = true;
       max-jobs = "auto";

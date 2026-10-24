@@ -23,6 +23,11 @@
     pciutils
     openssl
     libnotify
+    btop # Modern responsive TUI monitor (top/htop replacement)
+    duf # Modern colorized disk free utility (df replacement)
+    dust # Visual disk usage analyzer (du replacement)
+    hyperfine # Command-line benchmarking tool
+    tealdeer # Fast Rust client for community tldr pages
     nix-alien.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien
   ];
 }
