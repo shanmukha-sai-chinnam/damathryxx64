@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792898120,
-        "narHash": "sha256-HNdYf+pUjdfoghYJBrv2tm6TzJC4eAg2XkPDOkFF03s=",
+        "lastModified": 1793160131,
+        "narHash": "sha256-AH44f/7GgHbkR8APRXvBrFiZGCfKAZiLXAqrvpWuu3E=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "clamav-scanner",
-        "rev": "d7126ade6309fbef106bbaa22a9610d4726f00c5",
+        "rev": "2980056f41bada56ded6066c2653989bbbf517c1",
         "type": "github"
       },
       "original": {
@@ -128,11 +128,11 @@
     "gemini-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793121896,
+        "lastModified": 1793203604,
         "narHash": "sha256-kDBuqAJy9watA2PC3KyNO7NbvYPmDA4M1VzsUywRD5Q=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "f45869e1a72a7232de5df43852486bc3065c92f5",
+        "rev": "02b44a25b29972330642ee08685d725c4499f0ff",
         "type": "github"
       },
       "original": {
