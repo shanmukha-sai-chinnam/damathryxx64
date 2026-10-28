@@ -8,13 +8,14 @@
     exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
   '';
 
-  mcpServerGit = pkgs.mcp-server-git.overridePythonAttrs (_: {
-    dontCheckRuntimeDeps = true;
-  });
+  relaxMcpDeps = pkg:
+    if builtins.hasAttr "overridePythonAttrs" pkg
+    then pkg.overridePythonAttrs (_: {dontCheckRuntimeDeps = true;})
+    else pkg;
 
-  mcpServerTime = pkgs.mcp-server-time.overridePythonAttrs (_: {
-    dontCheckRuntimeDeps = true;
-  });
+  mcpServerFetch = relaxMcpDeps pkgs.mcp-server-fetch;
+  mcpServerGit = relaxMcpDeps pkgs.mcp-server-git;
+  mcpServerTime = relaxMcpDeps pkgs.mcp-server-time;
 in {
   nixpkgs.config.problems.handlers.fastmcp-slim.broken = "warn";
 
@@ -24,7 +25,7 @@ in {
     markitdown-mcp
     mcp-language-server
     mcp-nixos
-    mcp-server-fetch
+    mcpServerFetch
     mcp-server-filesystem
     mcpServerGit
     mcp-server-memory
