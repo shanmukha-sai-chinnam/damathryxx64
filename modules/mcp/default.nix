@@ -8,14 +8,19 @@
     exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
   '';
 
-  relaxMcpDeps = pkg:
-    if builtins.hasAttr "overridePythonAttrs" pkg
-    then pkg.overridePythonAttrs (_: {dontCheckRuntimeDeps = true;})
-    else pkg;
+  # Adapt reference Python MCP servers for nixpkgs mcp 2.2.0 compatibility
+  patchMcp = pkg:
+    pkg.overridePythonAttrs (old: {
+      dontCheckRuntimeDeps = true;
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          find . -name "*.py" -exec sed -i "s/\bMcpError\b/MCPError/g" {} + 2>/dev/null || true
+        '';
+    });
 
-  mcpServerFetch = relaxMcpDeps pkgs.mcp-server-fetch;
-  mcpServerGit = relaxMcpDeps pkgs.mcp-server-git;
-  mcpServerTime = relaxMcpDeps pkgs.mcp-server-time;
+  mcpServerFetch = patchMcp pkgs.mcp-server-fetch;
+  mcpServerGit = patchMcp pkgs.mcp-server-git;
 in {
   nixpkgs.config.problems.handlers.fastmcp-slim.broken = "warn";
 
@@ -30,7 +35,6 @@ in {
     mcpServerGit
     mcp-server-memory
     mcp-server-sequential-thinking
-    mcpServerTime
     mcpServerTypesafe
   ];
 }
