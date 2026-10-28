@@ -49,10 +49,7 @@
       inherit system;
       config = {
         allowUnfree = true;
-        problems.handlers = {
-          gemini-cli.removal = "ignore";
-          fastmcp-slim.broken = "warn";
-        };
+        problems.handlers.gemini-cli.removal = "ignore";
       };
     };
     dotsEnv = import ./modules/shells/dots.nix {inherit pkgs;};
