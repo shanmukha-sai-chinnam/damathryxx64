@@ -8,6 +8,8 @@
     exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
   '';
 in {
+  nixpkgs.config.problems.handlers.fastmcp-slim.broken = "warn";
+
   environment.systemPackages = with pkgs; [
     github-mcp-server
     githubMcpServerWrapped
