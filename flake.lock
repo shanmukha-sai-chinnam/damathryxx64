@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792893257,
-        "narHash": "sha256-uH6k/boqs4UtjvZ/YLZS9UCg1Q7w/SCTYUpdH6Nrod0=",
+        "lastModified": 1793242922,
+        "narHash": "sha256-U72XsBZCRT2VFnFMOK8mVOfiY8NoZ95JDS8ue3CBwiE=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "antigravity-superpowers",
-        "rev": "d0fe31f065aa9bb91291b9f50a45d3101d552544",
+        "rev": "650538f3968407c0a28f8af2b570f6f1840f1e81",
         "type": "github"
       },
       "original": {
@@ -128,11 +128,11 @@
     "gemini-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793203604,
+        "lastModified": 1793277287,
         "narHash": "sha256-kDBuqAJy9watA2PC3KyNO7NbvYPmDA4M1VzsUywRD5Q=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "skills",
-        "rev": "02b44a25b29972330642ee08685d725c4499f0ff",
+        "rev": "6d0b0f7239a0431571008daa9089ff8e1db2b02d",
         "type": "github"
       },
       "original": {
