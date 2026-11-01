@@ -14,7 +14,7 @@
     },
     "filesystem": {
       "command": "mcp-server-filesystem",
-      "args": ["/home/damathryxx64/repositories/damathryxx64"]
+      "args": ["/home/damathryxx64/repositories"]
     },
     "fetch": {
       "command": "mcp-server-fetch",

@@ -93,7 +93,7 @@
     for existing in "$PLUGINS_DIR"/*; do
       if [ -d "$existing" ]; then
         pname=$(basename "$existing")
-        if [ ! -d "$STAGING_PLUGINS/$pname" ]; then
+        if [ ! -d "$STAGING_PLUGINS/$pname" ] && [ "$pname" != "ponytail" ]; then
           rm -rf "$existing"
         fi
       fi
