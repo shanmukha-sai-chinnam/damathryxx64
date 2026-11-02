@@ -6,13 +6,18 @@
 }: let
   syncForksScript = pkgs.writeShellScriptBin "dots-sync-skills" ''
     set -eu
-    export PATH="${pkgs.lib.makeBinPath (with pkgs; [git nix nh alejandra statix deadnix coreutils])}:$PATH"
+    export PATH="${pkgs.lib.makeBinPath (with pkgs; [git nix nh alejandra statix deadnix coreutils python3])}:$PATH"
 
-    DEV_SCRIPT="/home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py"
+    DEV_SCRIPT="/home/damathryxx64/repositories/skills/scripts/sync-upstreams.py"
     if [ -f "$DEV_SCRIPT" ]; then
       exec ${pkgs.python3}/bin/python3 "$DEV_SCRIPT" "$@"
+    ${lib.optionalString (gemini-skills != null) ''
+      elif [ -f "${gemini-skills}/scripts/sync-upstreams.py" ]; then
+        exec ${pkgs.python3}/bin/python3 "${gemini-skills}/scripts/sync-upstreams.py" "$@"
+    ''}
     else
-      exec ${pkgs.python3}/bin/python3 ${../../scripts/sync-forks.py} "$@"
+      echo "Error: sync-upstreams engine not found." >&2
+      exit 1
     fi
   '';
 

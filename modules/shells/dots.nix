@@ -60,11 +60,12 @@
   '';
 
   dotsSyncSkills = pkgs.writeShellScriptBin "dots-sync-skills" ''
-    DEV_SCRIPT="/home/damathryxx64/repositories/damathryxx64/scripts/sync-forks.py"
+    DEV_SCRIPT="/home/damathryxx64/repositories/skills/scripts/sync-upstreams.py"
     if [ -f "$DEV_SCRIPT" ]; then
       exec ${pkgs.python3}/bin/python3 "$DEV_SCRIPT" "$@"
     else
-      exec ${pkgs.python3}/bin/python3 ${../../scripts/sync-forks.py} "$@"
+      echo "Error: sync-upstreams engine not found." >&2
+      exit 1
     fi
   '';
 

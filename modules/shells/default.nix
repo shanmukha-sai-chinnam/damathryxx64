@@ -1,14 +1,8 @@
-{pkgs, ...}: let
-  customZshCompletions =
-    pkgs.runCommand "custom-zsh-completions" {
-      nativeBuildInputs = [pkgs.gh pkgs.uv];
-    } ''
-      mkdir -p $out/share/zsh/site-functions
-      cp ${./completions}/* $out/share/zsh/site-functions/
-      gh completion -s zsh > $out/share/zsh/site-functions/_gh
-      uv generate-shell-completion zsh > $out/share/zsh/site-functions/_uv
-    '';
-in {
+{pkgs, ...}: {
+  imports = [
+    ./completions.nix
+  ];
+
   programs = {
     zsh = {
       enable = true;
@@ -262,7 +256,6 @@ in {
       nix-your-shell
       zsh-completions
       nix-zsh-completions
-      customZshCompletions
       zsh-fzf-tab
       zsh-autopair
     ];
