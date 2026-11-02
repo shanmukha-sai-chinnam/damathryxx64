@@ -15,6 +15,8 @@
       {src = "${coreutils}/bin/mkdir";}
       {src = "${coreutils}/bin/uname";}
       {src = "${coreutils}/bin/dirname";}
+      {src = "${coreutils}/bin/test";}
+      {src = "${coreutils}/bin/sleep";}
     ];
     wslConf = {
       automount.root = "/mnt";
