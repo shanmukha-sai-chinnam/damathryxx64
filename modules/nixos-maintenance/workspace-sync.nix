@@ -8,7 +8,7 @@
     export PATH="${pkgs.lib.makeBinPath (with pkgs; [git coreutils])}:$PATH"
 
     WORKSPACE_ROOT="/home/damathryxx64/repositories"
-    REPOS=("damathryxx64" "clamav-scanner" "antigravity-superpowers" "skills" "NixOS-WSL")
+    REPOS=("damathryxx64" "clamav-scanner" "antigravity-superpowers" "skills" "NixOS-WSL" "eye-of-skadi")
 
     echo -e "\033[1;36m══════════════════════════════════════════════════════════════════════\033[0m"
     echo -e "\033[1;36m 🔄 Workspace Repository Pull\033[0m"

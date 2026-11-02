@@ -28,6 +28,7 @@
     dust # Visual disk usage analyzer (du replacement)
     hyperfine # Command-line benchmarking tool
     tealdeer # Fast Rust client for community tldr pages
+    obsidian # Markdown knowledge base and graph viewer
     nix-alien.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien
   ];
 }
