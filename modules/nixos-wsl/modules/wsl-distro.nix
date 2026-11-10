@@ -1,0 +1,340 @@
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
+with builtins;
+with lib; let
+  cfg = config.wsl;
+
+  # The default user may only be trusted with the Nix daemon while they can
+  # become root without a password; otherwise that trust would grant them
+  # root-equivalent access they do not already have (Fixes upstream #1024 / PR #1120).
+  passwordlessSudoEnabled =
+    config.security.sudo.enable && !config.security.sudo.wheelNeedsPassword;
+
+  defaultLinks = [
+    "/usr/lib/wsl/lib/libcudadebugger.so.1"
+    "/usr/lib/wsl/lib/libcuda.so"
+    "/usr/lib/wsl/lib/libcuda.so.1"
+    "/usr/lib/wsl/lib/libcuda.so.1.1"
+    "/usr/lib/wsl/lib/libd3d12core.so"
+    "/usr/lib/wsl/lib/libd3d12.so"
+    "/usr/lib/wsl/lib/libdxcore.so"
+    "/usr/lib/wsl/lib/libnvcuvid.so"
+    "/usr/lib/wsl/lib/libnvcuvid.so.1"
+    "/usr/lib/wsl/lib/libnvdxdlkernels.so"
+    "/usr/lib/wsl/lib/libnvidia-encode.so"
+    "/usr/lib/wsl/lib/libnvidia-encode.so.1"
+    "/usr/lib/wsl/lib/libnvidia-gpucomp.so"
+    "/usr/lib/wsl/lib/libnvidia-ml.so.1"
+    "/usr/lib/wsl/lib/libnvidia-ngx.so.1"
+    "/usr/lib/wsl/lib/libnvidia-opticalflow.so"
+    "/usr/lib/wsl/lib/libnvidia-opticalflow.so.1"
+    "/usr/lib/wsl/lib/libnvoptix.so.1"
+    "/usr/lib/wsl/lib/libnvwgf2umx.so"
+    "/usr/lib/wsl/lib/nvidia-ngx-updater"
+    "/usr/lib/wsl/lib/nvidia-smi"
+  ];
+
+  mkWslLib = extraLinks:
+    assert cfg.useWindowsDriver;
+      pkgs.runCommand "wsl-lib" {} ''
+        mkdir -p "$out/lib"
+
+        ${concatMapStrings (path: ''
+          ln -s ${escapeShellArg path} "$out/lib"
+        '') (defaultLinks ++ extraLinks)}
+      '';
+in {
+  options.wsl = with types; {
+    enable = mkEnableOption "support for running NixOS as a WSL distribution";
+    useWindowsDriver = mkEnableOption "OpenGL driver from the Windows host";
+
+    kernelModules = mkOption {
+      type = listOf str;
+      default = [];
+      example = ["vhci-hcd"];
+      description = ''
+        The set of kernel modules to be loaded in the second stage of
+        the boot process via systemd-modules-load.service.
+      '';
+    };
+
+    wslLibExtraLinks = mkOption {
+      type = listOf str;
+      default = [];
+      description = "Additional /usr/lib/wsl/lib/ paths to symlink into wsl-lib";
+    };
+
+    wslLib = mkOption {
+      type = package;
+      default = mkWslLib cfg.wslLibExtraLinks;
+      defaultText = literalExpression "mkWslLib config.wsl.wslLibExtraLinks";
+      description = "WSL GPU driver library package with symlinks to Windows host drivers";
+    };
+
+    binShPkg = mkOption {
+      type = package;
+      internal = true;
+      description = "Package to be linked to /bin/sh. Mainly useful to be re-used by other modules like envfs.";
+    };
+    binShExe = mkOption {
+      type = str;
+      internal = true;
+      description = "Path to the shell executable to be linked to /bin/sh";
+      default = "${config.wsl.binShPkg}/bin/sh";
+    };
+    defaultUser = mkOption {
+      type = str;
+      default = "nixos";
+      description = "The name of the default user";
+    };
+    populateBin = mkOption {
+      type = bool;
+      default = true;
+      internal = true;
+      description = ''
+        Dangerous! Things might break. Use with caution!
+
+        Do not populate /bin.
+
+        This is mainfly useful if another module populates /bin like envfs.
+      '';
+    };
+    extraBin = mkOption {
+      type = listOf (submodule ({config, ...}: {
+        options = {
+          src = mkOption {
+            type = str;
+            description = "Path of the file that should be added";
+          };
+          name = mkOption {
+            type = str;
+            description = "The name the file should be created as in /bin";
+            default = baseNameOf config.src;
+            defaultText = literalExpression "baseNameOf src";
+          };
+          copy = mkOption {
+            type = bool;
+            default = false;
+            description = "Whether or not the file should be copied instead of symlinked";
+          };
+        };
+      }));
+      description = "Additional files to be added to /bin";
+    };
+    startMenuLaunchers = mkEnableOption "shortcuts for GUI applications in the windows start menu";
+  };
+
+  config = mkIf cfg.enable {
+    # WSL uses its own kernel and boot loader
+    boot = {
+      initrd.enable = false;
+      kernel.enable = false;
+      loader.grub.enable = false;
+      modprobeConfig.enable = false;
+    };
+    system.build.installBootLoader = "${pkgs.coreutils}/bin/true";
+
+    # WSL does not support virtual consoles
+    console.enable = false;
+
+    hardware.graphics = {
+      enable = true; # Enable GPU acceleration
+
+      extraPackages = mkIf cfg.useWindowsDriver [cfg.wslLib];
+    };
+
+    environment = {
+      # Only set the options if the files are managed by WSL
+      etc = mkMerge [
+        (mkIf config.wsl.wslConf.network.generateHosts {
+          hosts.enable = false;
+        })
+        (mkIf config.wsl.wslConf.network.generateResolvConf {
+          "resolv.conf".enable = false;
+        })
+        (mkIf (cfg.kernelModules != []) {
+          "modules-load.d/nixos.conf".text = concatStringsSep "\n" cfg.kernelModules + "\n";
+        })
+        {
+          # Mask x11.conf for systemd-tmpfiles to prevent fchmod errors on read-only WSLg /tmp/.X11-unix
+          "tmpfiles.d/x11.conf".text = ''
+            # Masked by NixOS-WSL to prevent fchmod errors on read-only WSLg /tmp/.X11-unix
+            x /tmp/.X11-unix
+            D! /tmp/.ICE-unix 1777 root root 1h
+            D! /tmp/.XIM-unix 1777 root root 1h
+            D! /tmp/.font-unix 1777 root root 1h
+          '';
+        }
+      ];
+    };
+
+    # WSL systemd mounts, services, and tmpfiles rules
+    systemd = {
+      mounts = [
+        rec {
+          description = "Mount WSLg X11 socket";
+          what = "${cfg.wslConf.automount.root}/wslg/.X11-unix/X0";
+          where = "/tmp/.X11-unix/X0";
+          type = "none";
+          options = "bind";
+          after = ["nixos-wsl-migration-x11mount.service"];
+          wants = after;
+          wantedBy = ["local-fs.target"];
+          unitConfig.ConditionPathExists = "${cfg.wslConf.automount.root}/wslg/.X11-unix/X0";
+        }
+      ];
+
+      services = {
+        # Remove symbolic link for WSLg X11 socket, which was created by NixOS-WSL until 2024-02-24
+        nixos-wsl-migration-x11mount = {
+          description = "Remove /tmp/.X11-unix symlink if present";
+          unitConfig = {
+            ConditionPathIsSymbolicLink = "/tmp/.X11-unix";
+            DefaultDependencies = "no";
+          };
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.coreutils}/bin/rm /tmp/.X11-unix";
+          };
+        };
+
+        # Override WSL 2.4+ generated wsl-mnt-guard service to use Nix store binaries
+        wsl-mnt-guard = {
+          overrideStrategy = "asDropin";
+          unitConfig.ConditionPathIsMountPoint = "/mnt/wsl";
+          serviceConfig = {
+            ExecStart = ["" "${pkgs.coreutils}/bin/true"];
+            ExecStop = ["" "-${pkgs.util-linux}/bin/mount --make-rslave /mnt/wsl"];
+          };
+        };
+
+        # WSL has no physical virtual console; disable vconsole-setup to avoid udev exit code 5
+        systemd-vconsole-setup.enable = false;
+      };
+
+      # Symlink /usr/share/zoneinfo to /etc/zoneinfo so WSL init can locate the Windows host timezone
+      tmpfiles.rules = [
+        "L+ /usr/share/zoneinfo - - - - /etc/zoneinfo"
+      ];
+    };
+
+    # dhcp is handled by windows
+    networking.dhcpcd.enable = false;
+
+    # disable resolvconf if WSL is managing it
+    networking.resolvconf.enable = mkIf config.wsl.wslConf.network.generateResolvConf false;
+
+    users.users.${cfg.defaultUser} = {
+      isNormalUser = true;
+      uid = mkDefault 1000;
+      extraGroups = ["wheel"]; # Allow the default user to use sudo
+    };
+
+    # Trust the default user with the Nix daemon while they have passwordless sudo
+    # (Fixes upstream #1024 / PR #1120).
+    nix.settings.trusted-users = mkIf passwordlessSudoEnabled (mkAfter [cfg.defaultUser]);
+
+    # Otherwise WSL fails to login as root with "initgroups failed 5"
+    users.users.root.extraGroups = ["root"];
+
+    powerManagement.enable = false;
+
+    security.sudo.wheelNeedsPassword = mkDefault false; # The default user will not have a password by default
+
+    system.activationScripts = {
+      copy-launchers = mkIf cfg.startMenuLaunchers (
+        stringAfter ["etc" "users"] ''
+          for x in applications icons; do
+            echo "setting up /usr/share/''${x}..."
+            targets=()
+            if [[ -d "$systemConfig/sw/share/$x" ]]; then
+              targets+=("$systemConfig/sw/share/$x/.")
+            fi
+            if [[ -d "/etc/profiles/per-user/${config.users.users.${cfg.defaultUser}.name}/share/$x" ]]; then
+              targets+=("/etc/profiles/per-user/${config.users.users.${cfg.defaultUser}.name}/share/$x/.")
+            fi
+
+            if [[ -d "/home/${config.users.users.${cfg.defaultUser}.name}/.nix-profile/share/$x" ]]; then
+               targets+=("/home/${config.users.users.${cfg.defaultUser}.name}/.nix-profile/share/$x/.")
+            fi
+
+            if (( ''${#targets[@]} != 0 )); then
+              mkdir -p "/usr/share/$x"
+              ${pkgs.rsync}/bin/rsync --archive --copy-dirlinks --delete-after --recursive "''${targets[@]}" "/usr/share/$x"
+            else
+              rm -rf "/usr/share/$x"
+            fi
+          done
+        ''
+      );
+      populateBin = lib.mkIf cfg.populateBin (stringAfter ["binsh"] ''
+        echo "setting up /bin..."
+        ${concatStringsSep "\n" (
+          map
+          (
+            entry:
+              if entry.copy
+              then "cp -f ${escapeShellArg entry.src} ${escapeShellArg "/bin/${entry.name}"}"
+              else "ln -sf ${escapeShellArg entry.src} ${escapeShellArg "/bin/${entry.name}"}"
+          )
+          config.wsl.extraBin
+        )}
+      '');
+    };
+
+    # require people to use lib.mkForce to make it harder to brick their installation
+    wsl = {
+      extraBin = [
+        {
+          src = "/init";
+          name = "wslpath";
+        }
+        {
+          src = "${cfg.binShExe}";
+          name = "sh";
+        }
+        {src = "${pkgs.util-linux}/bin/mount";}
+        {src = "${pkgs.bashInteractive}/bin/bash";}
+        {src = "${pkgs.coreutils}/bin/true";}
+        {src = "${pkgs.systemd}/bin/systemctl";}
+        {src = "${pkgs.gnugrep}/bin/grep";}
+      ];
+    };
+
+    services.envfs.extraFallbackPathCommands =
+      concatStringsSep "\n"
+      (
+        map
+        (
+          entry:
+            if entry.copy
+            then "cp -f ${escapeShellArg entry.src} $out/${escapeShellArg entry.name}"
+            else "ln -sf ${escapeShellArg entry.src} $out/${escapeShellArg entry.name}"
+        )
+        cfg.extraBin
+      );
+
+    # Disable `systemd-timesyncd` to prevent conflict with the `chronyd` in the WSL root namespace
+    services.timesyncd.enable = false;
+
+    warnings = flatten [
+      (
+        optional (config.services.resolved.enable && config.wsl.wslConf.network.generateResolvConf)
+        "systemd-resolved is enabled, but resolv.conf is managed by WSL (wsl.wslConf.network.generateResolvConf)"
+      )
+      (
+        optional ((length config.networking.nameservers) > 0 && config.wsl.wslConf.network.generateResolvConf)
+        "custom nameservers are set (networking.nameservers), but resolv.conf is managed by WSL (wsl.wslConf.network.generateResolvConf)"
+      )
+      (
+        optional ((length config.networking.nameservers) == 0 && !config.services.resolved.enable && !config.wsl.wslConf.network.generateResolvConf)
+        "resolv.conf generation is turned off (wsl.wslConf.network.generateResolvConf), but no other nameservers are configured (networking.nameservers)"
+      )
+    ];
+  };
+}

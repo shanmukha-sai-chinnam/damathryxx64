@@ -1,0 +1,16 @@
+[Unit]
+Description=ClamAV Real-time File Creation Sentinel
+After=docker.service default.target
+Wants=docker.service
+
+[Service]
+Type=simple
+ExecStart=clamav-sentinel watch %h
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,5 @@
+{...}: {
+  imports = [
+    ./clamav.nix
+  ];
+}

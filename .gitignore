@@ -1,0 +1,36 @@
+# Build outputs & environments
+result
+result*
+nixos-wsl*.tar.gz
+nixos.wsl
+.direnv
+.venv
+.env
+
+# Language runtimes & caches
+__pycache__/
+*.py[cod]
+*$py.class
+node_modules/
+npm-debug.log*
+coverage/
+*.tgz
+
+# Security & test artifacts
+clamav-audit.jsonl
+test_sandbox/
+.quarantine/
+*.log
+data/
+clamav-db/
+.pre-commit-config.yaml
+
+# Editor & OS metadata
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+*.tmp
+.vscode/
+.idea/

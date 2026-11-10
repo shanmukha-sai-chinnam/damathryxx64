@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Damathryxx64 Values Schema",
+  "description": "Schema definition for the damathryxx64 monorepo single source of truth configuration.",
+  "type": "object",
+  "required": [
+    "identity",
+    "system",
+    "wsl",
+    "windows",
+    "paths",
+    "github",
+    "security"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "object",
+      "required": ["username", "name", "email", "home"],
+      "properties": {
+        "username": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string" },
+        "home": { "type": "string", "pattern": "^/" }
+      },
+      "additionalProperties": false
+    },
+    "system": {
+      "type": "object",
+      "required": ["hostname", "platform", "state_version"],
+      "properties": {
+        "hostname": { "type": "string", "minLength": 1 },
+        "platform": { "type": "string", "enum": ["x86_64-linux", "aarch64-linux"] },
+        "state_version": { "type": "string", "pattern": "^[0-9]{2}\\.[0-9]{2}$" }
+      },
+      "additionalProperties": false
+    },
+    "wsl": {
+      "type": "object",
+      "required": ["init_timeout", "proxy_socket_dir", "proxy_socket_mode"],
+      "properties": {
+        "init_timeout": { "type": "integer", "minimum": 1000 },
+        "proxy_socket_dir": { "type": "string", "pattern": "^/" },
+        "proxy_socket_mode": { "type": "string", "pattern": "^[0-7]{3,4}$" }
+      },
+      "additionalProperties": false
+    },
+    "windows": {
+      "type": "object",
+      "required": ["user_profile"],
+      "properties": {
+        "user_profile": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "paths": {
+      "type": "object",
+      "required": ["workspace_root", "dots_repo", "dots_name", "skills_dir", "pkgs_dir", "modules_dir"],
+      "properties": {
+        "workspace_root": { "type": "string", "pattern": "^/" },
+        "dots_repo": { "type": "string", "pattern": "^/" },
+        "dots_name": { "type": "string", "minLength": 1 },
+        "skills_dir": { "type": "string", "minLength": 1 },
+        "pkgs_dir": { "type": "string", "minLength": 1 },
+        "modules_dir": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "github": {
+      "type": "object",
+      "required": ["owner", "repo", "default_branch", "pages_url"],
+      "properties": {
+        "owner": { "type": "string", "minLength": 1 },
+        "repo": { "type": "string", "minLength": 1 },
+        "default_branch": { "type": "string", "minLength": 1 },
+        "pages_url": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "required": ["clamav"],
+      "properties": {
+        "clamav": {
+          "type": "object",
+          "required": ["watch_dir", "quarantine_dir", "audit_log", "auto_quarantine"],
+          "properties": {
+            "watch_dir": { "type": "string" },
+            "quarantine_dir": { "type": "string" },
+            "audit_log": { "type": "string" },
+            "auto_quarantine": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

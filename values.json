@@ -1,0 +1,44 @@
+{
+  "$schema": "./values.schema.json",
+  "identity": {
+    "username": "damathryxx64",
+    "name": "Shanmukha Sai Chinnam",
+    "email": "shanmukh02.ch@gmail.com",
+    "home": "/home/damathryxx64"
+  },
+  "system": {
+    "hostname": "NixOS",
+    "platform": "x86_64-linux",
+    "state_version": "25.05"
+  },
+  "wsl": {
+    "init_timeout": 60000,
+    "proxy_socket_dir": "/mnt/wsl/docker-desktop/shared-sockets/guest-services",
+    "proxy_socket_mode": "666"
+  },
+  "windows": {
+    "user_profile": "/mnt/c/Users/shanm"
+  },
+  "paths": {
+    "workspace_root": "/home/damathryxx64/repositories",
+    "dots_repo": "/home/damathryxx64/repositories/damathryxx64",
+    "dots_name": "damathryxx64",
+    "skills_dir": "skills",
+    "pkgs_dir": "pkgs",
+    "modules_dir": "modules"
+  },
+  "github": {
+    "owner": "shanmukha-sai-chinnam",
+    "repo": "damathryxx64",
+    "default_branch": "trunk",
+    "pages_url": "https://shanmukha-sai-chinnam.github.io/damathryxx64/"
+  },
+  "security": {
+    "clamav": {
+      "watch_dir": ".",
+      "quarantine_dir": ".quarantine",
+      "audit_log": "clamav-audit.jsonl",
+      "auto_quarantine": true
+    }
+  }
+}

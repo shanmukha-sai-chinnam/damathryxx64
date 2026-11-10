@@ -1,0 +1,121 @@
+import { access, cp, mkdir, readdir, lstat, rm, chmod } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { join, resolve } from "node:path";
+import { homedir } from "node:os";
+
+function getTemplateDir() {
+  return fileURLToPath(new URL("../../templates/.agents", import.meta.url));
+}
+
+async function exists(path) {
+  try {
+    await access(path, fsConstants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function makeWritable(targetPath) {
+  try {
+    const s = await lstat(targetPath);
+    if (s.isDirectory()) {
+      await chmod(targetPath, 0o755).catch(() => {});
+      const entries = await readdir(targetPath);
+      for (const entry of entries) {
+        await makeWritable(join(targetPath, entry));
+      }
+    } else {
+      await chmod(targetPath, 0o644).catch(() => {});
+    }
+  } catch {
+    // ignore
+  }
+}
+
+async function copyDirectoryOverwritingSymlinks(src, dest) {
+  await mkdir(dest, { recursive: true });
+  await chmod(dest, 0o755).catch(() => {});
+  const entries = await readdir(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = join(src, entry.name);
+    const destPath = join(dest, entry.name);
+    try {
+      const destStat = await lstat(destPath);
+      if (destStat.isDirectory()) {
+        await makeWritable(destPath);
+        await rm(destPath, { recursive: true, force: true });
+      } else if (destStat.isSymbolicLink() || destStat.isFile()) {
+        await chmod(destPath, 0o644).catch(() => {});
+        await rm(destPath, { force: true });
+      }
+    } catch {
+      // destPath does not exist, safe to copy
+    }
+    await cp(srcPath, destPath, { recursive: true, force: true, errorOnExist: false, dereference: true });
+    await makeWritable(destPath);
+  }
+}
+
+export async function syncCommand(args, { cwd, stdout, stderr }) {
+  const isGlobal = args.includes("--global") || args.includes("-g");
+  const templateDir = getTemplateDir();
+
+  if (!(await exists(templateDir))) {
+    stderr.write("Error: Bundled templates are missing.\n");
+    return 1;
+  }
+
+  if (isGlobal) {
+    const globalConfigDir = process.env.GEMINI_CONFIG_DIR || join(homedir(), ".gemini", "config");
+    try {
+      await mkdir(globalConfigDir, { recursive: true });
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "skills"), join(globalConfigDir, "skills"));
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "rules"), join(globalConfigDir, "rules"));
+      stdout.write(`[ok] Successfully synchronized Antigravity Superpowers into ${globalConfigDir}\n`);
+      return 0;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      stderr.write(`Sync failed: ${message}\n`);
+      return 1;
+    }
+  }
+
+  const targetDir = resolve(cwd, args.find((a) => !a.startsWith("-")) || ".");
+  const agentsDir = join(targetDir, ".agents");
+
+  if (!(await exists(agentsDir))) {
+    stderr.write(`Error: No .agents directory found at ${agentsDir}. Run 'init' first.\n`);
+    return 1;
+  }
+
+  try {
+    // Sync skills and rules
+    await copyDirectoryOverwritingSymlinks(join(templateDir, "skills"), join(agentsDir, "skills"));
+    if (await exists(join(templateDir, "rules"))) {
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "rules"), join(agentsDir, "rules"));
+    }
+    if (await exists(join(templateDir, "workflows"))) {
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "workflows"), join(agentsDir, "workflows"));
+    }
+    if (await exists(join(templateDir, "tests"))) {
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "tests"), join(agentsDir, "tests"));
+    }
+
+    // Sync MCP templates and hooks if they exist in template
+    if (await exists(join(templateDir, "mcp"))) {
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "mcp"), join(agentsDir, "mcp"));
+    }
+    if (await exists(join(templateDir, "hooks"))) {
+      await copyDirectoryOverwritingSymlinks(join(templateDir, "hooks"), join(agentsDir, "hooks"));
+    }
+
+    stdout.write(`[ok] Successfully synchronized Antigravity Superpowers profile at ${agentsDir}\n`);
+    return 0;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    stderr.write(`Sync failed: ${message}\n`);
+    return 1;
+  }
+}
