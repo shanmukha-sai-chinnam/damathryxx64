@@ -78,7 +78,10 @@
   # ── Claude Code Launcher with Gemini Base URL & Dynamic Token ─────────
   claudeLauncher = pkgs.writeShellScriptBin "claude" ''
     set -euo pipefail
-    export ANTHROPIC_BASE_URL="''${ANTHROPIC_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}"
+    export ANTHROPIC_BASE_URL="''${ANTHROPIC_BASE_URL:-http://127.0.0.1:3456}"
+    export ANTHROPIC_AUTH_TOKEN="''${ANTHROPIC_AUTH_TOKEN:-test}"
+    export ANTHROPIC_API_KEY="''${ANTHROPIC_API_KEY:-test}"
+
     if [ -z "''${GEMINI_API_KEY:-}" ]; then
       if [ -f "$HOME/repositories/nether-ward/.env" ]; then
         K="$(grep -E '^GEMINI_API_KEY=' "$HOME/repositories/nether-ward/.env" | cut -d '=' -f2- | tr -d '"' | tr -d ' ' || true)"
@@ -94,11 +97,6 @@
       fi
     fi
 
-    if [ -n "''${GEMINI_API_KEY:-}" ]; then
-      export ANTHROPIC_AUTH_TOKEN="''${ANTHROPIC_AUTH_TOKEN:-$GEMINI_API_KEY}"
-      export ANTHROPIC_API_KEY="''${ANTHROPIC_API_KEY:-$GEMINI_API_KEY}"
-    fi
-
     exec ${pkgs.claude-code}/bin/claude "$@"
   '';
 
@@ -109,8 +107,10 @@
   claudeSettingsInstaller = pkgs.writeShellScript "claude-settings-install" ''
         set -eu
         CLAUDE_DIR="$HOME/.claude"
-        mkdir -p "$CLAUDE_DIR"
+        CCR_DIR="$HOME/.claude-code-router"
+        mkdir -p "$CLAUDE_DIR" "$CCR_DIR"
         SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+        CCR_CONFIG="$CCR_DIR/config.json"
 
         GEMINI_KEY=""
         if [ -f "$HOME/repositories/nether-ward/.env" ]; then
@@ -123,41 +123,50 @@
           GEMINI_KEY="$(tr -d '\r\n ' < "$HOME/.config/gemini/api_key" 2>/dev/null || true)"
         fi
 
-        if [ ! -f "$SETTINGS_FILE" ]; then
-          if [ -n "$GEMINI_KEY" ]; then
-            cat <<EOF > "$SETTINGS_FILE"
+        cat <<EOF > "$SETTINGS_FILE"
     {
       "env": {
-        "ANTHROPIC_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai/",
-        "ANTHROPIC_AUTH_TOKEN": "$GEMINI_KEY",
-        "ANTHROPIC_API_KEY": "$GEMINI_KEY"
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:3456",
+        "ANTHROPIC_AUTH_TOKEN": "test",
+        "ANTHROPIC_API_KEY": "test"
       }
     }
     EOF
-          else
-            cat <<EOF > "$SETTINGS_FILE"
+        chmod 600 "$SETTINGS_FILE"
+
+        if [ -n "$GEMINI_KEY" ]; then
+          cat <<EOF > "$CCR_CONFIG"
     {
-      "env": {
-        "ANTHROPIC_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai/"
+      "LOG": false,
+      "HOST": "127.0.0.1",
+      "PORT": 3456,
+      "API_TIMEOUT_MS": 600000,
+      "Providers": [
+        {
+          "name": "gemini",
+          "api_base_url": "https://generativelanguage.googleapis.com/v1beta/models/",
+          "api_key": "$GEMINI_KEY",
+          "models": [
+            "gemini-3.5-flash-lite",
+            "gemini-flash-latest",
+            "gemini-3.8-flash",
+            "gemini-pro-latest"
+          ],
+          "transformer": {
+            "use": ["gemini"]
+          }
+        }
+      ],
+      "Router": {
+        "default": "gemini,gemini-3.5-flash-lite",
+        "background": "gemini,gemini-3.5-flash-lite",
+        "think": "gemini,gemini-3.5-flash-lite",
+        "longContext": "gemini,gemini-3.5-flash-lite",
+        "longContextThreshold": 60000
       }
     }
     EOF
-          fi
-          chmod 600 "$SETTINGS_FILE"
-        else
-          if [ -n "$GEMINI_KEY" ]; then
-            ${pkgs.jq}/bin/jq \
-              --arg url "https://generativelanguage.googleapis.com/v1beta/openai/" \
-              --arg token "$GEMINI_KEY" \
-              '.env.ANTHROPIC_BASE_URL = $url | .env.ANTHROPIC_AUTH_TOKEN = $token | .env.ANTHROPIC_API_KEY = $token' \
-              "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
-          else
-            ${pkgs.jq}/bin/jq \
-              --arg url "https://generativelanguage.googleapis.com/v1beta/openai/" \
-              '.env.ANTHROPIC_BASE_URL = $url' \
-              "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
-          fi
-          chmod 600 "$SETTINGS_FILE"
+          chmod 600 "$CCR_CONFIG"
         fi
   '';
 in {
@@ -171,7 +180,9 @@ in {
   nixpkgs.config.problems.handlers.gemini-cli.removal = "ignore";
 
   environment.sessionVariables = {
-    ANTHROPIC_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+    ANTHROPIC_BASE_URL = "http://127.0.0.1:3456";
+    ANTHROPIC_AUTH_TOKEN = "test";
+    ANTHROPIC_API_KEY = "test";
   };
 
   # Antigravity, Gemini & Claude Code AI toolkits
@@ -182,9 +193,22 @@ in {
     geminiCliCompat
     agy2Launcher
     antigravity2Launcher
+    pkgs.claude-code-router
     claudeLauncher
     claudeCodeCompat
   ];
+
+  # ── Claude Code Router Background Service ──────────────────────────────
+  systemd.user.services.claude-code-router = {
+    description = "Claude Code Router Daemon (translates Anthropic Messages API to Gemini)";
+    after = ["network.target"];
+    wantedBy = ["default.target"];
+    serviceConfig = {
+      ExecStart = "${pkgs.claude-code-router}/bin/ccr start";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
 
   programs.antigravity-superpowers = {
     enable = true;
