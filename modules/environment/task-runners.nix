@@ -218,6 +218,8 @@
     echo "  agy -i <prompt>                → Interactive AGY prompt session"
     echo "  agy -c                         → Continue most recent AGY conversation"
     echo "  agy / gemini-cli               → Antigravity CLI & Gemini AI Toolkit"
+    echo "  claude / claude-code           → Claude Code CLI (routed to Google Gemini)"
+    echo "  ccr [start|stop|status]        → Claude Code Router daemon & control plane"
     echo ""
     echo -e "\033[1;33mWSL Interop & Productivity:\033[0m"
     echo "  cb                             → WSL bidirectional clipboard bridge (pipe to copy, bare to paste)"
