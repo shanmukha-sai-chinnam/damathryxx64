@@ -28,6 +28,12 @@ in {
       description = "Enable in-flight secret sanitization and redaction";
     };
 
+    semanticFirewall = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Enable bicameral Jev System One semantic safety inspection";
+    };
+
     upstreamUrl = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -60,7 +66,8 @@ in {
           + " --port ${toString cfg.port}"
           + " --model ${cfg.upstreamModel}"
           + (optionalString (cfg.upstreamUrl != null) " --upstream ${cfg.upstreamUrl}")
-          + (optionalString cfg.sanitize " --sanitize");
+          + (optionalString cfg.sanitize " --sanitize")
+          + (optionalString cfg.semanticFirewall " --semantic-firewall");
         Restart = "on-failure";
         RestartSec = "5s";
       };

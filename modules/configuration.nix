@@ -29,6 +29,7 @@
       enable = true;
       port = 4000;
       sanitize = true;
+      semanticFirewall = true;
     };
   };
 
