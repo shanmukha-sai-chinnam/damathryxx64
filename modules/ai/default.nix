@@ -79,6 +79,7 @@ in {
     ./skills.nix
     ./superpowers.nix
     ./mcp.nix
+    ./nether-ward.nix
   ];
 
   nixpkgs.config.problems.handlers.gemini-cli.removal = "ignore";

@@ -13,6 +13,10 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nether-ward = {
+      url = "github:shanmukha-sai-chinnam/nether-ward";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -20,6 +24,7 @@
     nix-index-database,
     nix-alien,
     git-hooks,
+    nether-ward,
     ...
   }: let
     values = import ./lib/values.nix;
@@ -44,7 +49,11 @@
       };
     };
   in {
-    packages.${system} = monorepoPkgs;
+    packages.${system} =
+      monorepoPkgs
+      // {
+        nether-ward = nether-ward.packages.${system}.default;
+      };
 
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
@@ -52,6 +61,7 @@
         specialArgs = {
           inherit
             nix-alien
+            nether-ward
             hostName
             userName
             values

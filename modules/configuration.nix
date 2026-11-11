@@ -11,8 +11,27 @@
     ./security
   ];
 
-  # Enable needed services for VS Code Remote Development
-  services.openssh.enable = true;
+  # Grouped system and sentinel services
+  services = {
+    openssh.enable = true;
+
+    # Real-time ClamAV antivirus sentinel for repositories
+    clamav-sentinel = {
+      enable = true;
+      watchDir = values.paths.workspace_root;
+      quarantineDir = "${values.paths.workspace_root}/${values.security.clamav.quarantine_dir}";
+      auditLog = "${values.paths.workspace_root}/${values.security.clamav.audit_log}";
+      autoQuarantine = values.security.clamav.auto_quarantine;
+    };
+
+    # Nether Ward AI security gateway and threat sentinel
+    nether-ward = {
+      enable = true;
+      port = 4000;
+      sanitize = true;
+    };
+  };
+
   networking.hostName = hostName;
   networking = {
     firewall.enable = true;
@@ -39,14 +58,5 @@
       enable = true;
       enableSSHSupport = true;
     };
-  };
-
-  # Real-time ClamAV antivirus sentinel for repositories
-  services.clamav-sentinel = {
-    enable = true;
-    watchDir = values.paths.workspace_root;
-    quarantineDir = "${values.paths.workspace_root}/${values.security.clamav.quarantine_dir}";
-    auditLog = "${values.paths.workspace_root}/${values.security.clamav.audit_log}";
-    autoQuarantine = values.security.clamav.auto_quarantine;
   };
 }
