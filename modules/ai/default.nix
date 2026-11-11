@@ -74,6 +74,92 @@
   geminiCliCompat = pkgs.writeShellScriptBin "gemini-cli" ''
     exec ${pkgs.gemini-cli}/bin/gemini "$@"
   '';
+
+  # ── Claude Code Launcher with Gemini Base URL & Dynamic Token ─────────
+  claudeLauncher = pkgs.writeShellScriptBin "claude" ''
+    set -euo pipefail
+    export ANTHROPIC_BASE_URL="''${ANTHROPIC_BASE_URL:-https://generativelanguage.googleapis.com/v1beta/openai/}"
+    if [ -z "''${GEMINI_API_KEY:-}" ]; then
+      if [ -f "$HOME/repositories/nether-ward/.env" ]; then
+        K="$(grep -E '^GEMINI_API_KEY=' "$HOME/repositories/nether-ward/.env" | cut -d '=' -f2- | tr -d '"' | tr -d ' ' || true)"
+        if [ -n "$K" ]; then
+          export GEMINI_API_KEY="$K"
+        fi
+      fi
+      if [ -z "''${GEMINI_API_KEY:-}" ] && [ -f "$HOME/.gemini/api_key" ]; then
+        export GEMINI_API_KEY="$(tr -d '\r\n ' < "$HOME/.gemini/api_key" 2>/dev/null || true)"
+      fi
+      if [ -z "''${GEMINI_API_KEY:-}" ] && [ -f "$HOME/.config/gemini/api_key" ]; then
+        export GEMINI_API_KEY="$(tr -d '\r\n ' < "$HOME/.config/gemini/api_key" 2>/dev/null || true)"
+      fi
+    fi
+
+    if [ -n "''${GEMINI_API_KEY:-}" ]; then
+      export ANTHROPIC_AUTH_TOKEN="''${ANTHROPIC_AUTH_TOKEN:-$GEMINI_API_KEY}"
+      export ANTHROPIC_API_KEY="''${ANTHROPIC_API_KEY:-$GEMINI_API_KEY}"
+    fi
+
+    exec ${pkgs.claude-code}/bin/claude "$@"
+  '';
+
+  claudeCodeCompat = pkgs.writeShellScriptBin "claude-code" ''
+    exec ${claudeLauncher}/bin/claude "$@"
+  '';
+
+  claudeSettingsInstaller = pkgs.writeShellScript "claude-settings-install" ''
+        set -eu
+        CLAUDE_DIR="$HOME/.claude"
+        mkdir -p "$CLAUDE_DIR"
+        SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+
+        GEMINI_KEY=""
+        if [ -f "$HOME/repositories/nether-ward/.env" ]; then
+          GEMINI_KEY="$(grep -E '^GEMINI_API_KEY=' "$HOME/repositories/nether-ward/.env" | cut -d '=' -f2- | tr -d '"' | tr -d ' ' || true)"
+        fi
+        if [ -z "$GEMINI_KEY" ] && [ -f "$HOME/.gemini/api_key" ]; then
+          GEMINI_KEY="$(tr -d '\r\n ' < "$HOME/.gemini/api_key" 2>/dev/null || true)"
+        fi
+        if [ -z "$GEMINI_KEY" ] && [ -f "$HOME/.config/gemini/api_key" ]; then
+          GEMINI_KEY="$(tr -d '\r\n ' < "$HOME/.config/gemini/api_key" 2>/dev/null || true)"
+        fi
+
+        if [ ! -f "$SETTINGS_FILE" ]; then
+          if [ -n "$GEMINI_KEY" ]; then
+            cat <<EOF > "$SETTINGS_FILE"
+    {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "ANTHROPIC_AUTH_TOKEN": "$GEMINI_KEY",
+        "ANTHROPIC_API_KEY": "$GEMINI_KEY"
+      }
+    }
+    EOF
+          else
+            cat <<EOF > "$SETTINGS_FILE"
+    {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai/"
+      }
+    }
+    EOF
+          fi
+          chmod 600 "$SETTINGS_FILE"
+        else
+          if [ -n "$GEMINI_KEY" ]; then
+            ${pkgs.jq}/bin/jq \
+              --arg url "https://generativelanguage.googleapis.com/v1beta/openai/" \
+              --arg token "$GEMINI_KEY" \
+              '.env.ANTHROPIC_BASE_URL = $url | .env.ANTHROPIC_AUTH_TOKEN = $token | .env.ANTHROPIC_API_KEY = $token' \
+              "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+          else
+            ${pkgs.jq}/bin/jq \
+              --arg url "https://generativelanguage.googleapis.com/v1beta/openai/" \
+              '.env.ANTHROPIC_BASE_URL = $url' \
+              "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+          fi
+          chmod 600 "$SETTINGS_FILE"
+        fi
+  '';
 in {
   imports = [
     ./skills.nix
@@ -84,14 +170,20 @@ in {
 
   nixpkgs.config.problems.handlers.gemini-cli.removal = "ignore";
 
-  # Exclusively Antigravity & Gemini AI toolkit
-  environment.systemPackages = with pkgs; [
-    antigravity-cli
-    gemini-cli
+  environment.sessionVariables = {
+    ANTHROPIC_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+  };
+
+  # Antigravity, Gemini & Claude Code AI toolkits
+  environment.systemPackages = [
+    pkgs.antigravity-cli
+    pkgs.gemini-cli
     antigravityCliCompat
     geminiCliCompat
     agy2Launcher
     antigravity2Launcher
+    claudeLauncher
+    claudeCodeCompat
   ];
 
   programs.antigravity-superpowers = {
@@ -102,5 +194,10 @@ in {
   # ── Spec Kit CLI Activation Script ─────────────────────────────────────
   system.userActivationScripts.specifyCli = {
     text = "${specifyCliInstaller}";
+  };
+
+  # ── Claude Code Settings Activation Script ─────────────────────────────
+  system.userActivationScripts.claudeSettings = {
+    text = "${claudeSettingsInstaller}";
   };
 }
