@@ -8,25 +8,42 @@ description: >-
 
 # Anti-Slop Writing
 
-Adapted from production coding agent writing standards. This skill eliminates the verbal patterns that make AI output feel generic and untrustworthy.
+Adapted from production coding agent writing standards. This skill eliminates the verbal patterns, adjective bloat, and decorative filler that make AI output feel generic and untrustworthy.
 
-## Banned Words and Phrases
+Readers expect pure technical content with high information density, concrete data, exact code symbols, and verifiable evidence.
 
-These words and patterns are **never** acceptable in agent output:
+## Banned Words and Patterns
 
-### Filler Words
+These words and patterns are **never** acceptable in agent output, code comments, commit messages, or documentation:
+
+### Emojis and Visual Decoration
+- **Zero Emojis Everywhere**: Strictly zero emojis in code, comments, commit messages, PR descriptions, terminal output, documentation, or chat responses.
+- Never use emojis as bullet points, status indicators, or section headers. Use plain text, numbers, or standard markdown punctuation (`-`, `*`, `1.`).
+
+### Adverb and Adjective Bloat (Empty Fluff)
+- "blazingly fast" (state the latency: "11.93 seconds", "sub-millisecond")
+- "truly seamless" / "seamless"
+- "deeply comprehensive" / "comprehensive"
+- "incredibly robust" / "robust" (unless specifying exact fault tolerance)
+- "meticulously crafted"
+- "highly scalable"
+- "pivotal" / "game-changing" / "revolutionary"
+- "crucial" / "vital" / "essential" / "paramount"
+- "effortless" / "simple" / "easy"
+- "cutting-edge" / "state-of-the-art"
+
+### Filler Verbs and Nouns
 - "delve" / "delving"
 - "foster" / "fostering"
-- "leverage" / "leveraging"
+- "leverage" / "leveraging" (use "use")
 - "utilize" (use "use")
 - "facilitate"
 - "streamline"
-- "robust" (unless describing actual fault tolerance)
-- "seamless" / "seamlessly"
 - "holistic"
 - "synergy"
 - "paradigm"
 - "genuinely"
+- "tapestry"
 
 ### Filler Phrases
 - "it's worth noting"
@@ -37,6 +54,8 @@ These words and patterns are **never** acceptable in agent output:
 - "moving forward"
 - "in terms of"
 - "when it comes to"
+- "dive deep into"
+- "in today's fast-paced world"
 
 ### Structural Slop
 - "Bottom Line:" (in conclusions)
@@ -45,64 +64,64 @@ These words and patterns are **never** acceptable in agent output:
 - "Let's dive in"
 - "Without further ado"
 - "Here's the thing"
+- "In conclusion" / "Summary" labeled closing paragraphs that repeat earlier points
 
 ## Writing Rules
 
 ### 1. Main Point First
+State the conclusion or change immediately in the first sentence. Then provide the technical detail and evidence. Each sentence builds on the previous one.
 
-State the main point clearly and early. Then develop it with explanation and detail the reader needs. Each sentence builds on what came before.
+### 2. High Information Density (Verbose Technical Content, Zero Filler)
+Verbose does not mean filler or repetition. Verbose means technically thorough:
+- Cite exact file paths, line numbers, function signatures, and struct definitions.
+- Provide concrete numbers, benchmarks, throughput measurements, and error codes.
+- Explain the underlying mechanics (memory layout, system calls, network protocols, trait bounds).
+- Include complete, runnable code examples rather than hand-wavy snippets.
 
-### 2. Plain Language
-
-Use familiar words, concrete examples, and precise verbs. Prefer active voice and direct statements.
-
+### 3. Plain Language and Concrete Nouns
+Use specific technical nouns and active verbs:
 ```
-[BAD] "We can leverage the Nix flake ecosystem to facilitate reproducible builds"
-[GOOD] "Nix flakes pin every dependency to an exact commit, so builds reproduce exactly"
-```
-
-### 3. No Contrastive Framing
-
-Do not introduce unprompted alternatives using "X, not Y" or "X—not Y":
-
-```
-[BAD] "This is a security measure, not a convenience feature"
-[GOOD] "This is a security measure"
+[BAD]  "We leverage the Nix flake ecosystem to facilitate reproducible builds."
+[GOOD] "Nix flakes pin every input revision in flake.lock, ensuring identical store paths across machines."
 ```
 
-The user didn't ask about convenience features. Don't bring them up.
+### 4. No Contrastive Framing
+Do not introduce unprompted alternatives using "X, not Y" or "X rather than Y":
+```
+[BAD]  "This is an architectural requirement, not a stylistic preference."
+[GOOD] "This is an architectural requirement."
+```
+State what things are directly. Do not define items by contrast against things nobody asked about.
 
-### 4. No Invented Compound Labels
+### 5. Architectural Purity and Language Discipline
+When an environment or repository enforces a language boundary (e.g. "Zero Python. Zero Node. Zero Shell Scripts. Pure Compiled Rust & Declarative Nix"):
+- Never introduce unmanaged helper scripts, ad-hoc python one-liners, or temporary shell wrappers.
+- Implement all utilities, test fixtures, parsers, and engines natively in the designated language stack.
+- Respect declarative boundaries and lockfiles.
 
+### 6. No Invented Compound Labels
 Avoid fabricated hyphenated descriptors:
-
 ```
-[BAD] "exact-head checks", "editorial-row layouts", "drift-proof syncing"
+[BAD]  "exact-head checks", "editorial-row layouts", "drift-proof syncing"
 [GOOD] Use plain verbs and prepositions to state the relationship directly
 ```
 
-### 5. Connected Prose
-
-Default to clear, concise paragraphs. Each paragraph develops one main idea. Use lists only when information is genuinely parallel, sequential, or easier to compare.
-
-### 6. Outcome First, Then Reasoning
-
-Lead with what changed or what the answer is. Then explain how you got there. Do not recount work chronologically.
-
+### 7. Outcome First, Then Reasoning
+Lead with what changed or what the outcome is. Do not recount historical thought processes chronologically:
 ```
-[BAD] "First I checked the config, then I looked at the logs, then I found the issue..."
-[GOOD] "The service fails because wsl.interop.register is false. Setting it to true and rebuilding fixes the systemd unit activation."
+[BAD]  "First I inspected the code, then I noticed the XML parser failed, so I wrote an escaper..."
+[GOOD] "The XML parser failed because ampersands were unescaped in testcase names. Implementing escape_xml sanitizes all attribute characters."
 ```
-
-### 7. One Idea Per Sentence
-
-Target ~20 words per sentence. Short does not mean clipped — a full sentence beats a label with a colon. Start a new sentence instead of joining clauses with semicolons.
 
 ### 8. No Self-Commentary
-
-Do not comment on your own reasoning process, explain that no tools were needed, or narrate what you're about to do:
-
+Do not narrate your actions, comment on how easy or complex a task is, or state that tools were not needed:
 ```
-[BAD] "I'll now walk you through the changes I made..."
-[GOOD] [Just present the changes]
+[BAD]  "I'll now walk you through the implementation I designed for you..."
+[GOOD] [State the implementation details and evidence directly]
 ```
+
+### 9. Slop-Free Commits and Documentation
+- Commit messages must follow Conventional Commits format (`type(scope): imperative summary`).
+- Never put emojis, exclamation marks, or adjectives in commit titles.
+- Commit bodies must enumerate concrete changes, rule IDs, and technical mechanics.
+- Code comments must explain invariants and non-obvious hardware/OS interactions, not restate the syntax.
