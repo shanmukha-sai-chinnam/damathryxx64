@@ -1,446 +1,352 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#1d2021] text-[#ebdbb2]">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>damathryxx64 | Declarative NixOS-WSL Monorepo & AI Hive</title>
-  <meta name="description" content="Architecture documentation and system specifications for the damathryxx64 declarative NixOS-WSL monorepo, AI agent skills hub, and security sentinels.">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gb: {
-              bgHard: '#1d2021',
-              bg: '#282828',
-              bgSoft: '#32302f',
-              bg1: '#3c3836',
-              bg2: '#504945',
-              bg3: '#665c54',
-              bg4: '#7c6f64',
-              fg: '#ebdbb2',
-              fg0: '#fbf1c7',
-              fg2: '#d5c4a1',
-              fg3: '#bdae93',
-              fg4: '#a89984',
-              gray: '#928374',
-              red: '#fb4934',
-              redDim: '#cc241d',
-              green: '#b8bb26',
-              greenDim: '#98971a',
-              yellow: '#fabd2f',
-              yellowDim: '#d79921',
-              blue: '#83a598',
-              blueDim: '#458588',
-              purple: '#d3869b',
-              purpleDim: '#b16286',
-              aqua: '#8ec07c',
-              aquaDim: '#689d6a',
-              orange: '#fe8019',
-              orangeDim: '#af3a03',
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          }
-        }
-      }
-    }
-  </script>
+  <title>DAMATHRYXX64 // UNIFIED NIXOS-WSL SYSTEM SPECIFICATION</title>
+  <meta name="description" content="Technical specification and architectural manual for the damathryxx64 unified NixOS-WSL monorepo, declarative skills hub, and task runner suite.">
   <style>
-    /* Gruvbox custom scrollbar */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #1d2021; }
-    ::-webkit-scrollbar-thumb { background: #3c3836; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #504945; }
-    
-    .gruvbox-card {
-      background-color: #282828;
-      border: 1px solid #3c3836;
-      transition: border-color 0.15s ease, transform 0.15s ease;
+    :root {
+      --bg: #1d2021;
+      --bg-alt: #282828;
+      --bg-box: #32302f;
+      --border: #3c3836;
+      --border-bright: #504945;
+      --fg: #ebdbb2;
+      --fg-bright: #fbf1c7;
+      --fg-dim: #a89984;
+      --fg-dark: #7c6f64;
+      --yellow: #fabd2f;
+      --green: #b8bb26;
+      --aqua: #8ec07c;
+      --blue: #83a598;
+      --orange: #fe8019;
+      --red: #fb4934;
+      --purple: #d3869b;
     }
-    .gruvbox-card:hover {
-      border-color: #504945;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+      padding: 0;
+      margin: 0;
     }
-    .gruvbox-card-active {
-      border-color: #665c54;
-      background-color: #32302f;
+    a { color: var(--yellow); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 32px 24px 80px 24px;
     }
-    .tab-btn {
-      color: #a89984;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s ease;
+    header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
     }
-    .tab-btn:hover {
-      color: #ebdbb2;
-      border-bottom-color: #504945;
+    .badge {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+      margin-bottom: 6px;
     }
-    .tab-btn.active {
-      color: #fabd2f;
-      border-bottom-color: #fabd2f;
-      background-color: rgba(250, 189, 47, 0.05);
+    .badge-yellow { background-color: var(--yellow); color: var(--bg); }
+    .badge-green { background-color: var(--green); color: var(--bg); }
+    .badge-aqua { background-color: var(--aqua); color: var(--bg); }
+    .badge-orange { background-color: var(--orange); color: var(--bg); }
+    .badge-red { background-color: var(--red); color: var(--bg); }
+    .badge-dim { background-color: var(--bg-box); color: var(--fg-dim); border: 1px solid var(--border); }
+    h1 {
+      color: var(--fg-bright);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 12px 0 6px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
-    .code-block {
-      background-color: #1d2021;
-      border: 1px solid #3c3836;
-      font-family: 'JetBrains Mono', monospace;
+    .subtitle {
+      color: var(--fg-dim);
+      font-size: 13px;
+      margin-bottom: 16px;
     }
-    .pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      padding: 0.125rem 0.5rem;
-      border-radius: 0.25rem;
-      border-width: 1px;
+    nav.toc {
+      background-color: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+    }
+    nav.toc h2 {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--yellow);
+      margin-bottom: 10px;
+      border: none;
+      padding: 0;
+    }
+    nav.toc ol {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 6px 20px;
+      list-style-position: inside;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+    }
+    nav.toc a { color: var(--fg); }
+    nav.toc a:hover { color: var(--yellow); }
+    section {
+      margin-bottom: 48px;
+    }
+    h2 {
+      color: var(--fg-bright);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 16px;
+      font-weight: 700;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3 {
+      color: var(--yellow);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 20px 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    p { margin-bottom: 12px; }
+    ul, ol { margin-left: 20px; margin-bottom: 16px; }
+    li { margin-bottom: 4px; }
+    pre {
+      background-color: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      color: var(--fg-bright);
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      background-color: var(--bg-box);
+      padding: 2px 5px;
+      border-radius: 3px;
+      color: var(--fg-bright);
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      color: inherit;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: var(--bg-alt);
+      color: var(--yellow);
+      font-weight: 700;
+    }
+    tr:nth-child(even) {
+      background-color: rgba(40, 40, 40, 0.4);
+    }
+    .spec-box {
+      background-color: var(--bg-alt);
+      border-left: 3px solid var(--aqua);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .spec-box.orange { border-left-color: var(--orange); }
+    .spec-box.red { border-left-color: var(--red); }
+    .spec-box.yellow { border-left-color: var(--yellow); }
+    .spec-box p:last-child { margin-bottom: 0; }
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      color: var(--fg-dim);
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
     }
   </style>
 </head>
-<body class="min-h-full flex flex-col font-sans bg-[#1d2021] text-[#ebdbb2]">
-
-  <!-- Top Sticky Navigation Bar -->
-  <header class="sticky top-0 z-50 bg-[#282828] border-b border-[#3c3836] shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-14">
-        
-        <!-- Brand & Context -->
-        <div class="flex items-center gap-3">
-          <a href="#overview" onclick="switchTab('overview')" class="flex items-center gap-2 group">
-            <span class="font-mono font-bold text-base sm:text-lg text-[#fabd2f] tracking-tight group-hover:text-[#fe8019] transition">damathryxx64</span>
-            <span class="pill bg-[#1d2021] text-[#8ec07c] border-[#3c3836]">dots-v25.05</span>
-          </a>
-          <span class="hidden md:inline-block text-xs font-mono text-[#928374]">|</span>
-          <span class="hidden md:inline-block text-xs font-mono text-[#a89984]">NixOS-WSL Declarative Monorepo</span>
-        </div>
-
-        <!-- Links -->
-        <div class="flex items-center gap-2 sm:gap-3 text-xs font-mono">
-          <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64" target="_blank" rel="noreferrer" class="px-2.5 py-1 rounded bg-[#32302f] hover:bg-[#3c3836] border border-[#504945] text-[#ebdbb2] hover:text-[#fbf1c7] transition flex items-center gap-1.5">
-            <span>GitHub</span>
-            <span class="text-[#928374]">↗</span>
-          </a>
-        </div>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <span class="badge badge-yellow">damathryxx64</span>
+        <span class="badge badge-aqua">NixOS 25.05</span>
+        <span class="badge badge-green">WSL 2 Kernel 6.6+</span>
+        <span class="badge badge-orange">Zero Drift Architecture</span>
+        <span class="badge badge-dim">Single Source of Truth</span>
       </div>
-
-      <!-- Horizontal Tab Navigation Bar -->
-      <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto no-scrollbar border-t border-[#3c3836]/60 text-xs font-mono pt-1">
-        <button onclick="switchTab('overview')" id="tab-btn-overview" class="tab-btn active px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">1.</span> <span>Overview</span>
-        </button>
-        <button onclick="switchTab('values')" id="tab-btn-values" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">2.</span> <span>Values Hub</span>
-        </button>
-        <button onclick="switchTab('nixos')" id="tab-btn-nixos" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">3.</span> <span>NixOS-WSL System</span>
-        </button>
-        <button onclick="switchTab('packages')" id="tab-btn-packages" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">4.</span> <span>In-Tree Packages</span>
-        </button>
-        <button onclick="switchTab('skills')" id="tab-btn-skills" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">5.</span> <span>Agent Skills</span>
-        </button>
-        <button onclick="switchTab('tasks')" id="tab-btn-tasks" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">6.</span> <span>Task Runners</span>
-        </button>
-        <button onclick="switchTab('architecture')" id="tab-btn-architecture" class="tab-btn px-3 py-2 whitespace-nowrap font-medium flex items-center gap-1.5">
-          <span class="text-[#928374]">7.</span> <span>Architecture</span>
-        </button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Live Subsystem Filter & Quick Search Strip -->
-  <div class="bg-[#282828] border-b border-[#3c3836] py-2">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-      <div class="flex items-center gap-2 text-xs font-mono text-[#a89984]">
-        <span class="text-[#fabd2f] font-bold">[FILTER]</span>
-        <span>Quick search across components, modules, and commands:</span>
+      <h1>DAMATHRYXX64 // UNIFIED SYSTEM SPECIFICATION</h1>
+      <div class="subtitle">
+        Declarative Monorepo Architecture, In-Tree Packages, Agent Skills Hub &amp; CLI Task Runners
       </div>
-      <div class="relative flex-1 max-w-md">
-        <input type="text" id="globalSearch" placeholder="Type to filter (e.g. docker, clamav, validate, jev)..." 
-               onkeyup="handleFilter()" 
-               class="w-full px-3 py-1.5 rounded bg-[#1d2021] border border-[#3c3836] text-xs font-mono text-[#ebdbb2] placeholder-[#7c6f64] focus:outline-none focus:border-[#fabd2f]">
-        <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-2.5 top-1.5 text-xs text-[#928374] hover:text-[#ebdbb2]">ESC</button>
+      <p style="color: var(--fg-dim); font-size: 13px;">
+        Primary driver and central source of truth for all NixOS-WSL configurations, AI coding agent runtimes, custom package derivations, and security sentinels.
+      </p>
+    </header>
+
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#overview">System Overview &amp; Monorepo Architecture</a></li>
+        <li><a href="#values">Declarative Configuration Hub (values.json)</a></li>
+        <li><a href="#nixos">NixOS-WSL System Modules (modules/)</a></li>
+        <li><a href="#packages">Custom In-Tree Package Derivations (pkgs/)</a></li>
+        <li><a href="#skills">Declarative Agent Skills Hub (skills/)</a></li>
+        <li><a href="#tasks">CLI Task Runners Reference (dots-*)</a></li>
+        <li><a href="#security">Security Sentinel &amp; Nether Ward Gateway</a></li>
+        <li><a href="#architecture">Architecture Decision Records &amp; Quality Gates</a></li>
+      </ol>
+    </nav>
+
+    <!-- SECTION 1: OVERVIEW -->
+    <section id="overview">
+      <h2>1. System Overview &amp; Monorepo Architecture</h2>
+      <p>
+        The <code>damathryxx64</code> monorepo unifies all operating system declarations, development toolchains, AI agent customization profiles, and security daemons into a single hermetic repository. It completely eliminates polyrepo drift, unmanaged mutable machine state, and imperative package installations.
+      </p>
+      <div class="spec-box yellow">
+        <strong>Anti-Drift Guarantee:</strong> The <code>damathryxx64</code> dots repository is the primary driver. All AI agent runtimes, skills, rules, CLI packages, and system configurations are declared in-tree. Every change is verified through the 5-stage automated quality gate (<code>dots-validate</code>).
       </div>
-    </div>
-  </div>
-
-  <!-- Main Container Viewport -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
-    <!-- ================================================================= -->
-    <!-- TAB 1: OVERVIEW & MONOREPO TOPOLOGY                               -->
-    <!-- ================================================================= -->
-    <section id="pane-overview" class="tab-pane space-y-6">
-      
-      <!-- Monorepo Hero Card -->
-      <div class="gruvbox-card rounded-lg p-5 sm:p-6">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#3c3836] pb-5">
-          <div>
-            <h1 class="text-xl sm:text-2xl font-bold font-mono text-[#fbf1c7] tracking-tight">
-              damathryxx64 — NixOS-WSL System Configuration &amp; Agent Runtimes
-            </h1>
-            <p class="text-sm text-[#a89984] mt-1.5 max-w-3xl leading-relaxed">
-              Declarative NixOS-WSL configuration, in-tree packages, security sentinels, agent skills, and architecture documentation unified under <code class="text-[#fabd2f]">flake.nix</code> and <code class="text-[#8ec07c]">values.json</code>.
-            </p>
-          </div>
-          
-          <div class="flex flex-wrap lg:flex-col gap-2 shrink-0">
-            <button onclick="switchTab('tasks')" class="px-3 py-1.5 rounded bg-[#32302f] hover:bg-[#3c3836] border border-[#504945] text-xs font-mono text-[#8ec07c] flex items-center justify-center gap-1.5 transition">
-              <span>Task Runners →</span>
-            </button>
-            <button onclick="switchTab('values')" class="px-3 py-1.5 rounded bg-[#32302f] hover:bg-[#3c3836] border border-[#504945] text-xs font-mono text-[#fabd2f] flex items-center justify-center gap-1.5 transition">
-              <span>Values Hub →</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Architectural Metrics Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 font-mono">
-          <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="text-[11px] text-[#928374] uppercase">SYSTEM CONFIG</div>
-            <div class="text-lg font-bold text-[#83a598] mt-0.5">18 Modules</div>
-            <div class="text-[11px] text-[#a89984] mt-0.5">WSL2 · Systemd Native</div>
-          </div>
-          <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="text-[11px] text-[#928374] uppercase">AGENT SKILLS</div>
-            <div class="text-lg font-bold text-[#fabd2f] mt-0.5">32+ Skills</div>
-            <div class="text-[11px] text-[#a89984] mt-0.5">14 Declarative Skills</div>
-          </div>
-          <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="text-[11px] text-[#928374] uppercase">MCP SERVERS</div>
-            <div class="text-lg font-bold text-[#d3869b] mt-0.5">9 Stdio Servers</div>
-            <div class="text-[11px] text-[#a89984] mt-0.5">Jev · NixOS · Git Mesh</div>
-          </div>
-          <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="text-[11px] text-[#928374] uppercase">VALIDATION</div>
-            <div class="text-lg font-bold text-[#b8bb26] mt-0.5">5 Checks</div>
-            <div class="text-[11px] text-[#a89984] mt-0.5">Schema · Flake · Linter</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Core Architectural Dataflow Grid -->
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="flex items-center justify-between border-b border-[#3c3836] pb-3 mb-4">
-          <h2 class="text-sm font-bold font-mono text-[#fbf1c7] uppercase tracking-wider flex items-center gap-2">
-            <span class="text-[#fabd2f]">[TOPOLOGY]</span> System Architecture &amp; Dataflow
-          </h2>
-          <span class="text-xs font-mono text-[#928374]">Key-Value Dataflow</span>
-        </div>
-
-        <div class="space-y-3 font-mono text-xs">
-          <!-- Hub Card -->
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#504945] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              <span class="px-2 py-0.5 rounded bg-[#32302f] text-[#fabd2f] font-bold border border-[#504945] text-xs self-start">SOURCE</span>
-              <span class="font-bold text-[#fbf1c7]">values.json</span>
-              <span class="text-[#a89984] text-[11px]">Central key-value configuration hub (identity, system, wsl, paths, security)</span>
-            </div>
-            <span class="text-[11px] text-[#8ec07c] shrink-0">Schema Validated</span>
-          </div>
-
-          <!-- Flow Arrow Indicator -->
-          <div class="hidden sm:grid grid-cols-4 text-[#7c6f64] text-center text-[11px] py-0.5">
-            <span>builtins.fromJSON ↓</span>
-            <span>json.loads() ↓</span>
-            <span>jq / dots-val ↓</span>
-            <span>JSON.parse() ↓</span>
-          </div>
-
-          <!-- Loaders & Runtimes Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-              <div class="text-[11px] font-bold text-[#83a598] mb-1">lib/values.nix</div>
-              <div class="text-[11px] text-[#a89984] mb-2">Pure Nix evaluation loader</div>
-              <div class="text-[10px] text-[#928374] border-t border-[#3c3836] pt-1.5">→ modules/configuration.nix</div>
-            </div>
-
-            <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-              <div class="text-[11px] font-bold text-[#fabd2f] mb-1">skills.nix</div>
-              <div class="text-[11px] text-[#a89984] mb-2">Declarative skills sync</div>
-              <div class="text-[10px] text-[#928374] border-t border-[#3c3836] pt-1.5">→ ~/.gemini/config/skills</div>
-            </div>
-
-            <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-              <div class="text-[11px] font-bold text-[#fe8019] mb-1">task-runners.nix</div>
-              <div class="text-[11px] text-[#a89984] mb-2">CLI task suite (dots-*)</div>
-              <div class="text-[10px] text-[#928374] border-t border-[#3c3836] pt-1.5">→ dots-validate, dots-build</div>
-            </div>
-
-            <div class="p-3 rounded bg-[#1d2021] border border-[#3c3836]">
-              <div class="text-[11px] font-bold text-[#d3869b] mb-1">antigravity-superpowers</div>
-              <div class="text-[11px] text-[#a89984] mb-2">Agent tooling &amp; test suite</div>
-              <div class="text-[10px] text-[#928374] border-t border-[#3c3836] pt-1.5">→ doctor, check, watch, preset</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subsystems Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-        <div class="gruvbox-card rounded-lg p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono font-bold text-[#83a598]">[SYS] MODULES</span>
-              <span class="pill bg-[#1d2021] text-[#928374] border-[#3c3836]">modules/</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono mb-1">Declarative WSL2 Modules</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              WSL2 boot timeouts (60000ms), Docker Desktop rootless socket permission shims (0666), and ClamAV inotify sentinel.
-            </p>
-          </div>
-          <button onclick="switchTab('nixos')" class="mt-4 text-xs font-mono text-[#83a598] hover:text-[#ebdbb2] flex items-center gap-1">
-            <span>Explore 18 Modules</span> <span class="text-[#928374]">→</span>
-          </button>
-        </div>
-
-        <div class="gruvbox-card rounded-lg p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono font-bold text-[#fabd2f]">[AI] SKILLS HUB</span>
-              <span class="pill bg-[#1d2021] text-[#928374] border-[#3c3836]">skills/</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono mb-1">Multi-Upstream Skills Hub</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Google Cloud, Superpowers, Karpathy Guidelines, and ADHD formats with automated daily AST rewrite engine adapting skills for Antigravity and Gemini.
-            </p>
-          </div>
-          <button onclick="switchTab('skills')" class="mt-4 text-xs font-mono text-[#fabd2f] hover:text-[#ebdbb2] flex items-center gap-1">
-            <span>View 32+ Skills</span> <span class="text-[#928374]">→</span>
-          </button>
-        </div>
-
-        <div class="gruvbox-card rounded-lg p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono font-bold text-[#8ec07c]">[SEC] SENTINELS</span>
-              <span class="pill bg-[#1d2021] text-[#928374] border-[#3c3836]">pkgs/</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono mb-1">Real-Time Inotify Sentinel</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              ClamAV Sentinel streams new files over TCP to an in-memory Docker container with 8.5M+ virus definitions, isolating threats with chmod 000.
-            </p>
-          </div>
-          <button onclick="switchTab('packages')" class="mt-4 text-xs font-mono text-[#8ec07c] hover:text-[#ebdbb2] flex items-center gap-1">
-            <span>Inspect Packages</span> <span class="text-[#928374]">→</span>
-          </button>
-        </div>
-
-      </div>
-
-      <!-- Primary Commands Reference -->
-      <div class="gruvbox-card rounded-lg p-5 font-mono text-xs">
-        <div class="flex items-center justify-between border-b border-[#3c3836] pb-3 mb-4">
-          <h2 class="text-sm font-bold text-[#fbf1c7] uppercase tracking-wider flex items-center gap-2">
-            <span class="text-[#8ec07c]">[CLI]</span> Core Commands
-          </h2>
-          <span class="text-xs text-[#928374]">Run from any directory in WSL</span>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-[#3c3836] text-[#928374] text-[11px]">
-                <th class="p-2">Command</th>
-                <th class="p-2">Action</th>
-                <th class="p-2">Target</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#3c3836]/60">
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2 font-bold text-[#b8bb26]">dots-validate</td>
-                <td class="p-2 text-[#ebdbb2]">5-stage validation: values schema, Alejandra format, Statix lint, Deadnix dead code, Flake check</td>
-                <td class="p-2 text-[#8ec07c]">Read-only check</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2 font-bold text-[#83a598]">dots-test-vm</td>
-                <td class="p-2 text-[#ebdbb2]">Ephemeral dry build with package closure diff</td>
-                <td class="p-2 text-[#8ec07c]">Dry-run</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2 font-bold text-[#fabd2f]">dots-val &lt;key&gt;</td>
-                <td class="p-2 text-[#ebdbb2]">Query value from values.json (e.g. dots-val identity.username)</td>
-                <td class="p-2 text-[#8ec07c]">Read-only query</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2 font-bold text-[#fe8019]">dots-build</td>
-                <td class="p-2 text-[#ebdbb2]">Build system derivation closure without applying to live system</td>
-                <td class="p-2 text-[#8ec07c]">No switch</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+      <h3>Monorepo Component Map</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Monorepo Path</th>
+            <th>Role &amp; Content</th>
+            <th>Replaced Polyrepo / Architecture Scope</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>values.json</code></td>
+            <td>Single declarative key-value configuration hub for Nix, Python, and Bash</td>
+            <td>Central Source of Truth (zero hardcoded machine strings)</td>
+          </tr>
+          <tr>
+            <td><code>lib/values.nix</code></td>
+            <td>Pure Nix loader (<code>builtins.fromJSON</code>) passing config to system modules</td>
+            <td>Hermetic Zero-Overhead Evaluation Loader</td>
+          </tr>
+          <tr>
+            <td><code>modules/system/</code></td>
+            <td>WSL2 boot timeout (60s), kernel shims, Windows .wslconfig, fonts, zram</td>
+            <td>NixOS-WSL System Layer &amp; Docker Desktop Integration</td>
+          </tr>
+          <tr>
+            <td><code>modules/environment/</code></td>
+            <td>Interactive Zsh, Starship prompt, direnv, task runners (<code>dots-*</code>), compilers</td>
+            <td>Developer Tooling &amp; Shell Orchestration</td>
+          </tr>
+          <tr>
+            <td><code>modules/ai/</code></td>
+            <td>Antigravity CLI, Gemini toolkit, MCP servers, Nether Ward, skills sync</td>
+            <td>AI Coding Agent Control Plane</td>
+          </tr>
+          <tr>
+            <td><code>modules/security/</code></td>
+            <td>ClamAV real-time inotify sentinel, sudo rules, firewall policies</td>
+            <td>Automated Filesystem Threat Containment</td>
+          </tr>
+          <tr>
+            <td><code>pkgs/</code></td>
+            <td>In-tree derivations: <code>clamav-sentinel</code>, <code>antigravity-superpowers</code></td>
+            <td>Custom Monorepo Packages</td>
+          </tr>
+          <tr>
+            <td><code>skills/</code></td>
+            <td>Unified in-tree agent skills hub (Superpowers, Karpathy, ADHD, TypeSafe)</td>
+            <td>Declarative Multi-Upstream Skills Hub</td>
+          </tr>
+          <tr>
+            <td><code>docs/</code></td>
+            <td>Technical documentation portal, architecture topology, and component specs</td>
+            <td>Clean Plain-Text Documentation Hub</td>
+          </tr>
+          <tr>
+            <td><code>flake.nix</code></td>
+            <td>Master flake defining NixOS-WSL system, packages, and code formatter</td>
+            <td>Consolidated Hermetic Evaluation Entrypoint</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 2: VALUES HUB (values.json)                                   -->
-    <!-- ================================================================= -->
-    <section id="pane-values" class="tab-pane hidden space-y-6">
-      
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="border-b border-[#3c3836] pb-4 mb-4">
-          <h2 class="text-xl font-bold font-mono text-[#fbf1c7]">values.json — Configuration Hub</h2>
-          <p class="text-sm text-[#a89984] mt-1 leading-relaxed">
-            Eliminates hardcoded machine strings, usernames, and paths. Pure Nix loader (<code class="text-[#83a598]">lib/values.nix</code>) loads this hermetically via <code class="text-[#8ec07c]">builtins.fromJSON</code> with zero derivation rebuild overhead.
-          </p>
-        </div>
+    <!-- SECTION 2: VALUES HUB -->
+    <section id="values">
+      <h2>2. Declarative Configuration Hub (values.json)</h2>
+      <p>
+        Machine paths, usernames, ports, and upstream endpoints are declared once in <code>values.json</code>. The pure Nix loader (<code>lib/values.nix</code>) imports this JSON document hermetically via <code>builtins.fromJSON</code> without rebuilding derivations when only runtime variables change.
+      </p>
+      <pre><code>+-----------------------------------------------------------------------------+
+|                                values.json                                  |
+|         (Central Source of Truth for Identity, Paths, Ports &amp; WSL)          |
++-----------------------------------------------------------------------------+
+        |                     |                     |                     |
+        | builtins.fromJSON   | json.loads()        | jq / dots-val       | JSON.parse()
+        v                     v                     v                     v
++---------------+     +---------------+     +---------------+     +---------------+
+| lib/values.nix|     | Python Scripts|     | Bash Runners  |     | Node.js / MCP |
+| (Nix Modules) |     | (ClamAV, etc) |     | (dots-*, cb)  |     | (Superpowers) |
++---------------+     +---------------+     +---------------+     +---------------+</code></pre>
 
-        <!-- Query Recipes Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between text-xs font-mono text-[#83a598] mb-1.5 font-bold">
-              <span>Nix Loading Recipe</span>
-              <button onclick="copySnippet('nix-val-recipe')" class="text-[10px] text-[#928374] hover:text-[#ebdbb2]">[copy]</button>
-            </div>
-            <pre id="nix-val-recipe" class="text-xs font-mono text-[#ebdbb2] overflow-x-auto"><code>let
+      <h3>Loading Recipes Across Runtimes</h3>
+      <pre><code># 1. Nix Expression Loading Recipe
+let
   values = import ./lib/values.nix;
 in {
   username = values.identity.username;
   watchDir = values.paths.workspace_root;
-}</code></pre>
-          </div>
+}
 
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between text-xs font-mono text-[#fabd2f] mb-1.5 font-bold">
-              <span>Python Loading Recipe</span>
-              <button onclick="copySnippet('py-val-recipe')" class="text-[10px] text-[#928374] hover:text-[#ebdbb2]">[copy]</button>
-            </div>
-            <pre id="py-val-recipe" class="text-xs font-mono text-[#ebdbb2] overflow-x-auto"><code>import json
+# 2. Python Loading Recipe
+import json
 from pathlib import Path
+values = json.loads(Path("values.json").read_text())
+username = values["identity"]["username"]
 
-values = json.loads(
-    Path("values.json").read_text()
-)
-user = values["identity"]["username"]</code></pre>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between text-xs font-mono text-[#fe8019] mb-1.5 font-bold">
-              <span>Bash Task Recipe</span>
-              <button onclick="copySnippet('sh-val-recipe')" class="text-[10px] text-[#928374] hover:text-[#ebdbb2]">[copy]</button>
-            </div>
-            <pre id="sh-val-recipe" class="text-xs font-mono text-[#ebdbb2] overflow-x-auto"><code># Query any dynamic key
+# 3. Bash CLI Query (Any dynamic key)
 USER=$(dots-val identity.username)
 ROOT=$(dots-val paths.workspace_root)
-INIT=$(dots-val wsl.init_timeout)
-echo "Running as: $USER on $ROOT"</code></pre>
-          </div>
-        </div>
+PORT=$(dots-val gateway.port)</code></pre>
 
-        <!-- Raw values.json Card -->
-        <div class="border border-[#3c3836] rounded-lg overflow-hidden">
-          <div class="bg-[#1d2021] px-4 py-2 border-b border-[#3c3836] flex items-center justify-between">
-            <span class="text-xs font-mono text-[#fabd2f]">values.json (Active Declarative State)</span>
-            <button onclick="copySnippet('raw-values-json')" class="text-xs font-mono text-[#928374] hover:text-[#ebdbb2] px-2 py-0.5 rounded bg-[#282828] border border-[#3c3836]">Copy JSON</button>
-          </div>
-          <pre id="raw-values-json" class="p-4 text-xs font-mono text-[#ebdbb2] bg-[#1d2021] overflow-x-auto max-h-96"><code>{
+      <h3>Active Configuration Namespace (values.json)</h3>
+      <pre><code>{
   "$schema": "./values.schema.json",
   "identity": {
     "username": "damathryxx64",
@@ -458,9 +364,6 @@ echo "Running as: $USER on $ROOT"</code></pre>
     "proxy_socket_dir": "/mnt/wsl/docker-desktop/shared-sockets/guest-services",
     "proxy_socket_mode": "666"
   },
-  "windows": {
-    "user_profile": "/mnt/c/Users/shanm"
-  },
   "paths": {
     "workspace_root": "/home/damathryxx64/repositories",
     "dots_repo": "/home/damathryxx64/repositories/damathryxx64",
@@ -468,12 +371,6 @@ echo "Running as: $USER on $ROOT"</code></pre>
     "skills_dir": "skills",
     "pkgs_dir": "pkgs",
     "modules_dir": "modules"
-  },
-  "github": {
-    "owner": "shanmukha-sai-chinnam",
-    "repo": "damathryxx64",
-    "default_branch": "trunk",
-    "pages_url": "https://shanmukha-sai-chinnam.github.io/damathryxx64/"
   },
   "security": {
     "clamav": {
@@ -483,514 +380,292 @@ echo "Running as: $USER on $ROOT"</code></pre>
       "auto_quarantine": true
     }
   }
-}
-</code></pre>
-        </div>
-      </div>
-
+}</code></pre>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 3: NIXOS-WSL SYSTEM & MODULES                                 -->
-    <!-- ================================================================= -->
-    <section id="pane-nixos" class="tab-pane hidden space-y-6">
-      
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="border-b border-[#3c3836] pb-4 mb-5">
-          <h2 class="text-xl font-bold font-mono text-[#fbf1c7]">NixOS-WSL System Modules</h2>
-          <p class="text-sm text-[#a89984] mt-1 leading-relaxed">
-            Orchestrated by <code class="text-[#83a598]">modules/configuration.nix</code>. Built directly from upstream Nixpkgs unstable with in-tree kernel shims, systemd native unit wrappers, and zero mutable local state.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836] space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-[#83a598]">modules/system/</span>
-              <span class="pill bg-[#282828] text-[#8ec07c] border-[#3c3836]">Domain: Core</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono">System, Hardware &amp; Store Maintenance</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Consolidates WSL2 boot handshake (60s init timeout), zram in-memory compressed swap, systemd-oomd PSI sentinel, typography (Cascadia &amp; Fira Code Nerd Fonts), Docker Desktop proxy socket watcher (mode 0666), binary substituters, and automated weekly store garbage collection via <code class="text-[#8ec07c]">nh</code>.
-            </p>
-            <div class="text-[11px] font-mono text-[#928374] pt-1">
-              • In-tree kernel shims · Host .wslconfig generator · Auto user group attachment
-            </div>
-          </div>
-
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836] space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-[#fe8019]">modules/environment/</span>
-              <span class="pill bg-[#282828] text-[#fe8019] border-[#3c3836]">Domain: User</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono">Shell Environment &amp; Task Runners</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Consolidates interactive Zsh with Starship prompt, direnv nix-direnv integration, Bat, Fzf, Zoxide, native tab completions (<code class="text-[#fabd2f]">_agy</code>, <code class="text-[#fabd2f]">_nh</code>, <code class="text-[#fabd2f]">_antigravity_superpowers</code>), development compilers (Python, Node, GCC, Clang, CMake, uv, nixd), and the 5-stage task runner suite (<code class="text-[#fabd2f]">dots-validate</code>, <code class="text-[#fabd2f]">dots-test-vm</code>, <code class="text-[#fabd2f]">dots-build</code>, <code class="text-[#fabd2f]">help-nix</code>).
-            </p>
-            <div class="text-[11px] font-mono text-[#928374] pt-1">
-              • Bidirectional Windows clipboard bridge (cb) · Fast package runner (,)
-            </div>
-          </div>
-
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836] space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-[#8ec07c]">modules/ai/</span>
-              <span class="pill bg-[#282828] text-[#8ec07c] border-[#3c3836]">Domain: Intelligence</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono">AI Runtimes, Superpowers &amp; MCP Servers</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Consolidates the Antigravity CLI and Gemini AI toolkit, in-tree Antigravity Superpowers profile, declarative agent skills synchronizer (<code class="text-[#fabd2f]">agent-skills-sync.service</code>), and native stdio JSON-RPC MCP servers (TypeSafe Jev, GitHub, NixOS, Git, Filesystem, Fetch, Sequential Thinking).
-            </p>
-            <div class="text-[11px] font-mono text-[#928374] pt-1">
-              • Single source of truth skills hub · Pre-edit advisory protocol · Zero drift
-            </div>
-          </div>
-
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836] space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-[#b8bb26]">modules/security/</span>
-              <span class="pill bg-[#282828] text-[#b8bb26] border-[#3c3836]">Domain: Protection</span>
-            </div>
-            <h3 class="text-sm font-bold text-[#fbf1c7] font-mono">ClamAV Sentinel &amp; Security Policies</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Spawns the user-level systemd service for real-time monitoring across all repositories. Bridges inotify file events over TCP to ClamAV daemon with resilient offline backoff, auto-quarantining threats with mode 000 permissions. Enforces passwordless sudo rules and host firewall policies.
-            </p>
-            <div class="text-[11px] font-mono text-[#928374] pt-1">
-              • Resilient 30s connection backoff · Sub-10ms INSTREAM latency · Desktop alerts
-            </div>
-          </div>
-
-        </div>
-      </div>
-
+    <!-- SECTION 3: SYSTEM MODULES -->
+    <section id="nixos">
+      <h2>3. NixOS-WSL System Modules (modules/)</h2>
+      <p>
+        System modules are partitioned cleanly by operational domain and orchestrated through <code>modules/configuration.nix</code>. Built directly against upstream Nixpkgs unstable with in-tree kernel shims and zero mutable state:
+      </p>
+      <ul>
+        <li>
+          <strong>modules/system/: Core System &amp; Hardware Lifecycle</strong>
+          <br>
+          Enforces the WSL2 boot handshake with a 60-second init timeout (<code>wsl.initTimeout = 60000;</code>), preventing spurious timeout aborts on heavy startup loads. Configures zram in-memory compressed swap, systemd-oomd memory pressure sentinels, Cascadia Code and Fira Code Nerd Fonts, binary substituters, Docker Desktop rootless socket permissions (mode 0666), and weekly automated Nix store garbage collection via <code>nh</code>.
+        </li>
+        <li>
+          <strong>modules/environment/: Shell Environment &amp; Task Runners</strong>
+          <br>
+          Deploys an interactive Zsh shell with Starship prompt, direnv nix-direnv caching, Bat, Fzf, Zoxide, native shell tab completions (<code>_agy</code>, <code>_nh</code>, <code>_antigravity_superpowers</code>), development compilers (Python, Node.js 20, GCC, Clang, CMake, uv, nixd), bidirectional Windows clipboard bridge (<code>cb</code>), and the full task runner suite (<code>dots-validate</code>, <code>dots-test-vm</code>, <code>dots-build</code>, <code>dots-switch</code>, <code>dots-val</code>, <code>help-nix</code>).
+        </li>
+        <li>
+          <strong>modules/ai/: Agent Runtimes, Skills Sync &amp; MCP Servers</strong>
+          <br>
+          Integrates the Antigravity CLI and Gemini AI toolkit, in-tree Antigravity Superpowers profile, the declarative agent skills synchronizer (<code>agent-skills-sync.service</code>), and native stdio JSON-RPC MCP servers (TypeSafe Jev, GitHub, NixOS, Git, Filesystem, Fetch, Sequential Thinking).
+        </li>
+        <li>
+          <strong>modules/security/: Threat Containment &amp; Policies</strong>
+          <br>
+          Spawns the user-level systemd service for real-time ClamAV inotify file monitoring across all workspace repositories, enforces passwordless sudo for Nix operations, and configures host firewall rules.
+        </li>
+      </ul>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 4: IN-TREE PACKAGES                                           -->
-    <!-- ================================================================= -->
-    <section id="pane-packages" class="tab-pane hidden space-y-6">
-      
-      <!-- ClamAV Sentinel Card -->
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="flex items-center justify-between border-b border-[#3c3836] pb-3 mb-4">
-          <div>
-            <span class="pill bg-[#1d2021] text-[#8ec07c] border-[#504945]">SECURITY SENTINEL</span>
-            <h2 class="text-lg font-bold font-mono text-[#fbf1c7] mt-1">pkgs/clamav-scanner — Real-Time Inotify Antivirus Daemon</h2>
-          </div>
-          <span class="pill bg-[#1d2021] text-[#928374] border-[#3c3836]">Python 3 + Docker</span>
-        </div>
+    <!-- SECTION 4: PACKAGES -->
+    <section id="packages">
+      <h2>4. Custom In-Tree Package Derivations (pkgs/)</h2>
+      <p>
+        Nether Ward and custom utilities are maintained in-tree with hermetic Nix package derivations:
+      </p>
+      <h3>pkgs/clamav-scanner (clamav-sentinel)</h3>
+      <p>
+        A sub-10ms real-time inotify file scanner monitoring workspace file creations via the Linux kernel <code>inotify</code> API. Streams file contents over TCP (<code>127.0.0.1:3310</code>) using the ClamAV <code>INSTREAM</code> protocol to an in-memory Docker container holding 8.5M+ signatures:
+      </p>
+      <ul>
+        <li><strong>Relocation:</strong> Instantly moves infected files to <code>.quarantine/&lt;ts&gt;_&lt;name&gt;</code>.</li>
+        <li><strong>Permission Stripping:</strong> Neutralizes execution privileges with <code>chmod 000</code>.</li>
+        <li><strong>Desktop Notification:</strong> Dispatches high-priority desktop alerts via <code>notify-send</code>.</li>
+        <li><strong>Audit Logging:</strong> Appends SHA-256 hash, scan latency, and malware signature to <code>clamav-audit.jsonl</code>.</li>
+      </ul>
 
-        <p class="text-sm text-[#a89984] leading-relaxed mb-4">
-          Sub-10ms latency file scanner monitoring workspace file creations via Linux kernel <code class="text-[#8ec07c]">inotify</code>. Streams file content over TCP socket (<code class="text-[#fabd2f]">127.0.0.1:3310</code>) using ClamAV <code class="text-[#83a598]">INSTREAM</code> protocol to an in-memory Docker container with 8.5M+ signatures.
-        </p>
+      <h3>pkgs/antigravity-superpowers</h3>
+      <p>
+        A Node.js 20+ declarative project initializer, environment health diagnostic runner (<code>doctor</code>), and continuous lint/format watcher with automatic fixing (<code>watch --fix</code>) using Alejandra, Statix, Deadnix, and ShellCheck.
+      </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <h3 class="text-xs font-bold font-mono text-[#fabd2f] uppercase mb-2">Quarantine Protocol</h3>
-            <ul class="text-xs text-[#a89984] space-y-1.5 list-disc list-inside">
-              <li><strong class="text-[#ebdbb2]">Relocation</strong>: Instantly moves infected file to <code class="text-[#fabd2f]">.quarantine/&lt;ts&gt;_&lt;name&gt;</code></li>
-              <li><strong class="text-[#ebdbb2]">Permission Neutralization</strong>: Strips all permissions (<code class="text-[#fb4934]">chmod 000</code>)</li>
-              <li><strong class="text-[#ebdbb2]">Desktop Notification</strong>: High-priority alert dispatched via <code class="text-[#8ec07c]">notify-send</code></li>
-              <li><strong class="text-[#ebdbb2]">Audit Log</strong>: Appends SHA-256, latency, and signature to <code class="text-[#83a598]">clamav-audit.jsonl</code></li>
-            </ul>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <h3 class="text-xs font-bold font-mono text-[#8ec07c] uppercase mb-2">CLI Command Reference</h3>
-            <div class="text-xs font-mono text-[#ebdbb2] space-y-1">
-              <div><span class="text-[#fabd2f]">clamav-sentinel up</span> <span class="text-[#928374]"># Start container &amp; wait for health</span></div>
-              <div><span class="text-[#fabd2f]">clamav-sentinel status</span> <span class="text-[#928374]"># Check connectivity &amp; database version</span></div>
-              <div><span class="text-[#fabd2f]">clamav-sentinel scan &lt;path&gt;</span> <span class="text-[#928374]"># On-demand recursive file scan</span></div>
-              <div><span class="text-[#fabd2f]">clamav-sentinel watch [dir]</span> <span class="text-[#928374]"># Launch inotify monitoring</span></div>
-              <div><span class="text-[#fabd2f]">clamav-sentinel test</span> <span class="text-[#928374]"># Run unit &amp; E2E integration tests</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Antigravity Superpowers Card -->
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="flex items-center justify-between border-b border-[#3c3836] pb-3 mb-4">
-          <div>
-            <span class="pill bg-[#1d2021] text-[#d3869b] border-[#504945]">AGENT TOOLKIT</span>
-            <h2 class="text-lg font-bold font-mono text-[#fbf1c7] mt-1">pkgs/antigravity-superpowers — AI Engineering Test Harness</h2>
-          </div>
-          <span class="pill bg-[#1d2021] text-[#928374] border-[#3c3836]">Node.js 20+</span>
-        </div>
-
-        <p class="text-sm text-[#a89984] leading-relaxed mb-4">
-          Declarative project initializer, environment doctor, and test suite for AI agents. Validates skill frontmatter schemas, provisions <code class="text-[#fabd2f]">.agents/</code> profile directories, and verifies zero-drift compliance.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <h3 class="text-xs font-bold font-mono text-[#fabd2f] uppercase mb-2">Harness Capabilities</h3>
-            <ul class="text-xs text-[#a89984] space-y-1.5 list-disc list-inside">
-              <li><strong class="text-[#ebdbb2]">Profile Scaffolding</strong>: Creates <code class="text-[#fabd2f]">.agents/</code> with skills, hooks, and MCP servers</li>
-              <li><strong class="text-[#ebdbb2]">Doctor Diagnostics</strong>: Verifies Nix, Git, Node, and MCP server connectivity</li>
-              <li><strong class="text-[#ebdbb2]">Global Sync</strong>: Deploys declared skills directly into <code class="text-[#8ec07c]">~/.gemini/config</code></li>
-              <li><strong class="text-[#ebdbb2]">Test Coverage</strong>: 15 Node test suites + 118 shell verification checks</li>
-            </ul>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836]">
-            <h3 class="text-xs font-bold font-mono text-[#d3869b] uppercase mb-2">CLI Command Reference</h3>
-            <div class="text-xs font-mono text-[#ebdbb2] space-y-1">
-              <div><span class="text-[#fabd2f]">antigravity-superpowers init</span> <span class="text-[#928374]"># Scaffold project profile</span></div>
-              <div><span class="text-[#fabd2f]">antigravity-superpowers doctor</span> <span class="text-[#928374]"># Run environment health check</span></div>
-              <div><span class="text-[#fabd2f]">antigravity-superpowers sync</span> <span class="text-[#928374]"># Synchronize skills to ~/.gemini</span></div>
-              <div><span class="text-[#fabd2f]">antigravity-superpowers watch --fix</span> <span class="text-[#928374]"># Auto-fix lint &amp; format</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <h3>nether-ward</h3>
+      <p>
+        Static application security testing (SAST) scanner, stdio MCP security proxy, canary honeypot seeder, velocity limiter, and autonomous adversarial red team evaluation harness in Rust and Nix.
+      </p>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 5: AI AGENT SKILLS                                            -->
-    <!-- ================================================================= -->
-    <section id="pane-skills" class="tab-pane hidden space-y-6">
-      
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="border-b border-[#3c3836] pb-4 mb-5">
-          <h2 class="text-xl font-bold font-mono text-[#fbf1c7]">Agent Skills Catalog</h2>
-          <p class="text-sm text-[#a89984] mt-1 leading-relaxed">
-            Declarative in-tree agent skills and engineering workflows, synchronized directly from this monorepo into the active agent configuration.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#fabd2f] border-[#3c3836]">superpowers</span>
-              <span class="text-[10px] font-mono text-[#928374]">TDD</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">test-driven-development</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Enforces strict red-green-refactor cycles. Demands writing failing tests and confirming failure before writing implementation code.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#fabd2f] border-[#3c3836]">superpowers</span>
-              <span class="text-[10px] font-mono text-[#928374]">Debugging</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">systematic-debugging</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Mandatory root-cause isolation before proposing fixes. Eliminates guesswork, shotgun debugging, and unverified assumptions.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#fabd2f] border-[#3c3836]">superpowers</span>
-              <span class="text-[10px] font-mono text-[#928374]">Verification</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">verification-before-completion</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Demands executing test commands and citing observed evidence before claiming work is complete, passing, or fixed.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#83a598] border-[#3c3836]">karpathy</span>
-              <span class="text-[10px] font-mono text-[#928374]">Simplicity</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">karpathy-guidelines</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Simplicity first, surgical edits, and goal-driven execution. Avoids premature abstractions, over-engineering, and scope creep.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#fe8019] border-[#3c3836]">adhd</span>
-              <span class="text-[10px] font-mono text-[#928374]">Executive</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">i-have-adhd</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Formats output for maximum clarity: leads with the next action, numbers multi-step work, eliminates tangents, and provides time estimates.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#d3869b] border-[#3c3836]">typesafe</span>
-              <span class="text-[10px] font-mono text-[#928374]">System One</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">typesafe-ai</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Consults Jev for typed judgments, semantic condition evaluation, and architectural decision scoring via TypeSafe MCP server.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#b8bb26] border-[#3c3836]">nixos</span>
-              <span class="text-[10px] font-mono text-[#928374]">WSL Driver</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">nixos-wsl</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Runbook for modifying system modules, updating flake locks, and verifying NixOS builds inside WSL 2.
-            </p>
-          </div>
-
-          <div class="p-3.5 rounded bg-[#1d2021] border border-[#3c3836] space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="pill bg-[#282828] text-[#fb4934] border-[#3c3836]">quality</span>
-              <span class="text-[10px] font-mono text-[#928374]">Anti-Slop</span>
-            </div>
-            <h3 class="text-sm font-bold font-mono text-[#fbf1c7]">anti-slop-writing</h3>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              Enforces clean, precise writing. Eliminates filler phrases, corporate jargon, contrastive framing, and conversational filler.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
+    <!-- SECTION 5: SKILLS -->
+    <section id="skills">
+      <h2>5. Declarative Agent Skills Hub (skills/)</h2>
+      <p>
+        All agent skills and rules are unified directly in-tree under <code>skills/skills/</code>. Synchronized into the active agent configuration (<code>~/.gemini/config/skills/</code>) via <code>refresh-skills</code> and systemd user activation scripts. Zero foreign AST rewrites, zero external upstream drift, 100% reproducibility.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Skill Name</th>
+            <th>Category</th>
+            <th>Core Principle &amp; Trigger Scope</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>test-driven-development</code></td>
+            <td>Superpowers</td>
+            <td>Enforces red-green-refactor cycles. Demands confirming test failure before writing implementation code.</td>
+          </tr>
+          <tr>
+            <td><code>systematic-debugging</code></td>
+            <td>Superpowers</td>
+            <td>Demands root-cause isolation before proposing fixes. Eliminates guesswork and unverified edits.</td>
+          </tr>
+          <tr>
+            <td><code>verification-before-completion</code></td>
+            <td>Superpowers</td>
+            <td>Requires executing test commands and citing observed evidence before claiming work is complete.</td>
+          </tr>
+          <tr>
+            <td><code>karpathy-guidelines</code></td>
+            <td>Behavioral</td>
+            <td>Simplicity first, surgical edits, and goal-driven execution. Eliminates over-engineering.</td>
+          </tr>
+          <tr>
+            <td><code>i-have-adhd</code></td>
+            <td>Cognitive</td>
+            <td>Shapes output for clarity: leads with the next action, numbers multi-step work, suppresses tangents.</td>
+          </tr>
+          <tr>
+            <td><code>typesafe-ai</code></td>
+            <td>Decision</td>
+            <td>Consults Jev (TypeSafe System One) for typed judgments, semantic safety, and decision scoring.</td>
+          </tr>
+          <tr>
+            <td><code>nixos-wsl</code></td>
+            <td>Infrastructure</td>
+            <td>Runbook for modifying system modules, updating flake locks, and building NixOS in WSL.</td>
+          </tr>
+          <tr>
+            <td><code>anti-slop-writing</code></td>
+            <td>Writing</td>
+            <td>Enforces clean, precise writing. Eliminates filler words, corporate jargon, and contrastive framing.</td>
+          </tr>
+          <tr>
+            <td><code>autonomous-execution</code></td>
+            <td>Autonomy</td>
+            <td>Biases towards action and carries tasks to full completion without unnecessary permission requests.</td>
+          </tr>
+          <tr>
+            <td><code>outcome-driven-reporting</code></td>
+            <td>Reporting</td>
+            <td>Enforces evidence-based outcome reporting citing observed tool output, exact metrics, and links.</td>
+          </tr>
+          <tr>
+            <td><code>persistent-memory-protocol</code></td>
+            <td>Memory</td>
+            <td>Persists non-obvious project facts, user preferences, and reference data as Knowledge Items.</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 6: CLI TASK RUNNERS                                          -->
-    <!-- ================================================================= -->
-    <section id="pane-tasks" class="tab-pane hidden space-y-6">
-      
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="border-b border-[#3c3836] pb-4 mb-5">
-          <h2 class="text-xl font-bold font-mono text-[#fbf1c7]">CLI Task Runners</h2>
-          <p class="text-sm text-[#a89984] mt-1 leading-relaxed">
-            All commands run anywhere inside NixOS-WSL with hermetic dependencies provided directly through Nix store paths.
-          </p>
-        </div>
-
-        <!-- Task Runners Table -->
-        <div class="overflow-x-auto mb-6">
-          <table class="w-full text-xs font-mono text-left border border-[#3c3836]">
-            <thead class="bg-[#1d2021] text-[#fabd2f] border-b border-[#3c3836]">
-              <tr>
-                <th class="p-2.5">Command</th>
-                <th class="p-2.5">Subsystem Action</th>
-                <th class="p-2.5">Mutation Scope</th>
-                <th class="p-2.5">Verification / Source</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#3c3836] text-[#ebdbb2]">
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#b8bb26]">dots-validate</td>
-                <td class="p-2.5">5-stage quality suite: Schema, Alejandra, Statix, Deadnix, Flake check</td>
-                <td class="p-2.5 text-[#8ec07c]">Safe (Read-only)</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:32</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#83a598]">dots-test-vm</td>
-                <td class="p-2.5">Dry-build derivation, nvd package diff, and systemd dry-activation check</td>
-                <td class="p-2.5 text-[#8ec07c]">Safe (Ephemeral)</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:155</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#fabd2f]">dots-val &lt;key&gt;</td>
-                <td class="p-2.5">Dynamic query of key-value pairs from values.json (e.g. dots-val identity.username)</td>
-                <td class="p-2.5 text-[#8ec07c]">Safe (Read-only)</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:6</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#fe8019]">dots-build</td>
-                <td class="p-2.5">Dry-build system derivation with closure diff (nh os build)</td>
-                <td class="p-2.5 text-[#8ec07c]">Safe (No switch)</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:85</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#fb4934]">dots-switch</td>
-                <td class="p-2.5">Apply live configuration (nh os switch) — explicit user approval required</td>
-                <td class="p-2.5 text-[#fb4934]">Live System Switch</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:90</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#d3869b]">dots-upgrade</td>
-                <td class="p-2.5">Validate, update all flake inputs, build, and switch in one command</td>
-                <td class="p-2.5 text-[#fb4934]">Live System Switch</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:97</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#8ec07c]">dots-fmt</td>
-                <td class="p-2.5">Format all Nix expressions with Alejandra</td>
-                <td class="p-2.5 text-[#fabd2f]">Modifies files</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:67</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#a89984]">dots-lint</td>
-                <td class="p-2.5">Run Statix anti-pattern check and Deadnix dead code scan</td>
-                <td class="p-2.5 text-[#8ec07c]">Safe (Read-only)</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:74</td>
-              </tr>
-              <tr class="hover:bg-[#32302f]">
-                <td class="p-2.5 font-bold text-[#928374]">dots-clean</td>
-                <td class="p-2.5">Garbage collect old Nix store generations (nh clean all)</td>
-                <td class="p-2.5 text-[#fabd2f]">Frees store disk</td>
-                <td class="p-2.5 text-[#928374]">task-runners.nix:107</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-
-      </div>
-
+    <!-- SECTION 6: TASK RUNNERS -->
+    <section id="tasks">
+      <h2>6. CLI Task Runners Reference (dots-*)</h2>
+      <p>
+        Task runners execute anywhere inside NixOS-WSL with hermetic dependencies provided directly through Nix store paths:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Purpose &amp; Action</th>
+            <th>Mutation Scope</th>
+            <th>Safety Policy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>dots-validate</code></td>
+            <td>Full 5-stage pipeline: JSON schema, Alejandra format, Statix lint, Deadnix dead code, Flake check</td>
+            <td>Read-only</td>
+            <td>Mandatory before committing</td>
+          </tr>
+          <tr>
+            <td><code>dots-test-vm</code></td>
+            <td>Ephemeral sandbox: dry build, nvd package version diff, systemd unit verification</td>
+            <td>Ephemeral</td>
+            <td>Safe (Zero live mutation)</td>
+          </tr>
+          <tr>
+            <td><code>dots-val &lt;key&gt;</code></td>
+            <td>Query key-value pairs from values.json (e.g. <code>dots-val identity.username</code>)</td>
+            <td>Read-only</td>
+            <td>Query anytime</td>
+          </tr>
+          <tr>
+            <td><code>dots-build</code></td>
+            <td>Dry-build system derivation with closure diff (<code>nh os build</code>)</td>
+            <td>No switch</td>
+            <td>Safe (Builds store closure)</td>
+          </tr>
+          <tr>
+            <td><code>dots-switch</code></td>
+            <td>Apply live configuration (<code>nh os switch</code>)</td>
+            <td>Live System Switch</td>
+            <td>Explicit user instruction required</td>
+          </tr>
+          <tr>
+            <td><code>dots-upgrade</code></td>
+            <td>Validate, update all flake inputs, build, and switch in one command</td>
+            <td>Live System Switch</td>
+            <td>Explicit user instruction required</td>
+          </tr>
+          <tr>
+            <td><code>dots-fmt</code></td>
+            <td>Format all Nix expressions with Alejandra</td>
+            <td>Modifies files</td>
+            <td>Run anytime</td>
+          </tr>
+          <tr>
+            <td><code>dots-lint</code></td>
+            <td>Run Statix anti-pattern checks and Deadnix dead code scanner</td>
+            <td>Read-only</td>
+            <td>Safe</td>
+          </tr>
+          <tr>
+            <td><code>dots-clean</code></td>
+            <td>Garbage collect old generations and purge unreferenced store paths (<code>nh clean all</code>)</td>
+            <td>Frees disk space</td>
+            <td>Safe maintenance</td>
+          </tr>
+          <tr>
+            <td><code>refresh-skills</code></td>
+            <td>Synchronize in-tree declarative skills to <code>~/.gemini/config/skills</code></td>
+            <td>Config sync</td>
+            <td>Safe</td>
+          </tr>
+          <tr>
+            <td><code>cb</code></td>
+            <td>Clipboard bridge: pipe text to copy, run bare to paste from Windows clipboard</td>
+            <td>Clipboard</td>
+            <td>Safe</td>
+          </tr>
+          <tr>
+            <td><code>help-nix</code></td>
+            <td>Display the full quick-reference card for all dots and AI commands</td>
+            <td>Read-only</td>
+            <td>Safe</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- ================================================================= -->
-    <!-- TAB 7: ARCHITECTURE                                               -->
-    <!-- ================================================================= -->
-    <section id="pane-architecture" class="tab-pane hidden space-y-6">
-      
-      <div class="gruvbox-card rounded-lg p-5">
-        <div class="border-b border-[#3c3836] pb-4 mb-5">
-          <h2 class="text-xl font-bold font-mono text-[#fbf1c7]">Architecture Specifications &amp; Decision Records</h2>
-          <p class="text-sm text-[#a89984] mt-1 leading-relaxed">
-            System documentation, failure remediation post-mortems, and protocols.
-          </p>
-        </div>
+    <!-- SECTION 7: SECURITY & NETHER WARD -->
+    <section id="security">
+      <h2>7. Security Sentinel &amp; Nether Ward Gateway</h2>
+      <p>
+        The system configuration declaratively manages both the ClamAV filesystem inotify sentinel and the Nether Ward AI security gateway:
+      </p>
+      <h3>Nether Ward Gateway Service Declaration (`modules/ai/nether-ward.nix`)</h3>
+      <pre><code># Declared in modules/configuration.nix:
+services.nether-ward = {
+  enable = true;
+  port = 4000;
+  sanitize = true;
+  semanticFirewall = true;
+  upstreamModel = "gemini-flash-lite-latest";
+};
 
-        <div class="space-y-4">
-          
-          <!-- Guide 1: Model Context Protocol Topology -->
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between border-b border-[#3c3836] pb-2 mb-2">
-              <h3 class="text-sm font-bold font-mono text-[#83a598]">Model Context Protocol (MCP) Topology</h3>
-              <span class="pill bg-[#282828] text-[#928374] border-[#3c3836]">9 Stdio Servers</span>
-            </div>
-            <p class="text-xs text-[#a89984] leading-relaxed mb-3">
-              Standardized Model Context Protocol servers provisioned declaratively via <code class="text-[#fabd2f]">.agents/mcp_config.json</code> and <code class="text-[#8ec07c]">modules/ai/mcp.nix</code>. All communication runs over isolated stdio JSON-RPC channels:
-            </p>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono">
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#fabd2f]">typesafe</strong>: Jev System One typed judgments</div>
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#83a598]">nixos</strong>: NixOS options, packages &amp; wiki docs</div>
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#8ec07c]">github</strong>: Issues, PRs, and branch workflows</div>
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#fe8019]">git</strong>: Local commits, diffs &amp; branch tracking</div>
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#d3869b]">filesystem</strong>: Repository workspace operations</div>
-              <div class="p-2 rounded bg-[#282828] border border-[#3c3836]"><strong class="text-[#ebdbb2]">sequential-thinking</strong>: Multi-step reasoning</div>
-            </div>
-          </div>
+# Systemd User Unit ExecStart generated:
+# ${pkg}/bin/nether-ward gateway --port 4000 --model gemini-flash-lite-latest --sanitize --semantic-firewall</code></pre>
 
-          <!-- Guide 2: Docker Desktop v4.90+ Failure Modes & Fix -->
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between border-b border-[#3c3836] pb-2 mb-2">
-              <h3 class="text-sm font-bold font-mono text-[#fabd2f]">Docker Desktop v4.90+ Startup Handshake &amp; InitTimeout Remediation</h3>
-              <span class="pill bg-[#282828] text-[#8ec07c] border-[#3c3836]">Post-Mortem</span>
-            </div>
-            <p class="text-xs text-[#a89984] leading-relaxed mb-2">
-              <strong class="text-[#ebdbb2]">Root Cause:</strong> Docker Desktop v4.90+ changed its socket creation handshake: it creates proxy sockets owned by <code class="text-[#fabd2f]">root:root</code> with mode <code class="text-[#fb4934]">0700</code> on a mounted tmpfs at <code class="text-[#8ec07c]">/mnt/wsl/docker-desktop/shared-sockets/guest-services</code>, while strict 10s default timeouts caused boot aborts.
-            </p>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              <strong class="text-[#ebdbb2]">Remediation:</strong> Added systemd path watcher <code class="text-[#83a598]">systemd.paths.docker-desktop-proxy-socket</code> executing an idempotent chmod 0666 script on socket creation, and extended boot timeout to 60,000ms via <code class="text-[#fabd2f]">wsl.initTimeout = 60000;</code>.
-            </p>
-          </div>
-
-          <!-- Guide 3: Declarative Skills & Anti-Drift Architecture -->
-          <div class="p-4 rounded bg-[#1d2021] border border-[#3c3836]">
-            <div class="flex items-center justify-between border-b border-[#3c3836] pb-2 mb-2">
-              <h3 class="text-sm font-bold font-mono text-[#b8bb26]">Dots Driver &amp; Declarative In-Tree Skills</h3>
-              <span class="pill bg-[#282828] text-[#928374] border-[#3c3836]">Hermetic</span>
-            </div>
-            <p class="text-xs text-[#a89984] leading-relaxed">
-              All agent skills and rules are unified directly in-tree under <code class="text-[#83a598]">skills/skills/</code>. Synchronized directly into the agent configuration via <code class="text-[#fabd2f]">refresh-skills</code> with zero external upstream drift, zero foreign AST rewrites, and 100% reproducibility.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
+      <h3>ClamAV Real-Time Sentinel Declaration (`modules/security/clamav.nix`)</h3>
+      <pre><code>services.clamav-sentinel = {
+  enable = true;
+  watchDir = values.paths.workspace_root;
+  quarantineDir = "${values.paths.workspace_root}/${values.security.clamav.quarantine_dir}";
+  auditLog = "${values.paths.workspace_root}/${values.security.clamav.audit_log}";
+  autoQuarantine = true;
+};</code></pre>
     </section>
 
-  </main>
+    <!-- SECTION 8: ADR & GATES -->
+    <section id="architecture">
+      <h2>8. Architecture Decision Records &amp; Quality Gates</h2>
+      <h3>ADR-001: Docker Desktop Socket Integration (Mode 0666)</h3>
+      <p>
+        Docker Desktop v4.90+ provisions user sockets inside <code>/mnt/wsl/docker-desktop/shared-sockets/guest-services</code> with root-only permissions (0600), causing permission denied errors for non-root users inside WSL2. Nether Ward and damathryxx64 solve this via an automated in-tree systemd socket permission watcher that sets permissions to <code>0666</code> upon creation, providing seamless container access without requiring unmanaged <code>sudo chmod</code>.
+      </p>
 
-  <!-- Footer -->
-  <footer class="bg-[#282828] border-t border-[#3c3836] py-3 text-xs font-mono text-[#928374] mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-      <div>damathryxx64 · NixOS-WSL Configuration Hub</div>
-      <a href="#overview" onclick="switchTab('overview')" class="text-[#fabd2f] hover:underline">Top ↑</a>
-    </div>
-  </footer>
+      <h3>ADR-002: WSL2 Boot Timeout Remediation (`initTimeout = 60000`)</h3>
+      <p>
+        During cold boots with heavy derivation builds or Docker daemon starts, the default WSL init timeout (10 seconds) aborts systemd startup. Nether Ward enforces <code>initTimeout = 60000</code> inside <code>modules/system/wsl.nix</code>, ensuring robust cold-boot completion under high load.
+      </p>
 
-  <!-- Interactive JavaScript Engine -->
-  <script>
-    const TABS = ['overview', 'values', 'nixos', 'packages', 'skills', 'tasks', 'architecture'];
+      <h3>ADR-003: Pre-Commit 5-Stage Zero Drift Quality Gate</h3>
+      <p>
+        Every commit to <code>damathryxx64</code> must pass the automated pre-commit validation suite before being pushed:
+      </p>
+      <ol>
+        <li><strong>Stage 1 (Schema Check):</strong> Validates <code>values.json</code> syntax and schema compliance against <code>values.schema.json</code>.</li>
+        <li><strong>Stage 2 (Format Check):</strong> Verifies all Nix expressions adhere to Alejandra code formatting style.</li>
+        <li><strong>Stage 3 (Anti-Pattern Check):</strong> Scans for non-idiomatic Nix expressions using Statix.</li>
+        <li><strong>Stage 4 (Dead Code Check):</strong> Identifies unreferenced bindings and dead declarations using Deadnix.</li>
+        <li><strong>Stage 5 (Flake Evaluation):</strong> Executes <code>nix flake check --impure</code> to guarantee hermetic evaluation and lockfile consistency.</li>
+      </ol>
+    </section>
 
-    function switchTab(tabId) {
-      if (!TABS.includes(tabId)) tabId = 'overview';
-      
-      TABS.forEach(t => {
-        const pane = document.getElementById('pane-' + t);
-        const btn = document.getElementById('tab-btn-' + t);
-        if (pane) pane.classList.toggle('hidden', t !== tabId);
-        if (btn) btn.classList.toggle('active', t === tabId);
-      });
-
-      // Update URL hash without jumping
-      history.replaceState(null, null, '#' + tabId);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Keyboard Shortcuts (1-8 to switch tabs)
-    window.addEventListener('keydown', (e) => {
-      if (document.activeElement.tagName === 'INPUT') return;
-      const num = parseInt(e.key);
-      if (num >= 1 && num <= 7) {
-        switchTab(TABS[num - 1]);
-      } else if (e.key === '/') {
-        e.preventDefault();
-        document.getElementById('globalSearch').focus();
-      }
-    });
-
-    // Copy to clipboard helper
-    function copySnippet(elementId) {
-      const el = document.getElementById(elementId);
-      if (!el) return;
-      const text = el.innerText || el.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        // Visual indicator
-        const prev = el.style.borderColor;
-        el.style.borderColor = '#fabd2f';
-        setTimeout(() => el.style.borderColor = prev, 600);
-      });
-    }
-
-    // Filter functionality
-    function handleFilter() {
-      const q = document.getElementById('globalSearch').value.toLowerCase().trim();
-      const clearBtn = document.getElementById('clearSearchBtn');
-      clearBtn.classList.toggle('hidden', q.length === 0);
-
-      // Search across cards in current active tab or auto-switch
-      const activePane = document.querySelector('.tab-pane:not(.hidden)');
-      if (!activePane) return;
-
-      const cards = activePane.querySelectorAll('.gruvbox-card, .p-3, .p-3.5, .p-4, tr');
-      cards.forEach(c => {
-        const text = c.textContent.toLowerCase();
-        c.style.display = (q === '' || text.includes(q)) ? '' : 'none';
-      });
-    }
-
-    function clearSearch() {
-      document.getElementById('globalSearch').value = '';
-      handleFilter();
-    }
-
-    // Load initial tab from hash
-    window.addEventListener('DOMContentLoaded', () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash && TABS.includes(hash)) {
-        switchTab(hash);
-      }
-    });
-  </script>
+    <footer>
+      <div>damathryxx64 // NixOS-WSL Declarative Monorepo Architecture</div>
+      <div>Repository: <a href="https://github.com/shanmukha-sai-chinnam/damathryxx64">github.com/shanmukha-sai-chinnam/damathryxx64</a></div>
+    </footer>
+  </div>
 </body>
 </html>
