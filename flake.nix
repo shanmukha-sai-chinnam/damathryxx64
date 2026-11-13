@@ -55,7 +55,7 @@
         nether-ward = nether-ward.packages.${system}.default;
       };
 
-    nixosConfigurations = {
+    nixosConfigurations = rec {
       nixos = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
@@ -73,6 +73,7 @@
           ./modules/configuration.nix
         ];
       };
+      NixOS = nixos;
     };
 
     checks.${system} = {
