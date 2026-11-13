@@ -34,7 +34,7 @@
         REPO_DIR="${values.paths.dots_repo}"
         cd "$REPO_DIR"
 
-        echo -e "\033[1;34m==>\033[0m \033[1m[1/5] Validating values.json schema & JSON syntax...\033[0m"
+        echo -e "\033[1;34m==>\033[0m \033[1m[1/6] Validating values.json schema & JSON syntax...\033[0m"
         if [ -f "values.json" ]; then
           ${pkgs.jq}/bin/jq empty values.json
           ${pkgs.python3}/bin/python3 -c '
@@ -49,17 +49,24 @@
     '
         fi
 
-        echo -e "\033[1;34m==>\033[0m \033[1m[2/5] Checking Nix code formatting (Alejandra)...\033[0m"
+        echo -e "\033[1;34m==>\033[0m \033[1m[2/6] Checking Nix code formatting (Alejandra)...\033[0m"
         ${pkgs.alejandra}/bin/alejandra -c .
 
-        echo -e "\033[1;34m==>\033[0m \033[1m[3/5] Checking Nix anti-patterns (Statix)...\033[0m"
+        echo -e "\033[1;34m==>\033[0m \033[1m[3/6] Checking Nix anti-patterns (Statix)...\033[0m"
         ${pkgs.statix}/bin/statix check .
 
-        echo -e "\033[1;34m==>\033[0m \033[1m[4/5] Checking dead code (Deadnix)...\033[0m"
+        echo -e "\033[1;34m==>\033[0m \033[1m[4/6] Checking dead code (Deadnix)...\033[0m"
         ${pkgs.deadnix}/bin/deadnix .
 
-        echo -e "\033[1;34m==>\033[0m \033[1m[5/5] Verifying Nix flake evaluations & checks...\033[0m"
+        echo -e "\033[1;34m==>\033[0m \033[1m[5/6] Verifying Nix flake evaluations & checks...\033[0m"
         ${pkgs.nix}/bin/nix flake check --impure
+
+        echo -e "\033[1;34m==>\033[0m \033[1m[6/6] Scanning SAST security & secret leakage (Nether Ward)...\033[0m"
+        if command -v nether-ward >/dev/null 2>&1; then
+          nether-ward threat --sast .
+        else
+          echo -e "  ↳ nether-ward not found in PATH; skipping SAST scan."
+        fi
 
         echo -e "\033[1;32m[ok] All Nix dots quality gates passed.\033[0m"
   '';
@@ -182,7 +189,7 @@
     echo -e "\033[1;36mNixOS Developer Tools Quick Reference:\033[0m"
     echo ""
     echo -e "\033[1;33mHandy Task Commands:\033[0m"
-    echo "  dots-validate                  → Run full 5-stage validation (Values Schema, Alejandra, Statix, Deadnix, Flake)"
+    echo "  dots-validate                  → Run full 6-stage validation (Values Schema, Alejandra, Statix, Deadnix, Flake, SAST Security)"
     echo "  dots-test-vm                   → Safe dry build, nvd package diff & systemd activation check"
     echo "  dots-fmt                       → Format Nix expressions with Alejandra"
     echo "  dots-lint                      → Run Statix & Deadnix anti-pattern checks"

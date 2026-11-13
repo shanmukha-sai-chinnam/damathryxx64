@@ -5,7 +5,8 @@ import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 
 function getTemplateDir() {
-  return fileURLToPath(new URL("../../templates/.agents", import.meta.url));
+  const currentDir = fileURLToPath(new URL(".", import.meta.url));
+  return resolve(currentDir, "..", "..", "templates", ".agents");
 }
 
 async function exists(path) {

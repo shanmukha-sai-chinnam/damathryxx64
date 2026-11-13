@@ -68,7 +68,7 @@ These MCP servers are configured in `.agents/mcp_config.json` and available for 
 2. **Reproducibility**: Avoid hardcoded machine-specific paths or volatile state. WSL host settings (CPU, memory, swap) belong in Windows `%UserProfile%\.wslconfig`, not in this repository.
 3. **Format Requirement**: Always verify and format Nix expressions using `nix fmt -- .`. All code must comply with Alejandra style.
 4. **Pre-commit Validation**:
-   - Automated full suite: `dots-validate` (runs values schema check, Alejandra format check, Statix/Deadnix linter, and Flake check).
+   - Automated full suite: `dots-validate` (runs values schema check, Alejandra format check, Statix/Deadnix linter, Flake check, and SAST security check).
    - Ephemeral test runner: `dots-test-vm` (dry build, nvd package version diff, systemd unit verification).
    - Or run manually:
      - Alejandra format check: `nix fmt -- .`

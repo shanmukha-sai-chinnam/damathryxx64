@@ -34,6 +34,12 @@ in {
       description = "Enable bicameral Jev System One semantic safety inspection";
     };
 
+    quarantine = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Enable runtime context quarantine auto-wrapping for untrusted tool outputs";
+    };
+
     upstreamUrl = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -67,6 +73,7 @@ in {
           + " --model ${cfg.upstreamModel}"
           + (optionalString (cfg.upstreamUrl != null) " --upstream ${cfg.upstreamUrl}")
           + (optionalString cfg.sanitize " --sanitize")
+          + (optionalString cfg.quarantine " --quarantine")
           + (optionalString cfg.semanticFirewall " --semantic-firewall");
         Restart = "on-failure";
         RestartSec = "5s";
