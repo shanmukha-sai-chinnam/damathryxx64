@@ -78,11 +78,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794571317,
-        "narHash": "sha256-AtZluPUJhqAbBoj9mpT46s87ZQhnNuaJ9pAWl2k8gSE=",
+        "lastModified": 1794574079,
+        "narHash": "sha256-ZkJhFt74dVSgz44j7+EjccrsVIHAd36r2qJW6VfIuys=",
         "owner": "shanmukha-sai-chinnam",
         "repo": "nether-ward",
-        "rev": "ce3f69b029ec2c9e8aab7115453fc9ce7347fa47",
+        "rev": "2733e589c9ab747a62756703ee2cdf43843b72c0",
         "type": "github"
       },
       "original": {
