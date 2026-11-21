@@ -9,9 +9,10 @@
     description = "WSL 2 In-Memory Compressed zram Swap Setup";
     wantedBy = ["multi-user.target"];
     after = ["systemd-modules-load.service"];
+    restartIfChanged = false;
     path = with pkgs; [kmod util-linux gawk coreutils];
     script = ''
-      if ! swapon --show | grep -q "/dev/zram0"; then
+      if ! swapon --show | grep -q "zram0"; then
         modprobe zram 2>/dev/null || true
         total_ram=$(awk '/MemTotal/ {print $2 * 1024}' /proc/meminfo)
         zram_size=$((total_ram / 2))
@@ -19,7 +20,7 @@
         if [ -b /dev/zram0 ]; then
           echo 1 > /sys/block/zram0/reset 2>/dev/null || true
           echo lzo-rle > /sys/block/zram0/comp_algorithm 2>/dev/null || true
-          echo "$zram_size" > /sys/block/zram0/disksize
+          echo "$zram_size" > /sys/block/zram0/disksize 2>/dev/null || true
           mkswap /dev/zram0
           swapon -p 100 /dev/zram0
         fi
