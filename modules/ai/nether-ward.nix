@@ -66,6 +66,9 @@ in {
       description = "Nether Ward AI Security Gateway Daemon";
       after = ["network.target"];
       wantedBy = ["default.target"];
+      unitConfig = {
+        ConditionUser = "!root";
+      };
       serviceConfig = {
         ExecStart =
           "${cfg.package}/bin/nether-ward gateway"

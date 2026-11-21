@@ -45,6 +45,9 @@ in {
       description = "ClamAV Real-time File Creation Sentinel";
       after = ["default.target"];
       wantedBy = ["default.target"];
+      unitConfig = {
+        ConditionUser = "!root";
+      };
       serviceConfig = {
         ExecStart =
           "${pkg}/bin/clamav-sentinel watch ${cfg.watchDir} --quarantine-dir ${cfg.quarantineDir} --audit-log ${cfg.auditLog}"

@@ -203,6 +203,9 @@ in {
     description = "Claude Code Router Daemon (translates Anthropic Messages API to Gemini)";
     after = ["network.target"];
     wantedBy = ["default.target"];
+    unitConfig = {
+      ConditionUser = "!root";
+    };
     serviceConfig = {
       ExecStart = "${pkgs.claude-code-router}/bin/ccr start";
       Restart = "on-failure";
